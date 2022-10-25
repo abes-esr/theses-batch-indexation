@@ -8,4 +8,4 @@ COPY ./theses-sample-mapping.json /app/
 COPY ./theses-sample-load.sh /app/
 RUN chmod a+x /app/theses-sample-load.sh
 
-
+ENTRYPOINT [ "/app/theses-sample-load.sh" ]
