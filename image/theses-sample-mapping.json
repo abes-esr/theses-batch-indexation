@@ -60,6 +60,9 @@
       },
       "membresJury": {
         "type": "nested"
+      },
+      "directeurs": {
+        "type": "nested"
       }
     }
   }
