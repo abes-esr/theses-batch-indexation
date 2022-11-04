@@ -29,10 +29,8 @@
       "nnt": {
         "type": "keyword"
       },
-      "titre": {
+      "titrePrincipal": {
         "type": "text",
-        "analyzer": "francais"
-        ,
         "fields": {
           "exact": {
             "type": "text",
@@ -40,15 +38,126 @@
           }
         }
       },
+      "titres": {
+	    "properties": {
+		  "fr" : {
+	  
+			"type": "text",
+			"analyzer": "francais"
+			,
+			"fields": {
+			  "exact": {
+				"type": "text",
+				"analyzer": "standard"
+			  }
+			}
+		  },
+		  "en" : {
+	  
+			"type": "text",
+			"analyzer": "english"
+			,
+			"fields": {
+			  "exact": {
+				"type": "text",
+				"analyzer": "standard"
+			  }
+			}
+		  },
+		  "es" : {
+	  
+			"type": "text",
+			"analyzer": "spanish"
+			,
+			"fields": {
+			  "exact": {
+				"type": "text",
+				"analyzer": "standard"
+			  }
+			}
+		  },
+		  "de" : {
+	  
+			"type": "text",
+			"analyzer": "german"
+			,
+			"fields": {
+			  "exact": {
+				"type": "text",
+				"analyzer": "standard"
+			  }
+			}
+		  },
+		  "it" : {
+	  
+			"type": "text",
+			"analyzer": "italian"
+			,
+			"fields": {
+			  "exact": {
+				"type": "text",
+				"analyzer": "standard"
+			  }
+			}
+		  }
+		}
+      },
+	  "resumes": {
+	    "properties": {
+		  "fr" : {
+	  
+			"type": "text",
+			"analyzer": "francais"
+		  },
+		  "en" : {
+	  
+			"type": "text",
+			"analyzer": "english"
+		  },
+		  "es" : {
+	  
+			"type": "text",
+			"analyzer": "spanish"
+		  },
+		  "de" : {
+	  
+			"type": "text",
+			"analyzer": "german"
+		  },
+		  "it" : {
+	  
+			"type": "text",
+			"analyzer": "italian"
+		  }
+		}
+      },
+	  "etabSoutenance": {
+	    "type": "nested"
+	  },
+	  "etabCotutelle": {
+	    "type": "nested"
+	  },
       "dateSoutenance": {
         "type": "date"
       },
-      "abstractFR": {
-        "type": "text"
-      },
-      "abstractEN": {
-        "type": "text"
-      },
+      "partenairesRecherche" : {
+	    "type": "nested"
+	  },
+	  "rapporteurs" : {
+	    "type": "nested"
+	  },
+	  "discipline": {
+	    "type": "keyword"
+	  },
+	  "auteurs" : {
+	    "type": "nested"
+	  },
+	  "directeurs" : {
+	    "type": "nested"
+	  },
+	  "membresJury" : {
+	    "type": "nested"
+	  },
       "sujetsRameau": {
         "type": "text",
         "fields": {
@@ -57,12 +166,6 @@
             "analyzer": "standard"
           }
         }
-      },
-      "membresJury": {
-        "type": "nested"
-      },
-      "directeurs": {
-        "type": "nested"
       }
     }
   }
