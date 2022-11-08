@@ -137,11 +137,14 @@
 	  "etabCotutelle": {
 	    "type": "nested"
 	  },
-      "dateSoutenance": {
-        "type": "date"
-      },
-      "partenairesRecherche" : {
-	    "type": "nested"
+    "dateSoutenance": {
+      "type": "date"
+    },
+    "partenairesRecherche" : {
+    "type": "nested"
+	  },
+	  "ecolesDoctorales" : {
+    "type": "nested"
 	  },
 	  "rapporteurs" : {
 	    "type": "nested"
@@ -153,6 +156,9 @@
 	    "type": "nested"
 	  },
 	  "directeurs" : {
+	    "type": "nested"
+	  },
+	  "presidentJury" : {
 	    "type": "nested"
 	  },
 	  "membresJury" : {
