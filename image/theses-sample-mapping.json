@@ -26,13 +26,32 @@
     },
   "mappings": {
     "properties": {
+      "cas": {
+        "type": "keyword"
+      },
+      "accessible": {
+        "type": "keyword"
+      },
+      "source": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "codeEtab": {
+        "type": "keyword"
+      },
       "nnt": {
         "type": "keyword"
       },
-      "titre": {
+      "dateSoutenance": {
+      "type": "date"
+    },
+    "dateFinEmbargo": {
+      "type": "date"
+    },
+      "titrePrincipal": {
         "type": "text",
-        "analyzer": "francais"
-        ,
         "fields": {
           "exact": {
             "type": "text",
@@ -40,29 +59,174 @@
           }
         }
       },
-      "dateSoutenance": {
-        "type": "date"
-      },
-      "abstractFR": {
-        "type": "text"
-      },
-      "abstractEN": {
-        "type": "text"
-      },
-      "sujetsRameau": {
-        "type": "text",
-        "fields": {
-          "suggestion": {
-            "type": "completion",
-            "analyzer": "standard"
-          }
-        }
-      },
-      "membresJury": {
-        "type": "nested"
-      },
-      "directeurs": {
-        "type": "nested"
+      "titres": {
+  	    "properties": {
+    		  "fr" : {
+    			"type": "text",
+    			"analyzer": "francais"
+    			,
+    			"fields": {
+    			  "exact": {
+    				"type": "text",
+    				"analyzer": "standard"
+    			  }
+    			}
+  		  },
+    		  "en" : {
+    	  
+    			"type": "text",
+    			"analyzer": "english"
+    			,
+    			"fields": {
+    			  "exact": {
+    				"type": "text",
+    				"analyzer": "standard"
+    			  }
+    			}
+  		  },
+    		  "es" : {
+    	  
+    			"type": "text",
+    			"analyzer": "spanish"
+    			,
+    			"fields": {
+    			  "exact": {
+    				"type": "text",
+    				"analyzer": "standard"
+    			  }
+    			}
+  		  },
+    		  "de" : {
+    	  
+    			"type": "text",
+    			"analyzer": "german"
+    			,
+    			"fields": {
+    			  "exact": {
+    				"type": "text",
+    				"analyzer": "standard"
+    			  }
+    			}
+  		  },
+    		  "it" : {
+    	  
+    			"type": "text",
+    			"analyzer": "italian"
+    			,
+    			"fields": {
+    			  "exact": {
+    				"type": "text",
+    				"analyzer": "standard"
+    			  }
+    			}
+  		  }
+		  }
+    },
+	  "resumes": {
+	    "properties": {
+  		  "fr" : {
+  	  
+  			"type": "text",
+  			"analyzer": "francais"
+  		  },
+  		  "en" : {
+  	  
+  			"type": "text",
+  			"analyzer": "english"
+  		  },
+  		  "es" : {
+  	  
+  			"type": "text",
+  			"analyzer": "spanish"
+  		  },
+  		  "de" : {
+  	  
+  			"type": "text",
+  			"analyzer": "german"
+  		  },
+  		  "it" : {
+  	  
+  			"type": "text",
+  			"analyzer": "italian"
+  		  }
+		  }
+    },
+	  "etabSoutenance": {
+	    "type": "nested"
+	  },
+	  "etabsCotutelle": {
+	    "type": "nested"
+	  },
+    "partenairesRecherche" : {
+      "type": "nested"
+	  },
+	  "rapporteurs" : {
+	    "type": "nested"
+	  },
+	  "discipline": {
+	    "type": "keyword",
+	    "copy_to": "suggestion"
+	  },
+	  "langues": {
+	    "type": "keyword"
+	  },
+	  "auteurs" : {
+	    "type": "nested"
+	  },
+	  "directeurs" : {
+	    "type": "nested"
+	  },
+	  "membresJury" : {
+	    "type": "nested"
+	  },
+    "sujetsRameau": {
+      "type": "text",
+      "analyzer": "francais",
+      "copy_to": "suggestion"
+    },
+    "sujets": {
+	    "properties": {
+  		  "fr" : {
+  	  
+  			"type": "text",
+  			"analyzer": "francais",
+  			"copy_to": "suggestion"
+  		  },
+  		  "en" : {
+  	  
+  			"type": "text",
+  			"analyzer": "english",
+  			"copy_to": "suggestion"
+  		  },
+  		  "es" : {
+  	  
+  			"type": "text",
+  			"analyzer": "spanish",
+  			"copy_to": "suggestion"
+  		  },
+  		  "de" : {
+  	  
+  			"type": "text",
+  			"analyzer": "german",
+  			"copy_to": "suggestion"
+  		  },
+  		  "it" : {
+  	  
+  			"type": "text",
+  			"analyzer": "italian",
+  			"copy_to": "suggestion"
+  		  }
+		  }
+    },
+    "oaiSets": {
+	    "type": "keyword"
+	  },
+    "theseTravaux" : {
+	    "type": "keyword"
+    },
+    "suggestion": {
+        "type": "completion",
+        "analyzer": "standard"
       }
     }
   }
