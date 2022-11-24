@@ -222,7 +222,7 @@
 	    "type": "keyword"
 	  },
     "theseTravaux" : {
-	    "type": "boolean"
+	    "type": "keyword"
     },
     "suggestion": {
         "type": "completion",
