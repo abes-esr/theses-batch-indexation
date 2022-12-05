@@ -165,8 +165,7 @@
 	  },
 	  "discipline": {
 	    "type": "text",
-	    "analyzer": "francais",
-	    "copy_to": "suggestion"
+	    "analyzer": "francais"
 	  },
 	  "langues": {
 	    "type": "keyword"
