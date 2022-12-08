@@ -151,18 +151,6 @@
   		  }
 		  }
     },
-	  "etabSoutenance": {
-	    "type": "nested"
-	  },
-	  "etabsCotutelle": {
-	    "type": "nested"
-	  },
-    "partenairesRecherche" : {
-      "type": "nested"
-	  },
-	  "rapporteurs" : {
-	    "type": "nested"
-	  },
 	  "discipline": {
 	    "type": "text",
 	    "analyzer": "francais"
@@ -171,13 +159,93 @@
 	    "type": "keyword"
 	  },
 	  "auteurs" : {
-	    "type": "nested"
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        },
+        "prenom": {
+          "type": "text"
+        }
+	    }
 	  },
 	  "directeurs" : {
-	    "type": "nested"
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        },
+        "prenom": {
+          "type": "text"
+        }
+	    }
 	  },
 	  "membresJury" : {
-	    "type": "nested"
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        },
+        "prenom": {
+          "type": "text"
+        }
+	    }
+	  },
+	  "rapporteurs" : {
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        },
+        "prenom": {
+          "type": "text"
+        }
+	    }
+	  },
+	  "etabSoutenance": {
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        }
+	    }
+	  },
+	  "etabsCotutelle": {
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        }
+	    }
+	  },
+    "partenairesRecherche" : {
+      "type": "nested",
+      "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        }
+	    }
 	  },
     "sujetsRameau": {
       "type": "text",
