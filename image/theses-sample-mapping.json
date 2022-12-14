@@ -244,6 +244,9 @@
         },
         "nom": {
           "type": "text"
+        },
+        "type": {
+          "type": "text"
         }
 	    }
 	  },
