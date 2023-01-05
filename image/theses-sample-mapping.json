@@ -172,6 +172,9 @@
         }
 	    }
 	  },
+	  "auteursNP": {
+	    "type": "text"
+	  },
 	  "directeurs" : {
 	    "type": "nested",
 	    "properties": {
@@ -185,6 +188,26 @@
           "type": "text"
         }
 	    }
+	  },
+	  "directeursNP": {
+	    "type": "text"
+	  },
+	  "presidentJury" : {
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        },
+        "prenom": {
+          "type": "text"
+        }
+	    }
+	  },
+	  "presidentJuryNP": {
+	    "type": "text"
 	  },
 	  "membresJury" : {
 	    "type": "nested",
@@ -200,6 +223,9 @@
         }
 	    }
 	  },
+	  "membresJuryNP": {
+	    "type": "text"
+	  },
 	  "rapporteurs" : {
 	    "type": "nested",
 	    "properties": {
@@ -214,6 +240,9 @@
         }
 	    }
 	  },
+	  "rapporteursNP": {
+	    "type": "text"
+	  },
 	  "etabSoutenance": {
 	    "type": "nested",
 	    "properties": {
@@ -225,6 +254,9 @@
         }
 	    }
 	  },
+	  "etabSoutenanceN": {
+	    "type": "text"
+	  },
 	  "etabsCotutelle": {
 	    "type": "nested",
 	    "properties": {
@@ -235,6 +267,23 @@
           "type": "text"
         }
 	    }
+	  },
+	  "etabsCotutelleN": {
+	    "type": "text"
+	  },
+	  "ecolesDoctorales": {
+	    "type": "nested",
+	    "properties": {
+        "ppn": {
+          "type": "keyword"
+        },
+        "nom": {
+          "type": "text"
+        }
+	    }
+	  },
+	  "ecolesDoctoralesN": {
+	    "type": "text"
 	  },
     "partenairesRecherche" : {
       "type": "nested",
@@ -249,6 +298,9 @@
           "type": "text"
         }
 	    }
+	  },
+	  "partenairesRechercheN": {
+	    "type": "text"
 	  },
     "sujetsRameau": {
       "type": "text",
