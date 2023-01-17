@@ -21,7 +21,13 @@
               "french_stemmer"
             ]
           }
+        },
+        "normalizer": {
+        "tri": {
+          "type": "custom",
+          "filter": ["lowercase", "asciifolding"]
         }
+      }
       }
     },
   "mappings": {
@@ -156,7 +162,8 @@
 	    "analyzer": "francais",
 			"fields": {
 			  "tri": {
-				"type": "keyword"
+			    "type": "keyword",
+			    "normalizer": "tri"
 			  }
 			}
 	  },
@@ -181,7 +188,8 @@
 	    "type": "text",
 	    "fields": {
 			  "tri": {
-				"type": "keyword"
+			    "type": "keyword",
+			    "normalizer": "tri"
 			  }
 			}
 	  },
