@@ -153,7 +153,12 @@
     },
 	  "discipline": {
 	    "type": "text",
-	    "analyzer": "francais"
+	    "analyzer": "francais",
+			"fields": {
+			  "tri": {
+				"type": "keyword"
+			  }
+			}
 	  },
 	  "langues": {
 	    "type": "keyword"
@@ -173,7 +178,12 @@
 	    }
 	  },
 	  "auteursNP": {
-	    "type": "text"
+	    "type": "text",
+	    "fields": {
+			  "tri": {
+				"type": "keyword"
+			  }
+			}
 	  },
 	  "directeurs" : {
 	    "type": "nested",
