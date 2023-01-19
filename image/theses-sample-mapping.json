@@ -165,7 +165,8 @@
 			    "type": "keyword",
 			    "normalizer": "tri"
 			  }
-			}
+			},
+			"copy_to": "suggestion"
 	  },
 	  "langues": {
 	    "type": "keyword"
@@ -325,39 +326,15 @@
       "analyzer": "francais",
       "copy_to": "suggestion"
     },
-    "sujets": {
-	    "properties": {
-  		  "fr" : {
-  	  
-  			"type": "text",
-  			"analyzer": "francais",
-  			"copy_to": "suggestion"
-  		  },
-  		  "en" : {
-  	  
-  			"type": "text",
-  			"analyzer": "english",
-  			"copy_to": "suggestion"
-  		  },
-  		  "es" : {
-  	  
-  			"type": "text",
-  			"analyzer": "spanish",
-  			"copy_to": "suggestion"
-  		  },
-  		  "de" : {
-  	  
-  			"type": "text",
-  			"analyzer": "german",
-  			"copy_to": "suggestion"
-  		  },
-  		  "it" : {
-  	  
-  			"type": "text",
-  			"analyzer": "italian",
-  			"copy_to": "suggestion"
-  		  }
-		  }
+    "sujetsFR": {
+      "type": "text",
+      "analyzer": "francais",
+      "copy_to": "suggestion"
+    },
+    "sujetsEN": {
+      "type": "text",
+      "analyzer": "standard",
+      "copy_to": "suggestion"
     },
     "oaiSets": {
 	    "type": "keyword"
@@ -367,7 +344,8 @@
 	  },
     "suggestion": {
         "type": "completion",
-        "analyzer": "francais"
+        "analyzer": "francais",
+        "max_input_length" : 200
       }
     }
   }
