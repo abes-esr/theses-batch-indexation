@@ -1,6 +1,6 @@
 package fr.abes.theses_batch_indexation.notification;
 
-import fr.abes.theses_batch_indexation.dto.TheseDTO;
+import fr.abes.theses_batch_indexation.dto.these.TheseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.beans.factory.annotation.Qualifier;

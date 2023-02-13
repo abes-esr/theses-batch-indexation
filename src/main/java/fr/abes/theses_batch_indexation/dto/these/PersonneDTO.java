@@ -1,4 +1,4 @@
-package fr.abes.theses_batch_indexation.dto;
+package fr.abes.theses_batch_indexation.dto.these;
 
 public class PersonneDTO {
     private String ppn;

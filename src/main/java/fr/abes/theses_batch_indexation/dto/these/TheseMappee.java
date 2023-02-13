@@ -1,4 +1,4 @@
-package fr.abes.theses_batch_indexation.dto;
+package fr.abes.theses_batch_indexation.dto.these;
 
 import fr.abes.theses_batch_indexation.model.jaxb.*;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,6 @@ public class TheseMappee {
     List<String> partenairesRechercheN = new ArrayList<String>();
 
 
-
     String discipline;
     List<PersonneDTO> auteurs = new ArrayList<PersonneDTO>();
     List<String> auteursNP = new ArrayList<String>();
@@ -63,8 +62,8 @@ public class TheseMappee {
 
             try {
 
-            techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
-            log.info("traitement de " + nnt);
+                techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
+                log.info("traitement de " + nnt);
 
                 Iterator<Identifier> iteIdentifiers = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
                 while (iteIdentifiers.hasNext()) {
@@ -72,8 +71,7 @@ public class TheseMappee {
                     if (isNnt(i.getValue()))
                         nnt = i.getValue();
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour nnt " + e.toString());
             }
 
@@ -89,8 +87,7 @@ public class TheseMappee {
                     cas = starGestion.get().getMdWrap().getXmlData().getStarGestion().getTraitements().getScenario();
                     codeEtab = starGestion.get().getMdWrap().getXmlData().getStarGestion().getCodeEtab();
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour cas de " + nnt + e.getMessage());
             }
 
@@ -99,8 +96,7 @@ public class TheseMappee {
             log.info("traitement de titrePrincipal");
             try {
                 titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent();
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour titrePrincipal de " + nnt + e.getMessage());
             }
             // titres
@@ -118,8 +114,7 @@ public class TheseMappee {
                                 a.getLang(), a.getContent());
                     }
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour titres de " + nnt + e.getMessage());
             }
 
@@ -132,8 +127,7 @@ public class TheseMappee {
                     Abstract a = abstractIterator.next();
                     resumes.put(a.getLang(), a.getContent());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour resumes de " + nnt + e.getMessage());
             }
 
@@ -147,18 +141,16 @@ public class TheseMappee {
                     Language l = languageIterator.next();
                     langues.add(l.getValue());
                 }
+            } catch (NullPointerException e) {
+                log.error("PB pour langue de " + nnt + e.getMessage());
             }
-            catch (NullPointerException e) {
-                    log.error("PB pour langue de " + nnt + e.getMessage());
-                }
 
             // date de soutenance
 
             log.info("traitement de dateSoutenance");
             try {
                 dateSoutenance = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString();
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour dateSoutenance de " + nnt);
             }
 
@@ -170,8 +162,7 @@ public class TheseMappee {
                         .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getRestrictionTemporelleFin().isEmpty())
                     dateFinEmbargo = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                             .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getRestrictionTemporelleFin();
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour date fin embargo de " + nnt + "," + e.getMessage());
             }
             // accessible
@@ -184,8 +175,7 @@ public class TheseMappee {
                         && (dateFinEmbargo == null || dateFinEmbargo.isEmpty() || LocalDate.parse(dateFinEmbargo).isBefore(LocalDate.now()))) {
                     accessible = "oui";
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour accessible de " + nnt);
             }
 
@@ -198,8 +188,7 @@ public class TheseMappee {
                 Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
                 if (stepGestion.isPresent())
                     status = "enCours";
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour status de " + nnt + e.getMessage());
             }
 
@@ -209,12 +198,12 @@ public class TheseMappee {
             if (status.equals("enCours"))
                 source = "step";
             try {
-                if (status.equals("soutenue") && mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
+                if (status.equals("soutenue") &&
+                        mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                         .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
                     source = "star";
-            }
-            catch (NullPointerException ex) {
-                log.info("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
+            } catch (NullPointerException ex) {
+                log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
 
             // etablissements
@@ -241,8 +230,7 @@ public class TheseMappee {
                     etabsCotutelle.add(ctdto);
                     etabsCotutelleN.add(a.getNom());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour etablissements de " + nnt + "," + e.getMessage());
             }
 
@@ -263,8 +251,7 @@ public class TheseMappee {
                     partenairesRecherche.add(pdto);
                     partenairesRechercheN.add(p.getNom());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour partenaire  " + nnt + "," + e.getMessage());
 
             }
@@ -285,8 +272,7 @@ public class TheseMappee {
                     ecolesDoctorales.add(edto);
                     ecolesDoctoralesN.add(ecole.getNom());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour ecolesDoctorales de " + nnt + "," + e.getMessage());
 
             }
@@ -298,8 +284,7 @@ public class TheseMappee {
                 ThesisDegreeDiscipline tddisc = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getThesisDegree().getThesisDegreeDiscipline();
                 discipline = tddisc.getValue();
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour discipline de " + nnt + "," + e.getMessage());
 
             }
@@ -321,8 +306,7 @@ public class TheseMappee {
                     auteurs.add(adto);
                     auteursNP.add(a.getNom() + " " + a.getPrenom());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour auteurs de " + nnt + "," + e.getMessage());
             }
 
@@ -340,10 +324,9 @@ public class TheseMappee {
                     dtdto.setNom(dt.getNom());
                     dtdto.setPrenom(dt.getPrenom());
                     directeurs.add(dtdto);
-                    directeursNP.add(dt.getNom() + " " +dt.getPrenom());
+                    directeursNP.add(dt.getNom() + " " + dt.getPrenom());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour directeurs de " + nnt + "," + e.getMessage());
             }
 
@@ -359,8 +342,7 @@ public class TheseMappee {
                     presidentJury.setPrenom(presidentDepuisTef.getPrenom());
                     presidentJuryNP = presidentDepuisTef.getNom() + " " + presidentDepuisTef.getPrenom();
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour president jury de " + nnt + "," + e.getMessage());
             }
 
@@ -379,10 +361,9 @@ public class TheseMappee {
                     mdto.setNom(m.getNom());
                     mdto.setPrenom(m.getPrenom());
                     membresJury.add(mdto);
-                    membresJuryNP.add(m.getNom() + " " +m.getPrenom());
+                    membresJuryNP.add(m.getNom() + " " + m.getPrenom());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour membres jury de " + nnt + "," + e.getMessage());
             }
 
@@ -401,10 +382,9 @@ public class TheseMappee {
                     rdto.setNom(r.getNom());
                     rdto.setPrenom(r.getPrenom());
                     rapporteurs.add(rdto);
-                    rapporteursNP.add(r.getNom() + " " +r.getPrenom());
+                    rapporteursNP.add(r.getNom() + " " + r.getPrenom());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour rapporteurs de " + nnt + "," + e.getMessage());
             }
 
@@ -416,15 +396,20 @@ public class TheseMappee {
                 Iterator<Subject> subjectIterator = subjects.iterator();
                 while (subjectIterator.hasNext()) {
                     Subject s = subjectIterator.next();
-                    switch (s.getLang()) {
-                        case "fr" : sujetsFR.add(s.getContent());
-                        break;
-                        case "en" : sujetsEN.add(s.getContent());
-                        break;
+                    if (s != null && s.getLang() != null) {
+                        switch (s.getLang()) {
+                            case "fr":
+                                sujetsFR.add(s.getContent());
+                                break;
+                            case "en":
+                                sujetsEN.add(s.getContent());
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour sujets de " + nnt + "," + e.getMessage());
             }
 
@@ -441,8 +426,7 @@ public class TheseMappee {
                     if (vdto.getElementdEntree() != null)
                         sujetsRameau.add(vdto.getElementdEntree().getContent());
                 }
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour sujetsRameau de " + nnt + ", " + e.getMessage());
             }
 
@@ -452,8 +436,7 @@ public class TheseMappee {
             try {
                 oaiSets = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getOaiSetSpec();
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour oaisets de " + nnt + "," + e.getMessage());
             }
 
@@ -463,8 +446,7 @@ public class TheseMappee {
             try {
                 theseTravaux = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getTheseSurTravaux();
-            }
-            catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 log.error("PB pour thesesTravaux de " + nnt + "," + e.getMessage());
             }
         } catch (Exception e) {
@@ -474,12 +456,11 @@ public class TheseMappee {
         }
     }
 
-    private boolean isNnt (String identifier) {
+    private boolean isNnt(String identifier) {
         if (identifier.length() == 12)
             return true;
         return false;
     }
-
 
 
     public String getNnt() {
@@ -521,6 +502,7 @@ public class TheseMappee {
     public void setMembresJury(List<PersonneDTO> membresJury) {
         this.membresJury = membresJury;
     }
+
     public List<PersonneDTO> getAuteurs() {
         return auteurs;
     }
@@ -536,6 +518,7 @@ public class TheseMappee {
     public void setDirecteurs(List<PersonneDTO> directeurs) {
         this.directeurs = directeurs;
     }
+
     public Map<String, String> getResumes() {
         return resumes;
     }
@@ -543,6 +526,7 @@ public class TheseMappee {
     public void setResumes(Map<String, String> resumes) {
         this.resumes = resumes;
     }
+
     public String getDateSoutenance() {
         return dateSoutenance;
     }
@@ -590,11 +574,11 @@ public class TheseMappee {
         this.accessible = accessible;
     }
 
-    public Map<String,String> getTitres() {
+    public Map<String, String> getTitres() {
         return titres;
     }
 
-    public void setTitres(Map<String,String> titres) {
+    public void setTitres(Map<String, String> titres) {
         this.titres = titres;
     }
 

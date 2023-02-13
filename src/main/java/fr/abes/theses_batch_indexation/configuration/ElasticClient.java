@@ -1,4 +1,4 @@
-package fr.abes.theses_batch_indexation.writer;
+package fr.abes.theses_batch_indexation.configuration;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
