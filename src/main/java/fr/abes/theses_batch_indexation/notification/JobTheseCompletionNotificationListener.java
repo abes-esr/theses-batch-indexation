@@ -1,7 +1,7 @@
 package fr.abes.theses_batch_indexation.notification;
 
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
-import fr.abes.theses_batch_indexation.writer.ElasticClient;
+import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -16,16 +16,13 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JobTheseCompletionNotificationListener extends JobExecutionListenerSupport {
 
-    private final JdbcTemplate jdbcTemplate;
-
     private long start;
 
-    @Autowired
-    private ElasticConfig elasticConfig;
+    private final ElasticConfig elasticConfig;
 
     @Autowired
-    public JobTheseCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public JobTheseCompletionNotificationListener(ElasticConfig elasticConfig) {
+        this.elasticConfig = elasticConfig;
     }
 
     @Override

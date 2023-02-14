@@ -1,11 +1,9 @@
 package fr.abes.theses_batch_indexation.configuration;
 
-import fr.abes.theses_batch_indexation.dto.TheseDTO;
-import fr.abes.theses_batch_indexation.dto.TheseRowMapper;
+import fr.abes.theses_batch_indexation.dto.these.TheseDTO;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
-import fr.abes.theses_batch_indexation.processor.TheseItemProcessor;
+import fr.abes.theses_batch_indexation.reader.TheseItemReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
-import fr.abes.theses_batch_indexation.writer.ESItemWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
 import org.springframework.batch.core.ItemWriteListener;
@@ -17,12 +15,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.database.Order;
-import org.springframework.batch.item.database.PagingQueryProvider;
-import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
-import org.springframework.batch.item.database.support.OraclePagingQueryProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,33 +23,34 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
 
-    @Autowired
-    protected JobBuilderFactory jobs;
+    protected final JobBuilderFactory jobs;
 
-    @Autowired
-    protected StepBuilderFactory stepBuilderFactory;
+    protected final StepBuilderFactory stepBuilderFactory;
 
-    @Autowired
-    @Qualifier("dataSourceLecture")
-    protected DataSource dataSourceLecture;
+    protected final DataSource dataSourceLecture;
 
-    @Autowired
-    private JobConfig config;
+    private final JobConfig config;
 
-    @Autowired
-    @Qualifier("theseWriteListener")
-    private ItemWriteListener<TheseDTO> theseWriteListener;
-    @Autowired
-    @Qualifier("theseProcessListener")
-    private ItemProcessListener<TheseDTO, TheseDTO> theseProcessListener;
+    private final ItemWriteListener<TheseDTO> theseWriteListener;
+    private final ItemProcessListener<TheseDTO, TheseDTO> theseProcessListener;
+
+    private final TheseItemReader theseItemReader;
+
+    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseDTO> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseDTO, TheseDTO> theseProcessListener, TheseItemReader theseItemReader) {
+        this.jobs = jobs;
+        this.stepBuilderFactory = stepBuilderFactory;
+        this.dataSourceLecture = dataSourceLecture;
+        this.config = config;
+        this.theseWriteListener = theseWriteListener;
+        this.theseProcessListener = theseProcessListener;
+        this.theseItemReader = theseItemReader;
+    }
 
     // ---------- JOB ---------------------------------------------
 
@@ -71,69 +65,23 @@ public class BatchConfiguration {
 
     // ---------- STEP --------------------------------------------
     @Bean
-    public Step stepIndexThesesDansES() {
+    public Step stepIndexThesesDansES(@Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
+                                      @Qualifier("thesesESItemWriter")ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationThese").<TheseDTO, TheseDTO>chunk(config.getChunk())
                 .listener(theseWriteListener)
-                .reader(databaseItemReaderThreadSafe()).processor(processorThese()).listener(theseProcessListener)
-                .writer(writerTheseDansES()).taskExecutor(taskExecutor()).throttleLimit(config.getThrottle()).build();
+                .reader(theseItemReader.read())
+                .processor(itemProcessor)
+                .listener(theseProcessListener)
+                .writer(itemWriter)
+                .taskExecutor(taskExecutor())
+                .throttleLimit(config.getThrottle())
+                .build();
     }
 
     // ---------------- TASK EXECUTOR ----------------------------
     @Bean
     public TaskExecutor taskExecutor() {
         return new SimpleAsyncTaskExecutor("spring_batch");
-    }
-
-    // ---------------- READER THREAD SAFE ----------------------------
-    @Bean
-    public ItemReader<TheseDTO> databaseItemReaderThreadSafe() {
-        log.info("début du reader these thread safe...");
-
-        try {
-            return new JdbcPagingItemReaderBuilder<TheseDTO>().name("theseReader").dataSource(dataSourceLecture)
-                    .queryProvider(createQueryProvider()).rowMapper(new TheseRowMapper()).pageSize(config.getChunk())
-                    .build();
-
-        } catch (Exception e) {
-            log.error("erreur lors de la creation du JdbcPagingItemReader : " + e);
-            return null;
-        }
-    }
-
-    private PagingQueryProvider createQueryProvider() {
-        OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
-        queryProvider.setSelectClause("SELECT iddoc, nnt, doc, numsujet");
-        queryProvider.setFromClause("from DOCUMENT");
-        if (config.getWhereLimite() > 0) {
-
-            //queryProvider.setWhereClause("where nnt = '1993BOR23095'");
-            queryProvider.setWhereClause("where rownum < " + config.getWhereLimite());
-            Map<String,Order> orderKeys = new HashMap<>();
-            orderKeys.put("iddoc", Order.ASCENDING);
-            queryProvider.setSortKeys(orderKeys);
-            //queryProvider.setWhereClause("where nnt = '2000PA010697' or nnt = '2001MNHN0022'or nnt = '2003MON30025' or nnt = '2003PA100181' or nnt = '2011AIX10218' or nnt = '2012PA010501' or nnt = '2014TOU20035' or nnt = '2014TOU20047' or nnt = '2015TOU20116' or nnt = '2020PA100137' or nnt = '2020TOU20084'");
-            //queryProvider.setWhereClause("where numsujet = 's347362'");
-        }
-        queryProvider.setSortKeys(sortByIdAsc());
-        return queryProvider;
-    }
-
-    private Map<String, Order> sortByIdAsc() {
-        Map<String, Order> sortConfiguration = new HashMap<>();
-        sortConfiguration.put("iddoc", Order.ASCENDING);
-        return sortConfiguration;
-    }
-
-    // -------------- PROCESSOR -------------------------------
-    @Bean
-    public ItemProcessor<TheseDTO, TheseDTO> processorThese() {
-        return new TheseItemProcessor();
-    }
-
-    // ----------------- WRITER -------------------------------------
-    @Bean
-    public ESItemWriter writerTheseDansES() {
-        return new ESItemWriter();
     }
 
     // --------------------- Utilitaires --------------------------------

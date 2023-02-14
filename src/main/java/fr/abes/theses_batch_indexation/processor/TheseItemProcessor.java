@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 
-import fr.abes.theses_batch_indexation.dto.TheseDTO;
-import fr.abes.theses_batch_indexation.dto.TheseMappee;
+import fr.abes.theses_batch_indexation.dto.these.TheseDTO;
+import fr.abes.theses_batch_indexation.dto.these.TheseMappee;
 import fr.abes.theses_batch_indexation.model.jaxb.Mets;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
+import org.springframework.stereotype.Component;
+
 @Slf4j
+@Component
 public class TheseItemProcessor implements ItemProcessor<TheseDTO, TheseDTO> {
 
     @Autowired

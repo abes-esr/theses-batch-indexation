@@ -1,4 +1,4 @@
-package fr.abes.theses_batch_indexation.dto;
+package fr.abes.theses_batch_indexation.dto.these;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

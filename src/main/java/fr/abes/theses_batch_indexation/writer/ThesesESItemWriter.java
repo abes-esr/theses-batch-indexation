@@ -6,16 +6,23 @@ import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
-import fr.abes.theses_batch_indexation.dto.TheseDTO;
+import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.dto.these.TheseDTO;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
 import java.util.List;
 
 @Slf4j
-public class ESItemWriter implements ItemWriter<TheseDTO> {
+@Component
+public class ThesesESItemWriter implements ItemWriter<TheseDTO> {
+
+    @Value("${index.name}")
+    private String nomIndex;
 
     @Override
     public void write(List<? extends TheseDTO> items) throws Exception {
@@ -25,10 +32,9 @@ public class ESItemWriter implements ItemWriter<TheseDTO> {
         for (TheseDTO theseDTO : items) {
             JsonData json = readJson(new ByteArrayInputStream(theseDTO.getJson().getBytes()), ElasticClient.getElasticsearchClient());
 
-            this.ecrireDansFichier(theseDTO.getJson(), theseDTO.getNnt());
             br.operations(op -> op
                     .index(idx -> idx
-                            .index("theses-sample-2")
+                            .index(nomIndex.toLowerCase())
                             .id(theseDTO.getNnt() == null? theseDTO.getIdSujet() : theseDTO.getNnt())
                             .document(json)
                     )
