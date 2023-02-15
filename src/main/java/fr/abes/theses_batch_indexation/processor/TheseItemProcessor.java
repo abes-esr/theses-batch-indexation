@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 
-import fr.abes.theses_batch_indexation.dto.these.TheseDTO;
+import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.these.TheseMappee;
 import fr.abes.theses_batch_indexation.model.jaxb.Mets;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
@@ -16,13 +16,16 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class TheseItemProcessor implements ItemProcessor<TheseDTO, TheseDTO> {
+public class TheseItemProcessor implements ItemProcessor<TheseModel, TheseModel> {
 
-    @Autowired
-    private XMLJsonMarshalling marshall;
+    private final XMLJsonMarshalling marshall;
+
+    public TheseItemProcessor(XMLJsonMarshalling marshall) {
+        this.marshall = marshall;
+    }
 
     @Override
-    public TheseDTO process(TheseDTO item) throws Exception {
+    public TheseModel process(TheseModel item) throws Exception {
 
         log.info("debut de traitement de " + item.getNnt());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(item.getDoc().getBytes()));

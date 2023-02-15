@@ -1,6 +1,6 @@
 package fr.abes.theses_batch_indexation.configuration;
 
-import fr.abes.theses_batch_indexation.dto.these.TheseDTO;
+import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
 import fr.abes.theses_batch_indexation.reader.TheseItemReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
@@ -37,12 +37,12 @@ public class BatchConfiguration {
 
     private final JobConfig config;
 
-    private final ItemWriteListener<TheseDTO> theseWriteListener;
-    private final ItemProcessListener<TheseDTO, TheseDTO> theseProcessListener;
+    private final ItemWriteListener<TheseModel> theseWriteListener;
+    private final ItemProcessListener<TheseModel, TheseModel> theseProcessListener;
 
     private final TheseItemReader theseItemReader;
 
-    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseDTO> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseDTO, TheseDTO> theseProcessListener, TheseItemReader theseItemReader) {
+    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener, TheseItemReader theseItemReader) {
         this.jobs = jobs;
         this.stepBuilderFactory = stepBuilderFactory;
         this.dataSourceLecture = dataSourceLecture;
@@ -63,15 +63,34 @@ public class BatchConfiguration {
                 .listener(listener).flow(stepIndexThesesDansES).end().build();
     }
 
+    @Bean
+    public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansES) {
+        return jobs.get("jobIndexationPersonnesDansES").incrementer(new RunIdIncrementer())
+                .start(stepIndexPersonnesDansES)
+                .build();
+    }
+
     // ---------- STEP --------------------------------------------
     @Bean
     public Step stepIndexThesesDansES(@Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
                                       @Qualifier("thesesESItemWriter")ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexationThese").<TheseDTO, TheseDTO>chunk(config.getChunk())
+        return stepBuilderFactory.get("stepIndexationThese").<TheseModel, TheseModel>chunk(config.getChunk())
                 .listener(theseWriteListener)
                 .reader(theseItemReader.read())
                 .processor(itemProcessor)
                 .listener(theseProcessListener)
+                .writer(itemWriter)
+                .taskExecutor(taskExecutor())
+                .throttleLimit(config.getThrottle())
+                .build();
+    }
+
+    @Bean
+    public Step stepIndexPersonnesDansES(@Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
+                                         @Qualifier("thesesESItemWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexPersonnesDansES").chunk(config.getChunk())
+                .reader(theseItemReader.read())
+                .processor(itemProcessor)
                 .writer(itemWriter)
                 .taskExecutor(taskExecutor())
                 .throttleLimit(config.getThrottle())

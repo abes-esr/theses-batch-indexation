@@ -2,6 +2,11 @@
 
 Programme qui permet l'indexation en masse des thèses et de leurs métadonnées.
 
+Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override configuration properties):
+ ~~~
+ spring.batch.job.names=nom_du_job
+ ~~~
+
 Pour le faire fonctionner :
 
 - il faut compiler avec au moins jdk-11.0.2

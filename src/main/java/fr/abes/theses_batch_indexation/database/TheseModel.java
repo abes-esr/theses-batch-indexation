@@ -1,6 +1,9 @@
-package fr.abes.theses_batch_indexation.dto.these;
+package fr.abes.theses_batch_indexation.database;
 
-public class TheseDTO {
+/** Objet "valise" qui modelise une entrée dans la base de données
+ * json : vide au départ ; après le processor : json à indexer dans ES
+ */
+public class TheseModel {
 
     private int idDoc;
     private String nnt;
