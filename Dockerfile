@@ -44,5 +44,6 @@ ENV LANGUAGE fr_FR:fr
 ENV LC_ALL fr_FR.UTF-8
 # Lancement de l'entrypoint et du démon crond
 COPY ./docker/batch/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["crond", "-n"]
