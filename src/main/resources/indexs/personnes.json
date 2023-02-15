@@ -1,0 +1,92 @@
+{
+    "settings": {
+        "analysis": {
+            "filter": {
+                "french_stop": {
+                    "type": "stop",
+                    "stopwords": "_french_"
+                },
+                "french_stemmer": {
+                    "type": "stemmer",
+                    "language": "light_french"
+                }
+            },
+            "analyzer": {
+                "francais": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "french_stop",
+                        "french_stemmer"
+                    ]
+                }
+            }
+        }
+    },
+    "mappings": {
+        "properties": {
+            "nom": {
+                "type": "text",
+                "copy_to": "nom_complet",
+                "analyzer": "francais",
+                "fields": {
+                    "exact": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    }
+                }
+            },
+            "prenom": {
+                "type": "text",
+                "copy_to": "nom_complet",
+                "analyzer": "francais",
+                "fields": {
+                    "exact": {
+                        "type": "text",
+                        "analyzer": "standard"
+                    }
+                }
+            },
+            "nom_complet": {
+                "type": "text"   ,
+                "analyzer": "francais",
+                "fields": {
+                    "exact": {
+                         "type": "text",
+                        "analyzer": "standard"                     
+                    }
+                }            
+            },
+            "suggestion": {
+                "type": "completion",              
+                "contexts": [
+                    {
+                        "name": "has_idref",
+                        "type": "category",
+                        "path": "has_idref.raw"
+                    }
+                ]
+            },
+            "has_idref": {
+                "type": "boolean",
+                "fields": {
+                    "raw": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "theses": {
+                "type": "nested",
+                "properties": {
+                    "ppn": {
+                        "type": "keyword"
+                    },
+                    "role": {
+                        "type": "keyword"
+                    }
+                }
+            }
+        }
+    }
+}

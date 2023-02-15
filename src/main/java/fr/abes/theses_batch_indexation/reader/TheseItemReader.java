@@ -1,8 +1,8 @@
 package fr.abes.theses_batch_indexation.reader;
 
 import fr.abes.theses_batch_indexation.configuration.JobConfig;
-import fr.abes.theses_batch_indexation.dto.these.TheseDTO;
-import fr.abes.theses_batch_indexation.dto.these.TheseRowMapper;
+import fr.abes.theses_batch_indexation.database.TheseModel;
+import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.Order;
@@ -38,11 +38,11 @@ public class TheseItemReader {
     }
 
     @Bean
-    public ItemReader<TheseDTO> read() {
+    public ItemReader<TheseModel> read() {
         log.info("début du reader these thread safe...");
 
         try {
-            return new JdbcPagingItemReaderBuilder<TheseDTO>().name("theseReader")
+            return new JdbcPagingItemReaderBuilder<TheseModel>().name("theseReader")
                     .dataSource(dataSourceLecture)
                     .queryProvider(createQueryProvider())
                     .rowMapper(new TheseRowMapper())
