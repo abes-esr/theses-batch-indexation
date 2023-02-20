@@ -26,6 +26,9 @@
     },
     "mappings": {
         "properties": {
+            "ppn": {
+                "type": "keyword"
+            },
             "nom": {
                 "type": "text",
                 "copy_to": "nom_complet",
@@ -84,6 +87,9 @@
                     },
                     "role": {
                         "type": "keyword"
+                    },
+                    "titre": {
+                        "type": "text"
                     }
                 }
             }

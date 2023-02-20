@@ -1,7 +1,7 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
-import fr.abes.theses_batch_indexation.dto.these.PersonneDTO;
 import fr.abes.theses_batch_indexation.model.jaxb.*;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -9,12 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 
 @Slf4j
+@Getter
 public class PersonneMapee {
 
-    //Todo: Ajouter les champs à indexer
-    private String ppn;
-    private String nom;
-    private String prenom;
+    //Todo: Ajouter les champs à indexer dans personneModel ou thesesDOT
+    private List<PersonneModelES> personnes = new ArrayList<>();
 
     private String nnt;
 
@@ -44,24 +43,27 @@ public class PersonneMapee {
 
         log.info("traitement de auteurs");
         try {
-            List<PersonneDTO> auteurs = new ArrayList<>();
+            List<PersonneModelES> auteurs = new ArrayList<>();
 
             List<Auteur> auteursDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getAuteur();
             Iterator<Auteur> auteurIterator = auteursDepuisTef.iterator();
-            //Todo: comment gérer les co-auteurs
             while (auteurIterator.hasNext()) {
                 Auteur a = auteurIterator.next();
-                PersonneDTO adto = new PersonneDTO();
+                PersonneModelES adto = new PersonneModelES();
                 if (a.getAutoriteExterne() != null)
                     adto.setPpn(a.getAutoriteExterne().getValue());
                 adto.setNom(a.getNom());
                 adto.setPrenom(a.getPrenom());
+                TheseModelES thedto = new TheseModelES();
+                thedto.setNnt(nnt);
+                thedto.setRole("auteur");
+                thedto.setTitre("titre de test");
+                adto.getTheses().add(thedto);
                 auteurs.add(adto);
             }
-            nom = auteurs.stream().findFirst().orElse(null).getNom();
-            prenom = auteurs.stream().findFirst().orElse(null).getPrenom();
-            ppn = auteurs.stream().findFirst().orElse(null).getPpn();
+
+            personnes.addAll(auteurs);
 
         } catch (NullPointerException e) {
             log.error("PB pour auteurs de " + nnt + "," + e.getMessage());

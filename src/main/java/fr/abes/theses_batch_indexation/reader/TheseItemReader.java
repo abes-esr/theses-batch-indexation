@@ -4,6 +4,7 @@ import fr.abes.theses_batch_indexation.configuration.JobConfig;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.PagingQueryProvider;
@@ -31,8 +32,7 @@ public class TheseItemReader {
     private String nomTable;
 
 
-    public TheseItemReader(JobConfig config,
-                           DataSource dataSourceLecture) {
+    public TheseItemReader(JobConfig config, DataSource dataSourceLecture) {
         this.config = config;
         this.dataSourceLecture = dataSourceLecture;
     }
@@ -42,12 +42,7 @@ public class TheseItemReader {
         log.info("début du reader these thread safe...");
 
         try {
-            return new JdbcPagingItemReaderBuilder<TheseModel>().name("theseReader")
-                    .dataSource(dataSourceLecture)
-                    .queryProvider(createQueryProvider())
-                    .rowMapper(new TheseRowMapper())
-                    .pageSize(config.getChunk())
-                    .build();
+            return new JdbcPagingItemReaderBuilder<TheseModel>().name("theseReader").dataSource(dataSourceLecture).queryProvider(createQueryProvider()).rowMapper(new TheseRowMapper()).pageSize(config.getChunk()).build();
         } catch (Exception e) {
             log.error("erreur lors de la creation du JdbcPagingItemReader : " + e);
             return null;
@@ -58,19 +53,28 @@ public class TheseItemReader {
         OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
         queryProvider.setSelectClause("SELECT iddoc, nnt, doc, numsujet");
         queryProvider.setFromClause("from " + nomTable);
-        if (nomIndex.length() > 0) {
 
-            //queryProvider.setWhereClause("where nnt = '1993BOR23095'");
-            //queryProvider.setWhereClause("where rownum < " + config.getWhereLimite());
-            Map<String, Order> orderKeys = new HashMap<>();
-            orderKeys.put("iddoc", Order.ASCENDING);
-            queryProvider.setSortKeys(orderKeys);
-            //queryProvider.setWhereClause("where nnt = '2000PA010697' or nnt = '2001MNHN0022'or nnt = '2003MON30025' or nnt = '2003PA100181' or nnt = '2011AIX10218' or nnt = '2012PA010501' or nnt = '2014TOU20035' or nnt = '2014TOU20047' or nnt = '2015TOU20116' or nnt = '2020PA100137' or nnt = '2020TOU20084'");
-            //queryProvider.setWhereClause("where numsujet = 's347362'");
-            queryProvider.setWhereClause("where nom_index = '" + nomIndex + "'");
-        }
+        setWhereClause(queryProvider);
         queryProvider.setSortKeys(sortByIdAsc());
         return queryProvider;
+    }
+
+    private void setWhereClause(OraclePagingQueryProvider queryProvider) {
+        String whereClause = "";
+
+        if (nomIndex.length() > 0) {
+            whereClause = "where nom_index = '" + nomIndex + "'";
+        }
+        if (config.getWhereLimite() > 0) {
+            if (whereClause.length() > 0) {
+                whereClause += " and rownum < " + config.getWhereLimite();
+            } else {
+                whereClause = "where rownum < " + config.getWhereLimite();
+            }
+        }
+        if (whereClause.length() > 0) {
+            queryProvider.setWhereClause(whereClause);
+        }
     }
 
     private Map<String, Order> sortByIdAsc() {

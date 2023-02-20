@@ -25,8 +25,8 @@ public class PersonneItemProcessor implements ItemProcessor<TheseModel, TheseMod
     public TheseModel process(TheseModel theseModel) throws Exception {
         log.info("debut de traitement de " + theseModel.getNnt());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
-        String json = new Gson().toJson(new PersonneMapee(mets));
-        theseModel.setJson(json);
+        PersonneMapee personneMapee = new PersonneMapee(mets);
+        theseModel.setPersonnes(personneMapee.getPersonnes());
         return theseModel;
     }
 }

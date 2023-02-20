@@ -1,15 +1,30 @@
 package fr.abes.theses_batch_indexation.database;
 
+import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
+
+import java.util.List;
+
 /** Objet "valise" qui modelise une entrée dans la base de données
- * json : vide au départ ; après le processor : json à indexer dans ES
+ * jsonThese : vide au départ ; après le processor : json à indexer dans ES
+ * personnes : Liste de personnes à indexer dans ES
  */
 public class TheseModel {
 
     private int idDoc;
     private String nnt;
     private String doc;
-    private String json;
+    private String jsonThese;
+    private List<PersonneModelES> personnes;
     private String idSujet;
+
+
+    public List<PersonneModelES> getPersonnes() {
+        return personnes;
+    }
+
+    public void setPersonnes(List<PersonneModelES> personnes) {
+        this.personnes = personnes;
+    }
 
     public int getIdDoc() {
         return idDoc;
@@ -35,12 +50,12 @@ public class TheseModel {
         this.doc = doc;
     }
 
-    public String getJson() {
-        return json;
+    public String getJsonThese() {
+        return jsonThese;
     }
 
-    public void setJson(String json) {
-        this.json = json;
+    public void setJsonThese(String jsonThese) {
+        this.jsonThese = jsonThese;
     }
 
     public String getIdSujet() {

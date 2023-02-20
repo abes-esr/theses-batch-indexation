@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;
 
@@ -30,7 +29,7 @@ public class TheseItemProcessor implements ItemProcessor<TheseModel, TheseModel>
         log.info("debut de traitement de " + item.getNnt());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(item.getDoc().getBytes()));
         String json = new Gson().toJson(new TheseMappee(mets));
-        item.setJson(json);
+        item.setJsonThese(json);
         return item;
     }
 }

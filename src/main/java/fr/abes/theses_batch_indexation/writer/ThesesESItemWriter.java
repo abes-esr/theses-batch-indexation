@@ -30,7 +30,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
         BulkRequest.Builder br = new BulkRequest.Builder();
 
         for (TheseModel theseModel : items) {
-            JsonData json = readJson(new ByteArrayInputStream(theseModel.getJson().getBytes()), ElasticClient.getElasticsearchClient());
+            JsonData json = readJson(new ByteArrayInputStream(theseModel.getJsonThese().getBytes()), ElasticClient.getElasticsearchClient());
 
             br.operations(op -> op
                     .index(idx -> idx

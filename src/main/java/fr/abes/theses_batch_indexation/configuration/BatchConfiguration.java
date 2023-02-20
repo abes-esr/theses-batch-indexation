@@ -3,6 +3,7 @@ package fr.abes.theses_batch_indexation.configuration;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
 import fr.abes.theses_batch_indexation.reader.TheseItemReader;
+import fr.abes.theses_batch_indexation.tasklet.InitialiserIndexESTasklet;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
@@ -14,6 +15,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -64,9 +66,13 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansES) {
+    public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansES,
+                                            Tasklet initialiserIndexESTasklet,
+                                            JobTheseCompletionNotificationListener listener) {
         return jobs.get("jobIndexationPersonnesDansES").incrementer(new RunIdIncrementer())
-                .start(stepIndexPersonnesDansES)
+                .listener(listener)
+                .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexPersonnesDansES)
                 .build();
     }
 
@@ -87,14 +93,18 @@ public class BatchConfiguration {
 
     @Bean
     public Step stepIndexPersonnesDansES(@Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
-                                         @Qualifier("thesesESItemWriter") ItemWriter itemWriter) {
+                                         @Qualifier("personnesESWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexPersonnesDansES").chunk(config.getChunk())
                 .reader(theseItemReader.read())
                 .processor(itemProcessor)
                 .writer(itemWriter)
-                .taskExecutor(taskExecutor())
-                .throttleLimit(config.getThrottle())
                 .build();
+    }
+
+    @Bean
+    public Step stepInitialiserIndexES(@Qualifier("initialiserIndexESTasklet") Tasklet t) {
+        return stepBuilderFactory.get("InitialiserIndexESTasklet").allowStartIfComplete(true)
+                .tasklet(t).build();
     }
 
     // ---------------- TASK EXECUTOR ----------------------------
