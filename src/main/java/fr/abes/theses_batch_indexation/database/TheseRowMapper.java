@@ -1,21 +1,22 @@
-package fr.abes.theses_batch_indexation.dto.these;
+package fr.abes.theses_batch_indexation.database;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import fr.abes.theses_batch_indexation.database.TheseModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.RowMapper;
 
 import oracle.jdbc.OracleResultSet;
 import oracle.xdb.XMLType;
 @Slf4j
-public class TheseRowMapper implements RowMapper<TheseDTO> {
+public class TheseRowMapper implements RowMapper<TheseModel> {
 
     @Override
-    public TheseDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public TheseModel mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         try {
-            TheseDTO these = new TheseDTO();
+            TheseModel these = new TheseModel();
             OracleResultSet rsOra = (OracleResultSet) rs;
 
             these.setIdDoc(rsOra.getInt("iddoc"));
