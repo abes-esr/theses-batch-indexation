@@ -60,20 +60,10 @@ public class TheseItemReader {
     }
 
     private void setWhereClause(OraclePagingQueryProvider queryProvider) {
-        String whereClause = "";
-
-        if (nomIndex.length() > 0) {
-            whereClause = "where nom_index = '" + nomIndex + "'";
-        }
-        if (config.getWhereLimite() > 0) {
-            if (whereClause.length() > 0) {
-                whereClause += " and rownum < " + config.getWhereLimite();
-            } else {
-                whereClause = "where rownum < " + config.getWhereLimite();
-            }
-        }
-        if (whereClause.length() > 0) {
-            queryProvider.setWhereClause(whereClause);
+        if (nomTable.toLowerCase().contains("document_test")) {
+            queryProvider.setWhereClause("where nom_index = '" + nomIndex + "'");
+        } else {
+            queryProvider.setWhereClause("where rownum < " + config.getWhereLimite());
         }
     }
 
