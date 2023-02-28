@@ -1,31 +1,28 @@
 package fr.abes.theses_batch_indexation.writer;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.BulkRequest;
-import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
+import co.elastic.clients.elasticsearch._types.Refresh;
+import co.elastic.clients.elasticsearch._types.Result;
+import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import com.google.gson.Gson;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
-import fr.abes.theses_batch_indexation.utils.UnsafeOkHttpClient;
+import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.net.ssl.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.CertificateException;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -48,79 +45,102 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
     public void write(List<? extends TheseModel> items) throws Exception {
 
 
-        BulkRequest.Builder br = new BulkRequest.Builder();
-
         for (TheseModel theseModel : items) {
             for (PersonneModelES personneModelES : theseModel.getPersonnes()) {
-                if (estPresentDansES(personneModelES.getPpn())) {
-                    updatePersonneDansES(personneModelES);
-                } else {
-                    ajoutPersoneDansES(br, personneModelES);
+                if (personneModelES.getPpn() != null && personneModelES.getPpn() != "") {
+                    log.info("ppn : " + personneModelES.getPpn());
+                    log.info("nom : " + personneModelES.getNom());
+                    if (estPresentDansES(personneModelES.getPpn())) {
+                        updatePersonneDansES(personneModelES);
+                    } else {
+                        ajoutPersoneDansES(personneModelES);
+                    }
                 }
             }
 
 
         }
+    }
 
-        BulkResponse result = ElasticClient.getElasticsearchClient().bulk(br.build());
+    private void ajoutPersoneDansES(PersonneModelES personneModelES) {
 
-        if (result.errors()) {
-            log.error("Erreurs dans le bulk : ");
-            for (BulkResponseItem item: result.items()) {
-                if (item.error() != null) {
-                    log.error(item.error().reason());
-                }
+        try {
+            String jsonPersonne = new Gson().toJson(personneModelES);
+            JsonData json = readJson(new ByteArrayInputStream(jsonPersonne.getBytes()), ElasticClient.getElasticsearchClient());
+
+            CreateRequest.Builder<JsonData> cr = new CreateRequest.Builder<>();
+
+            cr.index(nomIndex.toLowerCase());
+            cr.id(personneModelES.getPpn());
+            cr.refresh(Refresh.True);
+
+            cr.document(json);
+
+            CreateResponse result = ElasticClient.getElasticsearchClient().create(cr.build());
+
+            if (!result.result().equals(Result.Created)) {
+                log.error("Erreurs dans le ajoutPersoneDansES : " + result.result());
             }
+
+        } catch (Exception e) {
+            log.error("Dans ajoutPersoneDansES : " + e);
         }
     }
 
-    private void ajoutPersoneDansES(BulkRequest.Builder br, PersonneModelES personneModelES) {
-        String jsonPersonne = new Gson().toJson(personneModelES);
-        JsonData json = readJson(new ByteArrayInputStream(jsonPersonne.getBytes()), ElasticClient.getElasticsearchClient());
+    private PersonneModelES getPersonneModelES(String ppn) throws IOException {
+        try {
+            SearchResponse<PersonneModelES> response = ElasticClient.getElasticsearchClient().search(s -> s
+                            .index(nomIndex.toLowerCase())
+                            .query(q -> q
+                                    .match(t -> t
+                                            .query(ppn)
+                                            .field("ppn"))),
+                    PersonneModelES.class
+            );
+            Optional<PersonneModelES> a = response.hits().hits().stream().map(Hit::source).findFirst();
 
-        br.operations(op -> op
-                .index(idx -> idx
-                        .index(nomIndex.toLowerCase())
-                        .id(personneModelES.getPpn() == null? "" : personneModelES.getPpn())
-                        .document(json)
-                )
-        );
+            return a.orElse(null);
+
+        } catch (Exception e) {
+            log.error("Erreur dans getPersonneModelES : " + e);
+            throw e;
+        }
     }
-
 
     public boolean estPresentDansES(String ppn) throws IOException {
-        SearchResponse response = ElasticClient.getElasticsearchClient().search(s -> s
-                        .index(nomIndex.toLowerCase())
-                        .query(q->q
-                                .match(t->t
-                                        .query(ppn)
-                                        .field("ppn"))),
-                Object.class
-        );
+        if (ppn != null && ppn != "") {
+            return getPersonneModelES(ppn) != null;
+        } else {
+            return false;
+        }
 
-        return response.hits().total().value() > 0;
     }
 
-    public void updatePersonneDansES(PersonneModelES personneModelES) throws IOException {
-        OkHttpClient client = new UnsafeOkHttpClient().getUnsafeOkHttpClient();
-        MediaType mediaType = MediaType.parse("application/json");
-        String json = new Gson().toJson(personneModelES.getTheses().get(0));
-        RequestBody body = RequestBody.create(mediaType,
-                "{\"script\" : {\"source\":\"ctx._source.theses.add(params.theses)\"," +
-                "\"lang\":\"painless\"," +
-                "\"params\": {" +
-                    "\"theses\": " +
-                        json +
-                        "}}}");
-        Request request = new Request.Builder().url(elasticConfig.getScheme()
-                        + "://" + elasticConfig.getHostname() + ":"
-                        + elasticConfig.getPort() + "/"
-                        + nomIndex.toLowerCase() +"/_update/"
-                        + personneModelES.getPpn())
-                .method("POST", body).addHeader("Authorization", basicAuth)
-                .addHeader("Content-Type", "application/json")
-                .build();
-        Response response = client.newCall(request).execute();
+    public void updatePersonneDansES(PersonneModelES personneCourante) throws IOException, InterruptedException {
+        PersonneModelES personnePresentDansES = getPersonneModelES(personneCourante.getPpn());
+        deletePersonneES(personneCourante.getPpn());
+        personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
+        ajoutPersoneDansES(personnePresentDansES);
+    }
+
+    private boolean deletePersonneES(String ppn) throws IOException {
+        try {
+            DeleteRequest.Builder builder = new DeleteRequest.Builder();
+
+            builder.index(nomIndex.toLowerCase());
+            builder.id(ppn);
+            builder.refresh(Refresh.True);
+            DeleteResponse result = ElasticClient.getElasticsearchClient().delete(builder.build());
+
+            if (!result.result().equals(Result.Deleted)) {
+                log.error("Erreurs dans le deletePersonneES : " + result.result());
+            }
+
+            return result.result().equals(Result.Deleted);
+        } catch (Exception e) {
+            log.error("Erreur dans deletePersonneES " + e);
+            throw e;
+        }
     }
 
     public static JsonData readJson(InputStream input, ElasticsearchClient esClient) {

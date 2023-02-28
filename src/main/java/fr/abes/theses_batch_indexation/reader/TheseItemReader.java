@@ -63,7 +63,8 @@ public class TheseItemReader {
         if (nomTable.toLowerCase().contains("document_test")) {
             queryProvider.setWhereClause("where nom_index = '" + nomIndex + "'");
         } else {
-            queryProvider.setWhereClause("where rownum < " + config.getWhereLimite());
+            if (config.getWhereLimite() > 0)
+                queryProvider.setWhereClause("where rownum < " + config.getWhereLimite());
         }
     }
 
