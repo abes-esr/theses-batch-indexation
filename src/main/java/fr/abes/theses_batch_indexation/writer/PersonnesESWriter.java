@@ -53,7 +53,7 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
                     if (estPresentDansES(personneModelES.getPpn())) {
                         updatePersonneDansES(personneModelES);
                     } else {
-                        ajoutPersoneDansES(personneModelES);
+                        ajoutPersonneDansES(personneModelES);
                     }
                 }
             }
@@ -62,7 +62,7 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
         }
     }
 
-    private void ajoutPersoneDansES(PersonneModelES personneModelES) {
+    private void ajoutPersonneDansES(PersonneModelES personneModelES) {
 
         try {
             String jsonPersonne = new Gson().toJson(personneModelES);
@@ -79,11 +79,11 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
             CreateResponse result = ElasticClient.getElasticsearchClient().create(cr.build());
 
             if (!result.result().equals(Result.Created)) {
-                log.error("Erreurs dans le ajoutPersoneDansES : " + result.result());
+                log.error("Erreurs dans le ajoutPersonneDansES : " + result.result());
             }
 
         } catch (Exception e) {
-            log.error("Dans ajoutPersoneDansES : " + e);
+            log.error("Dans ajoutPersonneDansES : " + e);
         }
     }
 
@@ -120,7 +120,7 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
         PersonneModelES personnePresentDansES = getPersonneModelES(personneCourante.getPpn());
         deletePersonneES(personneCourante.getPpn());
         personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
-        ajoutPersoneDansES(personnePresentDansES);
+        ajoutPersonneDansES(personnePresentDansES);
     }
 
     private boolean deletePersonneES(String ppn) throws IOException {
