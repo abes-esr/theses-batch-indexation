@@ -15,7 +15,12 @@ public class PersonneMapee {
     //Todo: Ajouter les champs à indexer dans personneModel ou thesesDOT
     private List<PersonneModelES> personnes = new ArrayList<>();
 
+    private TheseModelESPartiel theseModelESPartiel = new TheseModelESPartiel();
+
     private String nnt;
+
+    private final String AUTEUR = "auteur";
+    private final String DIRECTEUR = "directeur";
 
     /*Todo: à partir de Mets extraire toutes les infos à indexer
        (s'inpirer de TheseMapee vu que la plupart des champs sont déjà extrait)*/
@@ -37,11 +42,17 @@ public class PersonneMapee {
                 if (isNnt(i.getValue()))
                     nnt = i.getValue();
             }
+            theseModelESPartiel.setNnt(nnt);
         } catch (NullPointerException e) {
             log.error("PB pour nnt " + e.toString());
         }
 
-        log.info("traitement de auteurs");
+        try {
+            theseModelESPartiel.setTitre(dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+        } catch (NullPointerException e) {
+            log.error("PB pour titrePrincipal de " + nnt + e.getMessage());
+        }
+
         try {
             List<PersonneModelES> auteurs = new ArrayList<>();
 
@@ -55,11 +66,10 @@ public class PersonneMapee {
                     adto.setPpn(a.getAutoriteExterne().getValue());
                 adto.setNom(a.getNom());
                 adto.setPrenom(a.getPrenom());
-                TheseModelES thedto = new TheseModelES();
-                thedto.setNnt(nnt);
-                thedto.setRole("auteur");
-                thedto.setTitre("titre de test");
-                adto.getTheses().add(thedto);
+
+                TheseModelES e = new TheseModelES(theseModelESPartiel, AUTEUR);
+
+                adto.getTheses().add(e);
                 auteurs.add(adto);
             }
 
@@ -67,6 +77,35 @@ public class PersonneMapee {
 
         } catch (NullPointerException e) {
             log.error("PB pour auteurs de " + nnt + "," + e.getMessage());
+        }
+
+        // directeurs
+        log.info("traitement de directeurs");
+        try {
+
+            List<PersonneModelES> directeurs = new ArrayList<>();
+
+            List<DirecteurThese> directeursDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getDirecteurThese();
+            Iterator<DirecteurThese> directeurTheseIterator = directeursDepuisTef.iterator();
+            while (directeurTheseIterator.hasNext()) {
+                DirecteurThese dt = directeurTheseIterator.next();
+                PersonneModelES personneModelES = new PersonneModelES();
+                if (dt.getAutoriteExterne() != null)
+                    personneModelES.setPpn(dt.getAutoriteExterne().getValue());
+                personneModelES.setNom(dt.getNom());
+                personneModelES.setPrenom(dt.getPrenom());
+
+                TheseModelES e = new TheseModelES(theseModelESPartiel, DIRECTEUR);
+
+                personneModelES.getTheses().add(e);
+                directeurs.add(personneModelES);
+            }
+
+            personnes.addAll(directeurs);
+
+        } catch (NullPointerException e) {
+            log.error("PB pour directeurs de " + nnt + "," + e.getMessage());
         }
     }
 
