@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -59,15 +60,15 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
             String jsonPersonne = new Gson().toJson(personneModelES);
             JsonData json = readJson(new ByteArrayInputStream(jsonPersonne.getBytes()), ElasticClient.getElasticsearchClient());
 
-            CreateRequest.Builder<JsonData> cr = new CreateRequest.Builder<>();
+            IndexRequest.Builder<JsonData> cr = new IndexRequest.Builder<>();
 
             cr.index(nomIndex.toLowerCase());
-            cr.id(personneModelES.getPpn());
+            cr.id(Objects.equals(personneModelES.getPpn(), "") ? null : personneModelES.getPpn());
             cr.refresh(Refresh.True);
 
             cr.document(json);
 
-            CreateResponse result = ElasticClient.getElasticsearchClient().create(cr.build());
+            IndexResponse result = ElasticClient.getElasticsearchClient().index(cr.build());
 
             if (!result.result().equals(Result.Created)) {
                 log.error("Erreurs dans le ajoutPersonneDansES : " + result.result());
