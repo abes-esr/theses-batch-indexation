@@ -32,12 +32,6 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
     @Value("${index.name}")
     private String nomIndex;
 
-    private final ElasticConfig elasticConfig;
-
-    public PersonnesESWriter(ElasticConfig elasticConfig) {
-        this.elasticConfig = elasticConfig;
-    }
-
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
 
