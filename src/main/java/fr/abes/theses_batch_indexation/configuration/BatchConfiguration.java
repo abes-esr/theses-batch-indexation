@@ -58,11 +58,15 @@ public class BatchConfiguration {
 
     @Bean
     public Job jobIndexationThesesDansES(Step stepIndexThesesDansES, JobRepository jobRepository,
+                                         Tasklet initialiserIndexESTasklet,
             JobTheseCompletionNotificationListener listener) {
         log.info("debut du job indexation des theses dans ES...");
 
         return jobs.get("indexationThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
-                .listener(listener).flow(stepIndexThesesDansES).end().build();
+                .listener(listener)
+                .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexThesesDansES)
+                .build();
     }
 
     @Bean

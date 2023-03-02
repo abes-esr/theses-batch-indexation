@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.Refresh;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import com.google.gson.Gson;
@@ -22,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -30,16 +32,6 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
 
     @Value("${index.name}")
     private String nomIndex;
-
-    @Value("${elastic.basicAuth}")
-    private String basicAuth;
-
-
-    private final ElasticConfig elasticConfig;
-
-    public PersonnesESWriter(ElasticConfig elasticConfig) {
-        this.elasticConfig = elasticConfig;
-    }
 
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
@@ -68,15 +60,15 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
             String jsonPersonne = new Gson().toJson(personneModelES);
             JsonData json = readJson(new ByteArrayInputStream(jsonPersonne.getBytes()), ElasticClient.getElasticsearchClient());
 
-            CreateRequest.Builder<JsonData> cr = new CreateRequest.Builder<>();
+            IndexRequest.Builder<JsonData> cr = new IndexRequest.Builder<>();
 
             cr.index(nomIndex.toLowerCase());
-            cr.id(personneModelES.getPpn());
+            cr.id(Objects.equals(personneModelES.getPpn(), "") ? null : personneModelES.getPpn());
             cr.refresh(Refresh.True);
 
             cr.document(json);
 
-            CreateResponse result = ElasticClient.getElasticsearchClient().create(cr.build());
+            IndexResponse result = ElasticClient.getElasticsearchClient().index(cr.build());
 
             if (!result.result().equals(Result.Created)) {
                 log.error("Erreurs dans le ajoutPersonneDansES : " + result.result());
