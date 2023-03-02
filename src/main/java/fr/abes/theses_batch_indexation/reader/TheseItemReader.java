@@ -4,7 +4,6 @@ import fr.abes.theses_batch_indexation.configuration.JobConfig;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.PagingQueryProvider;

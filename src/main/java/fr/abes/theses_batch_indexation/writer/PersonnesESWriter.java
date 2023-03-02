@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.Refresh;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import com.google.gson.Gson;
@@ -30,10 +31,6 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
 
     @Value("${index.name}")
     private String nomIndex;
-
-    @Value("${elastic.basicAuth}")
-    private String basicAuth;
-
 
     private final ElasticConfig elasticConfig;
 

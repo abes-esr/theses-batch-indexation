@@ -43,7 +43,10 @@ job.throttle=6
 # Limite de la clause where, mettre 0 pour tout prendre
 job.where-limite=2000
 
-table.name=DOCUMENT_TEST
+index.pathTheses=src/main/resources/indexs/theses.json
+index.pathPersonnes=src/main/resources/indexs/personnes.json
 index.name=
+
+table.name=DOCUMENT_TEST
 
 
