@@ -25,7 +25,7 @@
         }
       },
       "normalizer": {
-        "tri": {
+        "exact": {
           "type": "custom",
           "filter": ["lowercase", "asciifolding"]
         }
@@ -165,7 +165,7 @@
         "fields": {
           "exact": {
             "type": "keyword",
-            "normalizer": "tri"
+            "normalizer": "exact"
           }
         },
         "copy_to": "suggestion"
@@ -193,7 +193,7 @@
         "fields": {
           "exact": {
             "type": "keyword",
-            "normalizer": "tri"
+            "normalizer": "exact"
           }
         }
       },
@@ -280,7 +280,8 @@
         "type": "text",
         "fields": {
           "exact": {
-            "type": "keyword"
+            "type": "keyword",
+            "normalizer": "exact"
           }
         }
       },
@@ -314,7 +315,7 @@
         "fields": {
           "exact": {
             "type": "keyword",
-            "normalizer": "tri"
+            "normalizer": "exact"
           }
         }
       },
