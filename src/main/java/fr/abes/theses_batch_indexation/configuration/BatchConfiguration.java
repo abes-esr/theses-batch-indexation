@@ -73,7 +73,7 @@ public class BatchConfiguration {
     public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansES,
                                             Tasklet initialiserIndexESTasklet,
                                             JobTheseCompletionNotificationListener listener) {
-        return jobs.get("jobIndexationPersonnesDansES").incrementer(new RunIdIncrementer())
+        return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitialiserIndexES(initialiserIndexESTasklet))
                 .next(stepIndexPersonnesDansES)
