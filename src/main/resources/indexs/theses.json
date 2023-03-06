@@ -44,7 +44,13 @@
         "type": "keyword"
       },
       "status": {
-        "type": "keyword"
+        "type": "keyword",
+        "fields": {
+          "exact": {
+            "type": "keyword",
+            "normalizer": "exact"
+          }
+        }
       },
       "codeEtab": {
         "type": "keyword"
