@@ -100,7 +100,7 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
     }
 
     public boolean estPresentDansES(String ppn) throws IOException {
-        if (ppn != null && ppn != "") {
+        if (ppn != null && !ppn.equals("")) {
             return getPersonneModelES(ppn) != null;
         } else {
             return false;
