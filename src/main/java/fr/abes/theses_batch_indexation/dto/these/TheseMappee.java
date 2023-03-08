@@ -1,6 +1,7 @@
 package fr.abes.theses_batch_indexation.dto.these;
 
 import fr.abes.theses_batch_indexation.model.jaxb.*;
+import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
@@ -19,7 +20,6 @@ public class TheseMappee {
     String dateSoutenance;
     String dateFinEmbargo;
     List<String> ppn;
-
     Map<String, String> titres = new HashMap<String, String>();
     String titrePrincipal; // on veut ce titre dans un index à part pour faciliter l'affichage dans le front
     Map<String, String> resumes = new HashMap<String, String>();
@@ -32,8 +32,6 @@ public class TheseMappee {
     List<String> ecolesDoctoralesN = new ArrayList<String>();
     List<OrganismeDTO> partenairesRecherche = new ArrayList<OrganismeDTO>();
     List<String> partenairesRechercheN = new ArrayList<String>();
-
-
     String discipline;
     List<PersonneDTO> auteurs = new ArrayList<PersonneDTO>();
     List<String> auteursNP = new ArrayList<String>();
@@ -48,10 +46,10 @@ public class TheseMappee {
     List<String> sujetsRameau = new ArrayList<String>();
     List<String> sujetsFR = new ArrayList<>();
     List<String> sujetsEN = new ArrayList<>();
-    List<String> oaiSets = new ArrayList<String>();
+    List<String> oaiSetNames = new ArrayList<String>();
     String theseTravaux = "non";
 
-    public TheseMappee(Mets mets) {
+    public TheseMappee(Mets mets, List<Set> oaiSets) {
         try {
 
             DmdSec dmdSec = mets.getDmdSec().get(1);
@@ -434,8 +432,14 @@ public class TheseMappee {
 
             log.info("traitement de oaiSets");
             try {
-                oaiSets = techMD.getMdWrap().getXmlData().getThesisAdmin()
-                        .getOaiSetSpec();
+                Iterator<String> oaiSetSpecIterator = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                        .getOaiSetSpec().iterator();
+                while (oaiSetSpecIterator.hasNext()) {
+                    String oaiSetSpec  = oaiSetSpecIterator.next();
+                    Optional<Set> leSet = oaiSets.stream().filter(d -> d.getSetSpec().equals(oaiSetSpec)).findFirst();
+                    oaiSetNames.add(leSet.get().getSetName());
+                }
+
             } catch (NullPointerException e) {
                 log.error("PB pour oaisets de " + nnt + "," + e.getMessage());
             }
@@ -645,13 +649,11 @@ public class TheseMappee {
     public void setLangues(List<String> langues) {
         this.langues = langues;
     }
-
-    public List<String> getOaiSets() {
-        return oaiSets;
+    public List<String> getOaiSetNames() {
+        return oaiSetNames;
     }
 
-    public void setOaiSets(List<String> oaiSets) {
-        this.oaiSets = oaiSets;
+    public void setOaiSetNames(List<String> oaiSetNames) {
+        this.oaiSetNames = oaiSetNames;
     }
-
 }
