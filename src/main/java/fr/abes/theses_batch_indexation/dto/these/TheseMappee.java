@@ -20,6 +20,7 @@ public class TheseMappee {
     String dateSoutenance;
     String dateFinEmbargo;
     List<String> ppn;
+
     Map<String, String> titres = new HashMap<String, String>();
     String titrePrincipal; // on veut ce titre dans un index à part pour faciliter l'affichage dans le front
     Map<String, String> resumes = new HashMap<String, String>();
@@ -32,6 +33,8 @@ public class TheseMappee {
     List<String> ecolesDoctoralesN = new ArrayList<String>();
     List<OrganismeDTO> partenairesRecherche = new ArrayList<OrganismeDTO>();
     List<String> partenairesRechercheN = new ArrayList<String>();
+
+
     String discipline;
     List<PersonneDTO> auteurs = new ArrayList<PersonneDTO>();
     List<String> auteursNP = new ArrayList<String>();
@@ -649,6 +652,7 @@ public class TheseMappee {
     public void setLangues(List<String> langues) {
         this.langues = langues;
     }
+
     public List<String> getOaiSetNames() {
         return oaiSetNames;
     }
@@ -656,4 +660,5 @@ public class TheseMappee {
     public void setOaiSetNames(List<String> oaiSetNames) {
         this.oaiSetNames = oaiSetNames;
     }
+
 }

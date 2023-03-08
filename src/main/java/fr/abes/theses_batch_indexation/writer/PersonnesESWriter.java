@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
@@ -33,24 +34,41 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
     @Value("${index.name}")
     private String nomIndex;
 
+    private AtomicInteger nombreDeTheses = new AtomicInteger(0);
+    private AtomicInteger nombreDePersonnes = new AtomicInteger(0);
+    private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
+
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
 
 
         for (TheseModel theseModel : items) {
+            nombreDeTheses.incrementAndGet();
+            logSiPasAssezDePersonnesDansLaThese(theseModel);
             for (PersonneModelES personneModelES : theseModel.getPersonnes()) {
-                if (personneModelES.getPpn() != null && personneModelES.getPpn() != "") {
-                    log.info("ppn : " + personneModelES.getPpn());
-                    log.info("nom : " + personneModelES.getNom());
-                    if (estPresentDansES(personneModelES.getPpn())) {
-                        updatePersonneDansES(personneModelES);
-                    } else {
-                        ajoutPersonneDansES(personneModelES);
-                    }
+                nombreDePersonnes.incrementAndGet();
+                log.info("ppn : " + personneModelES.getPpn());
+                log.info("nom : " + personneModelES.getNom());
+                if (estPresentDansES(personneModelES.getPpn())) {
+                    updatePersonneDansES(personneModelES);
+                    nombreDePersonnesUpdated.incrementAndGet();
+                } else {
+                    ajoutPersonneDansES(personneModelES);
                 }
             }
 
 
+        }
+        log.info("Nombre de thèses traitées : " + nombreDeTheses.get());
+        log.info("Nombre de personnes traitées : " + nombreDePersonnes.get());
+        log.info("Nombre de personnes mis à jour : " + nombreDePersonnesUpdated.get());
+        log.info("Nombre de personnes dans l'index : " + (nombreDePersonnes.intValue() - nombreDePersonnesUpdated.intValue()));
+
+    }
+
+    private void logSiPasAssezDePersonnesDansLaThese(TheseModel theseModel) {
+        if (theseModel.getPersonnes().size() < 2) {
+            log.warn("Moins de personnes que prévu dans cette theses");
         }
     }
 
