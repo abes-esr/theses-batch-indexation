@@ -2,14 +2,15 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
@@ -28,10 +29,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}setSpec"/>
- *         &lt;element ref="{}setName"/>
- *         &lt;element ref="{}setDescription" minOccurs="0"/>
+ *         &lt;element ref="{http://www.loc.gov/METS/}name"/>
+ *         &lt;element ref="{http://www.loc.gov/METS/}note" minOccurs="0"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="ROLE" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -41,91 +42,93 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "setSpec",
-    "setName",
-    "setDescription"
+    "name",
+    "note"
 })
-@XmlRootElement(name = "set")
-public class Set {
+@XmlRootElement(name = "agent", namespace = "http://www.loc.gov/METS/")
+public class Agent {
 
-    @XmlElement(required = true)
+    @XmlElement(namespace = "http://www.loc.gov/METS/", required = true)
+    protected String name;
+    @XmlElement(namespace = "http://www.loc.gov/METS/")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NMTOKEN")
-    protected String setSpec;
-    @XmlElement(required = true)
-    protected String setName;
-    protected SetDescription setDescription;
+    @XmlSchemaType(name = "NCName")
+    protected String note;
+    @XmlAttribute(name = "ROLE", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String role;
 
     /**
-     * Obtient la valeur de la propriété setSpec.
+     * Obtient la valeur de la propriété name.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSetSpec() {
-        return setSpec;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Définit la valeur de la propriété setSpec.
+     * Définit la valeur de la propriété name.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSetSpec(String value) {
-        this.setSpec = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**
-     * Obtient la valeur de la propriété setName.
+     * Obtient la valeur de la propriété note.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSetName() {
-        return setName;
+    public String getNote() {
+        return note;
     }
 
     /**
-     * Définit la valeur de la propriété setName.
+     * Définit la valeur de la propriété note.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSetName(String value) {
-        this.setName = value;
+    public void setNote(String value) {
+        this.note = value;
     }
 
     /**
-     * Obtient la valeur de la propriété setDescription.
+     * Obtient la valeur de la propriété role.
      * 
      * @return
      *     possible object is
-     *     {@link SetDescription }
+     *     {@link String }
      *     
      */
-    public SetDescription getSetDescription() {
-        return setDescription;
+    public String getROLE() {
+        return role;
     }
 
     /**
-     * Définit la valeur de la propriété setDescription.
+     * Définit la valeur de la propriété role.
      * 
      * @param value
      *     allowed object is
-     *     {@link SetDescription }
+     *     {@link String }
      *     
      */
-    public void setSetDescription(SetDescription value) {
-        this.setDescription = value;
+    public void setROLE(String value) {
+        this.role = value;
     }
 
 }

@@ -2,11 +2,11 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -28,9 +28,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}setSpec"/>
- *         &lt;element ref="{}setName"/>
- *         &lt;element ref="{}setDescription" minOccurs="0"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/tefudoc}rcr"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/tefudoc}cote"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/tefudoc}peb"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -41,91 +41,94 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "setSpec",
-    "setName",
-    "setDescription"
+    "rcr",
+    "cote",
+    "peb"
 })
-@XmlRootElement(name = "set")
-public class Set {
+@XmlRootElement(name = "exemplaire", namespace = "http://www.theses.fr/namespace/tefudoc")
+public class Exemplaire {
 
-    @XmlElement(required = true)
+    @XmlElement(namespace = "http://www.theses.fr/namespace/tefudoc", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NMTOKEN")
-    protected String setSpec;
-    @XmlElement(required = true)
-    protected String setName;
-    protected SetDescription setDescription;
+    protected String rcr;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/tefudoc", required = true)
+    protected Cote cote;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/tefudoc", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String peb;
 
     /**
-     * Obtient la valeur de la propriété setSpec.
+     * Obtient la valeur de la propriété rcr.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSetSpec() {
-        return setSpec;
+    public String getRcr() {
+        return rcr;
     }
 
     /**
-     * Définit la valeur de la propriété setSpec.
+     * Définit la valeur de la propriété rcr.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSetSpec(String value) {
-        this.setSpec = value;
+    public void setRcr(String value) {
+        this.rcr = value;
     }
 
     /**
-     * Obtient la valeur de la propriété setName.
+     * Obtient la valeur de la propriété cote.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Cote }
+     *     
+     */
+    public Cote getCote() {
+        return cote;
+    }
+
+    /**
+     * Définit la valeur de la propriété cote.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Cote }
+     *     
+     */
+    public void setCote(Cote value) {
+        this.cote = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété peb.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSetName() {
-        return setName;
+    public String getPeb() {
+        return peb;
     }
 
     /**
-     * Définit la valeur de la propriété setName.
+     * Définit la valeur de la propriété peb.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSetName(String value) {
-        this.setName = value;
-    }
-
-    /**
-     * Obtient la valeur de la propriété setDescription.
-     * 
-     * @return
-     *     possible object is
-     *     {@link SetDescription }
-     *     
-     */
-    public SetDescription getSetDescription() {
-        return setDescription;
-    }
-
-    /**
-     * Définit la valeur de la propriété setDescription.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link SetDescription }
-     *     
-     */
-    public void setSetDescription(SetDescription value) {
-        this.setDescription = value;
+    public void setPeb(String value) {
+        this.peb = value;
     }
 
 }

@@ -1,6 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
-import fr.abes.theses_batch_indexation.model.jaxb.*;
+import fr.abes.theses_batch_indexation.model.tef.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +27,7 @@ public class PersonneMapee {
     public PersonneMapee(Mets mets) {
 
         DmdSec dmdSec = mets.getDmdSec().get(1);
-        AmdSec amdSec = mets.getAmdSec();
+        AmdSec amdSec = mets.getAmdSec().get(0);
 
         TechMD techMD = null;
         // nnt

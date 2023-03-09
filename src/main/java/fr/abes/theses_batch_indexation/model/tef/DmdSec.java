@@ -2,21 +2,19 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -28,7 +26,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute ref="{http://www.w3.org/XML/1998/namespace}lang use="required""/>
+ *       &lt;sequence>
+ *         &lt;element ref="{http://www.loc.gov/METS/}mdWrap"/>
+ *       &lt;/sequence>
+ *       &lt;attribute name="ID" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -38,64 +39,63 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "content"
+    "mdWrap"
 })
-@XmlRootElement(name = "description", namespace = "http://purl.org/dc/elements/1.1/")
-public class Description {
+@XmlRootElement(name = "dmdSec", namespace = "http://www.loc.gov/METS/")
+public class DmdSec {
 
-    @XmlValue
-    protected String content;
-    @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NCName")
-    protected String lang;
+    @XmlElement(namespace = "http://www.loc.gov/METS/", required = true)
+    protected MdWrap mdWrap;
+    @XmlAttribute(name = "ID", required = true)
+    @XmlSchemaType(name = "anySimpleType")
+    protected String id;
 
     /**
-     * Obtient la valeur de la propriété content.
+     * Obtient la valeur de la propriété mdWrap.
+     * 
+     * @return
+     *     possible object is
+     *     {@link MdWrap }
+     *     
+     */
+    public MdWrap getMdWrap() {
+        return mdWrap;
+    }
+
+    /**
+     * Définit la valeur de la propriété mdWrap.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link MdWrap }
+     *     
+     */
+    public void setMdWrap(MdWrap value) {
+        this.mdWrap = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété id.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getContent() {
-        return content;
+    public String getID() {
+        return id;
     }
 
     /**
-     * Définit la valeur de la propriété content.
+     * Définit la valeur de la propriété id.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setContent(String value) {
-        this.content = value;
-    }
-
-    /**
-     * Obtient la valeur de la propriété lang.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLang() {
-        return lang;
-    }
-
-    /**
-     * Définit la valeur de la propriété lang.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLang(String value) {
-        this.lang = value;
+    public void setID(String value) {
+        this.id = value;
     }
 
 }

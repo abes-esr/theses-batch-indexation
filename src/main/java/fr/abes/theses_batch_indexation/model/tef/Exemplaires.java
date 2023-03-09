@@ -2,11 +2,11 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.openarchives.org/OAI/2.0/oai_dc/}dc"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/tefudoc}exemplaire"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,36 +36,36 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "dc"
+    "exemplaire"
 })
-@XmlRootElement(name = "setDescription")
-public class SetDescription {
+@XmlRootElement(name = "exemplaires", namespace = "http://www.theses.fr/namespace/tefudoc")
+public class Exemplaires {
 
-    @XmlElement(namespace = "http://www.openarchives.org/OAI/2.0/oai_dc/", required = true)
-    protected Dc dc;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/tefudoc", required = true)
+    protected Exemplaire exemplaire;
 
     /**
-     * Obtient la valeur de la propriété dc.
+     * Obtient la valeur de la propriété exemplaire.
      * 
      * @return
      *     possible object is
-     *     {@link Dc }
+     *     {@link Exemplaire }
      *     
      */
-    public Dc getDc() {
-        return dc;
+    public Exemplaire getExemplaire() {
+        return exemplaire;
     }
 
     /**
-     * Définit la valeur de la propriété dc.
+     * Définit la valeur de la propriété exemplaire.
      * 
      * @param value
      *     allowed object is
-     *     {@link Dc }
+     *     {@link Exemplaire }
      *     
      */
-    public void setDc(Dc value) {
-        this.dc = value;
+    public void setExemplaire(Exemplaire value) {
+        this.exemplaire = value;
     }
 
 }

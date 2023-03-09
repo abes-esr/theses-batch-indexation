@@ -1,6 +1,6 @@
 package fr.abes.theses_batch_indexation.utils;
 
-import fr.abes.theses_batch_indexation.model.jaxb.Mets;
+import fr.abes.theses_batch_indexation.model.tef.Mets;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.bind.JAXBContext;
@@ -14,7 +14,7 @@ public class XMLJsonMarshalling {
 
     public Mets chargerMets(InputStream tef) throws Exception {
         try {
-            final JAXBContext jc2 = JAXBContext.newInstance("fr.abes.theses_batch_indexation.model.jaxb");
+            final JAXBContext jc2 = JAXBContext.newInstance("fr.abes.theses_batch_indexation.model.tef");
             final Unmarshaller unmarshaller2 = jc2.createUnmarshaller();
 
             InputStreamReader isr = new InputStreamReader(tef, StandardCharsets.UTF_8);

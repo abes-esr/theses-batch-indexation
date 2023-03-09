@@ -15,7 +15,7 @@ import com.google.gson.Gson;
 
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.these.TheseMappee;
-import fr.abes.theses_batch_indexation.model.jaxb.Mets;
+import fr.abes.theses_batch_indexation.model.tef.Mets;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import org.springframework.stereotype.Component;
 
