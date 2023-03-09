@@ -2,21 +2,17 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -28,7 +24,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute ref="{http://www.w3.org/XML/1998/namespace}lang use="required""/>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -40,15 +35,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlType(name = "", propOrder = {
     "content"
 })
-@XmlRootElement(name = "description", namespace = "http://purl.org/dc/elements/1.1/")
-public class Description {
+@XmlRootElement(name = "type", namespace = "http://purl.org/dc/elements/1.1/")
+public class Type {
 
     @XmlValue
     protected String content;
-    @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NCName")
-    protected String lang;
 
     /**
      * Obtient la valeur de la propriété content.
@@ -72,30 +63,6 @@ public class Description {
      */
     public void setContent(String value) {
         this.content = value;
-    }
-
-    /**
-     * Obtient la valeur de la propriété lang.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLang() {
-        return lang;
-    }
-
-    /**
-     * Définit la valeur de la propriété lang.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLang(String value) {
-        this.lang = value;
     }
 
 }

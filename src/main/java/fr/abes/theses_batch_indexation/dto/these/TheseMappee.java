@@ -1,6 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.these;
 
-import fr.abes.theses_batch_indexation.model.jaxb.*;
+import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +53,7 @@ public class TheseMappee {
         try {
 
             DmdSec dmdSec = mets.getDmdSec().get(1);
-            AmdSec amdSec = mets.getAmdSec();
+            AmdSec amdSec = mets.getAmdSec().get(0);
 
             TechMD techMD = null;
             // nnt

@@ -2,11 +2,11 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -26,11 +26,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * 
  * <pre>
  * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute ref="{http://www.w3.org/XML/1998/namespace}lang use="required""/>
- *     &lt;/restriction>
- *   &lt;/complexContent>
+ *   &lt;simpleContent>
+ *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>NMTOKEN">
+ *       &lt;attribute name="autoriteSource" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *     &lt;/extension>
+ *   &lt;/simpleContent>
  * &lt;/complexType>
  * </pre>
  * 
@@ -38,64 +38,66 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "content"
+    "value"
 })
-@XmlRootElement(name = "description", namespace = "http://purl.org/dc/elements/1.1/")
-public class Description {
+@XmlRootElement(name = "autoriteExterne")
+public class AutoriteExterne {
 
     @XmlValue
-    protected String content;
-    @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NMTOKEN")
+    protected String value;
+    @XmlAttribute(name = "autoriteSource", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
-    protected String lang;
+    protected String autoriteSource;
 
     /**
-     * Obtient la valeur de la propriété content.
+     * Obtient la valeur de la propriété value.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getContent() {
-        return content;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Définit la valeur de la propriété content.
+     * Définit la valeur de la propriété value.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setContent(String value) {
-        this.content = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**
-     * Obtient la valeur de la propriété lang.
+     * Obtient la valeur de la propriété autoriteSource.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLang() {
-        return lang;
+    public String getAutoriteSource() {
+        return autoriteSource;
     }
 
     /**
-     * Définit la valeur de la propriété lang.
+     * Définit la valeur de la propriété autoriteSource.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLang(String value) {
-        this.lang = value;
+    public void setAutoriteSource(String value) {
+        this.autoriteSource = value;
     }
 
 }

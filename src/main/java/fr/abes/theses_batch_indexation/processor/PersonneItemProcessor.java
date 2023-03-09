@@ -1,9 +1,8 @@
 package fr.abes.theses_batch_indexation.processor;
 
-import com.google.gson.Gson;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneMapee;
 import fr.abes.theses_batch_indexation.database.TheseModel;
-import fr.abes.theses_batch_indexation.model.jaxb.Mets;
+import fr.abes.theses_batch_indexation.model.tef.Mets;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;

@@ -2,17 +2,19 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
@@ -22,13 +24,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * <pre>
  * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{http://www.openarchives.org/OAI/2.0/oai_dc/}dc"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
+ *   &lt;simpleContent>
+ *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>date">
+ *     &lt;/extension>
+ *   &lt;/simpleContent>
  * &lt;/complexType>
  * </pre>
  * 
@@ -36,36 +35,37 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "dc"
+    "value"
 })
-@XmlRootElement(name = "setDescription")
-public class SetDescription {
+@XmlRootElement(name = "dateAccepted", namespace = "http://purl.org/dc/terms/")
+public class DateAccepted {
 
-    @XmlElement(namespace = "http://www.openarchives.org/OAI/2.0/oai_dc/", required = true)
-    protected Dc dc;
+    @XmlValue
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar value;
 
     /**
-     * Obtient la valeur de la propriété dc.
+     * Obtient la valeur de la propriété value.
      * 
      * @return
      *     possible object is
-     *     {@link Dc }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public Dc getDc() {
-        return dc;
+    public XMLGregorianCalendar getValue() {
+        return value;
     }
 
     /**
-     * Définit la valeur de la propriété dc.
+     * Définit la valeur de la propriété value.
      * 
      * @param value
      *     allowed object is
-     *     {@link Dc }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setDc(Dc value) {
-        this.dc = value;
+    public void setValue(XMLGregorianCalendar value) {
+        this.value = value;
     }
 
 }

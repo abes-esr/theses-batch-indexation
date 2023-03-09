@@ -2,19 +2,19 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.09 à 03:40:55 PM CET 
+// Généré le : 2023.03.09 à 03:31:30 PM CET 
 //
 
 
-package fr.abes.theses_batch_indexation.model.oaisets;
+package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -28,7 +28,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute ref="{http://www.w3.org/XML/1998/namespace}lang use="required""/>
+ *       &lt;sequence>
+ *         &lt;element ref="{http://www.loc.gov/METS/}div"/>
+ *       &lt;/sequence>
+ *       &lt;attribute name="TYPE" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -38,64 +41,64 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "content"
+    "div"
 })
-@XmlRootElement(name = "description", namespace = "http://purl.org/dc/elements/1.1/")
-public class Description {
+@XmlRootElement(name = "structMap", namespace = "http://www.loc.gov/METS/")
+public class StructMap {
 
-    @XmlValue
-    protected String content;
-    @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace", required = true)
+    @XmlElement(namespace = "http://www.loc.gov/METS/", required = true)
+    protected Div div;
+    @XmlAttribute(name = "TYPE", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
-    protected String lang;
+    protected String type;
 
     /**
-     * Obtient la valeur de la propriété content.
+     * Obtient la valeur de la propriété div.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Div }
+     *     
+     */
+    public Div getDiv() {
+        return div;
+    }
+
+    /**
+     * Définit la valeur de la propriété div.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Div }
+     *     
+     */
+    public void setDiv(Div value) {
+        this.div = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété type.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getContent() {
-        return content;
+    public String getTYPE() {
+        return type;
     }
 
     /**
-     * Définit la valeur de la propriété content.
+     * Définit la valeur de la propriété type.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setContent(String value) {
-        this.content = value;
-    }
-
-    /**
-     * Obtient la valeur de la propriété lang.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLang() {
-        return lang;
-    }
-
-    /**
-     * Définit la valeur de la propriété lang.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLang(String value) {
-        this.lang = value;
+    public void setTYPE(String value) {
+        this.type = value;
     }
 
 }
