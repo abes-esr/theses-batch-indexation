@@ -61,11 +61,12 @@ public class PersonneMapee {
             Iterator<Auteur> auteurIterator = auteursDepuisTef.iterator();
             while (auteurIterator.hasNext()) {
                 Auteur a = auteurIterator.next();
-                PersonneModelES adto = new PersonneModelES();
-                if (a.getAutoriteExterne() != null)
-                    adto.setPpn(a.getAutoriteExterne().getValue());
-                adto.setNom(a.getNom());
-                adto.setPrenom(a.getPrenom());
+
+                PersonneModelES adto = new PersonneModelES(
+                        a.getAutoriteExterne() != null ? a.getAutoriteExterne().getValue() : null,
+                        a.getNom(),
+                        a.getPrenom()
+                );
 
                 TheseModelES e = new TheseModelES(theseModelESPartiel, AUTEUR);
 
@@ -90,11 +91,12 @@ public class PersonneMapee {
             Iterator<DirecteurThese> directeurTheseIterator = directeursDepuisTef.iterator();
             while (directeurTheseIterator.hasNext()) {
                 DirecteurThese dt = directeurTheseIterator.next();
-                PersonneModelES personneModelES = new PersonneModelES();
-                if (dt.getAutoriteExterne() != null)
-                    personneModelES.setPpn(dt.getAutoriteExterne().getValue());
-                personneModelES.setNom(dt.getNom());
-                personneModelES.setPrenom(dt.getPrenom());
+
+                PersonneModelES personneModelES = new PersonneModelES(
+                        dt.getAutoriteExterne() != null ? dt.getAutoriteExterne().getValue() : null,
+                        dt.getNom(),
+                        dt.getPrenom()
+                );
 
                 TheseModelES e = new TheseModelES(theseModelESPartiel, DIRECTEUR);
 

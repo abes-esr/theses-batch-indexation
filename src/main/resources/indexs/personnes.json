@@ -21,6 +21,12 @@
                         "french_stemmer"
                     ]
                 }
+            },
+            "normalizer": {
+                "exact": {
+                    "type": "custom",
+                    "filter": ["lowercase", "asciifolding"]
+                }
             }
         }
     },
@@ -78,6 +84,10 @@
                         "type": "keyword"
                     }
                 }
+            },
+            "roles": {
+                "type": "keyword",
+                "normalizer": "exact"
             },
             "theses": {
                 "type": "nested",

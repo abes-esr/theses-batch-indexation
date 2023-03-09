@@ -13,6 +13,7 @@ import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
+import fr.abes.theses_batch_indexation.dto.personne.TheseModelES;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
@@ -25,6 +26,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -33,24 +36,41 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
     @Value("${index.name}")
     private String nomIndex;
 
+    private AtomicInteger nombreDeTheses = new AtomicInteger(0);
+    private AtomicInteger nombreDePersonnes = new AtomicInteger(0);
+    private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
+
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
 
 
         for (TheseModel theseModel : items) {
+            nombreDeTheses.incrementAndGet();
+            logSiPasAssezDePersonnesDansLaThese(theseModel);
             for (PersonneModelES personneModelES : theseModel.getPersonnes()) {
-                if (personneModelES.getPpn() != null && personneModelES.getPpn() != "") {
-                    log.info("ppn : " + personneModelES.getPpn());
-                    log.info("nom : " + personneModelES.getNom());
-                    if (estPresentDansES(personneModelES.getPpn())) {
-                        updatePersonneDansES(personneModelES);
-                    } else {
-                        ajoutPersonneDansES(personneModelES);
-                    }
+                nombreDePersonnes.incrementAndGet();
+                log.info("ppn : " + personneModelES.getPpn());
+                log.info("nom : " + personneModelES.getNom());
+                if (estPresentDansES(personneModelES.getPpn())) {
+                    updatePersonneDansES(personneModelES);
+                    nombreDePersonnesUpdated.incrementAndGet();
+                } else {
+                    ajoutPersonneDansES(personneModelES);
                 }
             }
 
 
+        }
+        log.info("Nombre de thèses traitées : " + nombreDeTheses.get());
+        log.info("Nombre de personnes traitées : " + nombreDePersonnes.get());
+        log.info("Nombre de personnes mis à jour : " + nombreDePersonnesUpdated.get());
+        log.info("Nombre de personnes dans l'index : " + (nombreDePersonnes.intValue() - nombreDePersonnesUpdated.intValue()));
+
+    }
+
+    private void logSiPasAssezDePersonnesDansLaThese(TheseModel theseModel) {
+        if (theseModel.getPersonnes().size() < 2) {
+            log.warn("Moins de personnes que prévu dans cette theses");
         }
     }
 
@@ -112,7 +132,18 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
         PersonneModelES personnePresentDansES = getPersonneModelES(personneCourante.getPpn());
         deletePersonneES(personneCourante.getPpn());
         personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
+        addRoles(personnePresentDansES);
         ajoutPersonneDansES(personnePresentDansES);
+    }
+
+    private void addRoles(PersonneModelES personnePresentDansES) {
+        for (String role: personnePresentDansES.getTheses().stream().map(TheseModelES::getRole).collect(Collectors.toList())) {
+            boolean alreadyInRoles = personnePresentDansES.getRoles().stream().anyMatch(r -> r.equals(role));
+
+            if (!alreadyInRoles) {
+                personnePresentDansES.getRoles().add(role);
+            }
+        }
     }
 
     private boolean deletePersonneES(String ppn) throws IOException {
