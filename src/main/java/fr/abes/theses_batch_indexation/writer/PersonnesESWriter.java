@@ -13,6 +13,7 @@ import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
+import fr.abes.theses_batch_indexation.dto.personne.TheseModelES;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -130,7 +132,18 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
         PersonneModelES personnePresentDansES = getPersonneModelES(personneCourante.getPpn());
         deletePersonneES(personneCourante.getPpn());
         personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
+        addRoles(personnePresentDansES);
         ajoutPersonneDansES(personnePresentDansES);
+    }
+
+    private void addRoles(PersonneModelES personnePresentDansES) {
+        for (String role: personnePresentDansES.getTheses().stream().map(TheseModelES::getRole).collect(Collectors.toList())) {
+            boolean alreadyInRoles = personnePresentDansES.getRoles().stream().anyMatch(r -> r.equals(role));
+
+            if (!alreadyInRoles) {
+                personnePresentDansES.getRoles().add(role);
+            }
+        }
     }
 
     private boolean deletePersonneES(String ppn) throws IOException {

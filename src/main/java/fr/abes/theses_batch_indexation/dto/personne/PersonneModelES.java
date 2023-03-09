@@ -16,6 +16,7 @@ public class PersonneModelES {
     private String nom;
     private String prenom;
     private List<TheseModelES> theses = new ArrayList<>();
+    private List<String> roles = new ArrayList<>();
 
 
     public PersonneModelES(String ppn, String nom, String prenom) {
