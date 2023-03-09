@@ -352,8 +352,9 @@
         "analyzer": "standard",
         "copy_to": "suggestion"
       },
-      "oaiSets": {
-        "type": "keyword"
+      "oaiSetNames": {
+        "type": "keyword",
+        "normalizer": "exact"
       },
       "theseTravaux": {
         "type": "keyword"

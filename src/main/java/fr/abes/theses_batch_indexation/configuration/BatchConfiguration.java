@@ -59,12 +59,14 @@ public class BatchConfiguration {
     @Bean
     public Job jobIndexationThesesDansES(Step stepIndexThesesDansES, JobRepository jobRepository,
                                          Tasklet initialiserIndexESTasklet,
+                                         Tasklet chargerOaiSetsTasklet,
             JobTheseCompletionNotificationListener listener) {
         log.info("debut du job indexation des theses dans ES...");
 
         return jobs.get("indexationThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
                 .next(stepIndexThesesDansES)
                 .build();
     }
@@ -108,6 +110,11 @@ public class BatchConfiguration {
     @Bean
     public Step stepInitialiserIndexES(@Qualifier("initialiserIndexESTasklet") Tasklet t) {
         return stepBuilderFactory.get("InitialiserIndexESTasklet").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+    @Bean
+    public Step stepChargerListeOaiSets(@Qualifier("chargerOaiSetsTasklet") Tasklet t) {
+        return stepBuilderFactory.get("ChargerOaiSetsTasklet").allowStartIfComplete(true)
                 .tasklet(t).build();
     }
 
