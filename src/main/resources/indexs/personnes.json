@@ -41,8 +41,8 @@
                 "analyzer": "francais",
                 "fields": {
                     "exact": {
-                        "type": "text",
-                        "analyzer": "standard"
+                        "type": "keyword",
+                        "normalizer": "exact"
                     }
                 }
             },
@@ -52,8 +52,8 @@
                 "analyzer": "francais",
                 "fields": {
                     "exact": {
-                        "type": "text",
-                        "analyzer": "standard"
+                        "type": "keyword",
+                        "normalizer": "exact"
                     }
                 }
             },
