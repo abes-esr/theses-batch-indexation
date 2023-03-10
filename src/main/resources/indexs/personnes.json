@@ -18,7 +18,8 @@
                     "filter": [
                         "lowercase",
                         "french_stop",
-                        "french_stemmer"
+                        "french_stemmer",
+                        "asciifolding"
                     ]
                 }
             },
@@ -41,8 +42,8 @@
                 "analyzer": "francais",
                 "fields": {
                     "exact": {
-                        "type": "keyword",
-                        "normalizer": "exact"
+                        "type": "text",
+                        "analyzer": "standard"
                     }
                 }
             },
@@ -52,8 +53,8 @@
                 "analyzer": "francais",
                 "fields": {
                     "exact": {
-                        "type": "keyword",
-                        "normalizer": "exact"
+                        "type": "text",
+                        "analyzer": "standard"
                     }
                 }
             },
@@ -63,7 +64,7 @@
                 "fields": {
                     "exact": {
                          "type": "text",
-                        "analyzer": "standard"                     
+                        "analyzer": "standard"
                     }
                 }            
             },
