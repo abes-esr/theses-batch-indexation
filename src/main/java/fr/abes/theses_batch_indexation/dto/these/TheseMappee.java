@@ -47,8 +47,7 @@ public class TheseMappee {
     List<PersonneDTO> rapporteurs = new ArrayList<PersonneDTO>();
     List<String> rapporteursNP = new ArrayList<String>();
     List<String> sujetsRameau = new ArrayList<String>();
-    List<String> sujetsFR = new ArrayList<>();
-    List<String> sujetsEN = new ArrayList<>();
+    Map<String, String> sujets = new HashMap<String, String>();
     List<String> oaiSetNames = new ArrayList<String>();
     String theseTravaux = "non";
 
@@ -397,17 +396,9 @@ public class TheseMappee {
                 Iterator<Subject> subjectIterator = subjects.iterator();
                 while (subjectIterator.hasNext()) {
                     Subject s = subjectIterator.next();
+
                     if (s != null && s.getLang() != null) {
-                        switch (s.getLang()) {
-                            case "fr":
-                                sujetsFR.add(s.getContent());
-                                break;
-                            case "en":
-                                sujetsEN.add(s.getContent());
-                                break;
-                            default:
-                                break;
-                        }
+                        sujets.put(s.getLang(), s.getContent());
                     }
                 }
             } catch (NullPointerException e) {
@@ -493,172 +484,118 @@ public class TheseMappee {
     public void setPartenairesRecherche(List<OrganismeDTO> partenairesRecherche) {
         this.partenairesRecherche = partenairesRecherche;
     }
-
     public List<PersonneDTO> getRapporteurs() {
         return rapporteurs;
     }
-
     public void setRapporteurs(List<PersonneDTO> rapporteurs) {
         this.rapporteurs = rapporteurs;
     }
-
     public List<PersonneDTO> getMembresJury() {
         return membresJury;
     }
-
     public void setMembresJury(List<PersonneDTO> membresJury) {
         this.membresJury = membresJury;
     }
-
     public List<PersonneDTO> getAuteurs() {
         return auteurs;
     }
-
     public void setAuteurs(List<PersonneDTO> auteurs) {
         this.auteurs = auteurs;
     }
-
     public List<PersonneDTO> getDirecteurs() {
         return directeurs;
     }
-
     public void setDirecteurs(List<PersonneDTO> directeurs) {
         this.directeurs = directeurs;
     }
-
     public Map<String, String> getResumes() {
         return resumes;
     }
-
     public void setResumes(Map<String, String> resumes) {
         this.resumes = resumes;
     }
-
     public String getDateSoutenance() {
         return dateSoutenance;
     }
-
     public void setDateSoutenance(String dateSoutenance) {
         this.dateSoutenance = dateSoutenance;
     }
-
-    /*public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }*/
     public String getStatus() {
         return status;
     }
-
     public void setStatus(String status) {
         this.status = status;
     }
-
     public List<String> getPpn() {
         return ppn;
     }
-
     public void setPpn(List<String> ppn) {
         this.ppn = ppn;
     }
-
     public String getSource() {
         return source;
     }
-
     public void setSource(String source) {
         this.source = source;
     }
-
     public String getAccessible() {
         return accessible;
     }
-
     public void setAccessible(String accessible) {
         this.accessible = accessible;
     }
-
     public Map<String, String> getTitres() {
         return titres;
     }
-
     public void setTitres(Map<String, String> titres) {
         this.titres = titres;
     }
-
     public List<OrganismeDTO> getEtabsCotutelle() {
         return etabsCotutelle;
     }
-
     public void setEtabsCotutelle(List<OrganismeDTO> etabsCotutelle) {
         this.etabsCotutelle = etabsCotutelle;
     }
-
     public String getDiscipline() {
         return discipline;
     }
-
     public void setDiscipline(String discipline) {
         this.discipline = discipline;
     }
-
     public List<OrganismeDTO> getEcolesDoctorales() {
         return ecolesDoctorales;
     }
-
     public void setEcolesDoctorales(List<OrganismeDTO> ecolesDoctorales) {
         this.ecolesDoctorales = ecolesDoctorales;
     }
-
-    public List<String> getSujetsFR() {
-        return sujetsFR;
-    }
-
-    public void setSujetsFR(List<String> sujetsFR) {
-        this.sujetsFR = sujetsFR;
-    }
-
-    public List<String> getSujetsEN() {
-        return sujetsEN;
-    }
-
-    public void setSujetsEN(List<String> sujetsEN) {
-        this.sujetsEN = sujetsEN;
-    }
-
     public String getCodeEtab() {
         return codeEtab;
     }
-
     public void setCodeEtab(String codeEtab) {
         this.codeEtab = codeEtab;
     }
-
     public String getDateFinEmbargo() {
         return dateFinEmbargo;
     }
-
     public void setDateFinEmbargo(String dateFinEmbargo) {
         this.dateFinEmbargo = dateFinEmbargo;
     }
-
     public List<String> getLangues() {
         return langues;
     }
-
     public void setLangues(List<String> langues) {
         this.langues = langues;
     }
-
     public List<String> getOaiSetNames() {
         return oaiSetNames;
     }
-
     public void setOaiSetNames(List<String> oaiSetNames) {
         this.oaiSetNames = oaiSetNames;
     }
-
+    public Map<String, String> getSujets() {
+        return sujets;
+    }
+    public void setSujets(Map<String, String> sujets) {
+        this.sujets = sujets;
+    }
 }
