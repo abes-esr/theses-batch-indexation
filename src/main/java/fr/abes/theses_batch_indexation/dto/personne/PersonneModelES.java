@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * Représente une personne au format de l'index Elastic Search.
  * Cet objet sera transformé en JSON au moment de l'appel API pour l'indexation.
+ * Le nom des attributs doivent correspondre exactement à ceux de l'index {@link /resources/indexs/personnes.json}
  */
 @Getter
 @Setter

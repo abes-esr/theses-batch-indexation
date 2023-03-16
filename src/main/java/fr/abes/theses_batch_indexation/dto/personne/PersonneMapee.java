@@ -35,13 +35,11 @@ public class PersonneMapee {
     private final String PRESIDENT = "président du jury";
     private final String MEMBRE_DU_JURY = "membre du jury";
 
-    /*Todo: à partir de Mets extraire toutes les infos à indexer
-       (s'inpirer de TheseMapee vu que la plupart des champs sont déjà extrait)*/
-
     /**
      * CTOR
      * Cette fonction permet de remplir la liste des personnes à partir du TEF.
      * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
+     *
      * @param mets
      */
     public PersonneMapee(Mets mets) {
@@ -108,22 +106,22 @@ public class PersonneMapee {
         log.info("traitement des rapporteurs");
         try {
             personnes.addAll(parseRapporteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getDirecteurThese()));
+                    .getRapporteur()));
 
         } catch (NullPointerException e) {
             log.error("PB pour les rapporteurs de " + nnt + "," + e.getMessage());
         }
 
         /************************************
-         * Parsing des présidents du jury de la thèse
+         * Parsing du président du jury de la thèse
          * ***********************************/
-        log.info("traitement des présidents du jury de la thèse");
+        log.info("traitement du président du jury de la thèse");
         try {
-            personnes.addAll(parsePresident(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getDirecteurThese()));
+            personnes.add(parsePresident(techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getPresidentJury()));
 
         } catch (NullPointerException e) {
-            log.error("PB pour les présidents du jury de " + nnt + "," + e.getMessage());
+            log.error("PB pour le président du jury de " + nnt + "," + e.getMessage());
         }
 
         /************************************
@@ -132,7 +130,7 @@ public class PersonneMapee {
         log.info("traitement des membres du jury de la thèse");
         try {
             personnes.addAll(parseMembreJury(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getDirecteurThese()));
+                    .getMembreJury()));
 
         } catch (NullPointerException e) {
             log.error("PB pour les membres du jury de " + nnt + "," + e.getMessage());
@@ -146,6 +144,15 @@ public class PersonneMapee {
         return false;
     }
 
+    /**
+     * Instancie un objet Personne à partir des informations de base
+     * @param id Identifiant de la personne
+     * @param nom Nom de la personne
+     * @param prenom Prénom de la personne
+     * @param role Rôle de la personne
+     * @param theses Thèses de la personne au format ThesesModelESPartiel
+     * @return Un objet PersonneModelES
+     */
     private PersonneModelES buildPersonne(String id, String nom, String prenom, String role, TheseModelESPartiel theses) {
         // Construction d'un objet Personne
         PersonneModelES item = new PersonneModelES(
@@ -153,19 +160,25 @@ public class PersonneMapee {
                 nom,
                 prenom
         );
-        TheseModelES e = new TheseModelES(theseModelESPartiel, role);
+        TheseModelES e = new TheseModelES(theses, role);
         item.getTheses().add(e);
         item.getRoles().add(role);
 
         return item;
     }
 
-    private List<PersonneModelES> parseAuteurs(List<Auteur> auteursDepuisTef) throws NullPointerException {
+    /**
+     * Transforme les informations sur les auteurs de la thèse au format Elastic Search
+     * @param collection Liste des auteurs au format TEF
+     * @return La liste des auteurs de la thèse au format ES
+     * @throws NullPointerException si une erreur de lecture du TEF
+     */
+    private List<PersonneModelES> parseAuteurs(List<Auteur> collection) throws NullPointerException {
         List<PersonneModelES> candidates = new ArrayList<>();
 
-        Iterator<Auteur> auteurIterator = auteursDepuisTef.iterator();
-        while (auteurIterator.hasNext()) {
-            Auteur item = auteurIterator.next();
+        Iterator<Auteur> iter = collection.iterator();
+        while (iter.hasNext()) {
+            Auteur item = iter.next();
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
@@ -181,12 +194,18 @@ public class PersonneMapee {
         return candidates;
     }
 
-    private List<PersonneModelES> parseDirecteurs(List<DirecteurThese> directeursDepuisTef) throws NullPointerException {
+    /**
+     * Transforme les informations sur les directeurs de la thèse au format Elastic Search
+     * @param collection Liste des directeurs au format TEF
+     * @return La liste des directeurs de la thèse au format ES
+     * @throws NullPointerException si une erreur de lecture du TEF
+     */
+    private List<PersonneModelES> parseDirecteurs(List<DirecteurThese> collection) throws NullPointerException {
         List<PersonneModelES> candidates = new ArrayList<>();
 
-        Iterator<DirecteurThese> directeurTheseIterator = directeursDepuisTef.iterator();
-        while (directeurTheseIterator.hasNext()) {
-            DirecteurThese item = directeurTheseIterator.next();
+        Iterator<DirecteurThese> iter = collection.iterator();
+        while (iter.hasNext()) {
+            DirecteurThese item = iter.next();
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
@@ -202,12 +221,18 @@ public class PersonneMapee {
         return candidates;
     }
 
-    private List<PersonneModelES> parseRapporteurs(List<DirecteurThese> directeursDepuisTef) throws NullPointerException {
+    /**
+     * Transforme les informations sur les rapporteurs de la thèse au format Elastic Search
+     * @param collection Liste des rapporteurs au format TEF
+     * @return La liste des rapporteurs de la thèse au format ES
+     * @throws NullPointerException si une erreur de lecture du TEF
+     */
+    private List<PersonneModelES> parseRapporteurs(List<Rapporteur> collection) throws NullPointerException {
         List<PersonneModelES> candidates = new ArrayList<>();
 
-        Iterator<DirecteurThese> directeurTheseIterator = directeursDepuisTef.iterator();
-        while (directeurTheseIterator.hasNext()) {
-            DirecteurThese item = directeurTheseIterator.next();
+        Iterator<Rapporteur> iter = collection.iterator();
+        while (iter.hasNext()) {
+            Rapporteur item = iter.next();
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
@@ -223,33 +248,37 @@ public class PersonneMapee {
         return candidates;
     }
 
-    private List<PersonneModelES> parsePresident(List<DirecteurThese> directeursDepuisTef) throws NullPointerException {
-        List<PersonneModelES> candidates = new ArrayList<>();
+    /**
+     * Transforme les informations du président du jury de la thèse au format Elastic Search
+     * @param item Information du président du jury au format TEF
+     * @return Les informations du président du jury de la thèse au format ES
+     * @throws NullPointerException si une erreur de lecture du TEF
+     */
+    private PersonneModelES parsePresident(PresidentJury item) throws NullPointerException {
 
-        Iterator<DirecteurThese> directeurTheseIterator = directeursDepuisTef.iterator();
-        while (directeurTheseIterator.hasNext()) {
-            DirecteurThese item = directeurTheseIterator.next();
-
-            // Construction d'un objet Personne
-            PersonneModelES adto = buildPersonne(
-                    item.getAutoriteExterne() != null ? item.getAutoriteExterne().getValue() : null,
-                    item.getNom(),
-                    item.getPrenom(),
-                    PRESIDENT,
-                    theseModelESPartiel
-            );
-            candidates.add(adto);
-        }
-
-        return candidates;
+        // Construction d'un objet Personne
+        PersonneModelES adto = buildPersonne(
+                item.getAutoriteExterne() != null ? item.getAutoriteExterne().getValue() : null,
+                item.getNom(),
+                item.getPrenom(),
+                PRESIDENT,
+                theseModelESPartiel
+        );
+        return adto;
     }
 
-    private List<PersonneModelES> parseMembreJury(List<DirecteurThese> directeursDepuisTef) throws NullPointerException {
+    /**
+     * Transforme les informations sur les membre du jury de la thèse au format Elastic Search
+     * @param collection Liste des membres du jury au format TEF
+     * @return La liste des membres du jury de la thèse au format ES
+     * @throws NullPointerException si une erreur de lecture du TEF
+     */
+    private List<PersonneModelES> parseMembreJury(List<MembreJury> collection) throws NullPointerException {
         List<PersonneModelES> candidates = new ArrayList<>();
 
-        Iterator<DirecteurThese> directeurTheseIterator = directeursDepuisTef.iterator();
-        while (directeurTheseIterator.hasNext()) {
-            DirecteurThese item = directeurTheseIterator.next();
+        Iterator<MembreJury> iter = collection.iterator();
+        while (iter.hasNext()) {
+            MembreJury item = iter.next();
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
@@ -264,6 +293,4 @@ public class PersonneMapee {
 
         return candidates;
     }
-
-
 }
