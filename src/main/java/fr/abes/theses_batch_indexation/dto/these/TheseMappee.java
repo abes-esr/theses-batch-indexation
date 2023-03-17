@@ -2,6 +2,7 @@ package fr.abes.theses_batch_indexation.dto.these;
 
 import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
+import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
@@ -216,7 +217,7 @@ public class TheseMappee {
                 Iterator<ThesisDegreeGrantor> iteGrantor = grantors.iterator();
                 // l'étab de soutenance est le premier de la liste
                 ThesisDegreeGrantor premier = iteGrantor.next();
-                if (premier.getAutoriteExterne() != null)
+                if (premier.getAutoriteExterne() != null && OutilsTef.isPPN(premier.getAutoriteExterne()))
                     etabSoutenance.setPpn(premier.getAutoriteExterne().getValue());
                 etabSoutenance.setNom(premier.getNom());
                 etabSoutenanceN = premier.getNom();
@@ -224,7 +225,7 @@ public class TheseMappee {
                 while (iteGrantor.hasNext()) {
                     ThesisDegreeGrantor a = iteGrantor.next();
                     OrganismeDTO ctdto = new OrganismeDTO();
-                    if (a.getAutoriteExterne() != null)
+                    if (a.getAutoriteExterne() != null && OutilsTef.isPPN(a.getAutoriteExterne()))
                         ctdto.setPpn(a.getAutoriteExterne().getValue());
                     ctdto.setNom(a.getNom());
                     etabsCotutelle.add(ctdto);
@@ -244,7 +245,7 @@ public class TheseMappee {
                 while (partenairesIterator.hasNext()) {
                     PartenaireRecherche p = partenairesIterator.next();
                     OrganismeDTO pdto = new OrganismeDTO();
-                    if (p.getAutoriteExterne() != null)
+                    if (p.getAutoriteExterne() != null && OutilsTef.isPPN(p.getAutoriteExterne()))
                         pdto.setPpn(p.getAutoriteExterne().getValue());
                     pdto.setNom(p.getNom());
                     pdto.setType(p.getType());
@@ -266,7 +267,7 @@ public class TheseMappee {
                 while (ecoleDoctoraleIterator.hasNext()) {
                     EcoleDoctorale ecole = ecoleDoctoraleIterator.next();
                     OrganismeDTO edto = new OrganismeDTO();
-                    if (ecole.getAutoriteExterne() != null)
+                    if (ecole.getAutoriteExterne() != null && OutilsTef.isPPN(ecole.getAutoriteExterne()))
                         edto.setPpn(ecole.getAutoriteExterne().getValue());
                     edto.setNom(ecole.getNom());
                     ecolesDoctorales.add(edto);
@@ -299,7 +300,7 @@ public class TheseMappee {
                 while (auteurIterator.hasNext()) {
                     Auteur a = auteurIterator.next();
                     PersonneDTO adto = new PersonneDTO();
-                    if (a.getAutoriteExterne() != null)
+                    if (a.getAutoriteExterne() != null && OutilsTef.isPPN(a.getAutoriteExterne()))
                         adto.setPpn(a.getAutoriteExterne().getValue());
                     adto.setNom(a.getNom());
                     adto.setPrenom(a.getPrenom());
@@ -319,7 +320,7 @@ public class TheseMappee {
                 while (directeurTheseIterator.hasNext()) {
                     DirecteurThese dt = directeurTheseIterator.next();
                     PersonneDTO dtdto = new PersonneDTO();
-                    if (dt.getAutoriteExterne() != null)
+                    if (dt.getAutoriteExterne() != null && OutilsTef.isPPN(dt.getAutoriteExterne()))
                         dtdto.setPpn(dt.getAutoriteExterne().getValue());
                     dtdto.setNom(dt.getNom());
                     dtdto.setPrenom(dt.getPrenom());
@@ -336,7 +337,7 @@ public class TheseMappee {
             try {
                 if (techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury() != null) {
                     PresidentJury presidentDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury();
-                    if (presidentDepuisTef.getAutoriteExterne() != null)
+                    if (presidentDepuisTef.getAutoriteExterne() != null && OutilsTef.isPPN(presidentDepuisTef.getAutoriteExterne()))
                         presidentJury.setPpn(presidentDepuisTef.getAutoriteExterne().getValue());
                     presidentJury.setNom(presidentDepuisTef.getNom());
                     presidentJury.setPrenom(presidentDepuisTef.getPrenom());
@@ -356,7 +357,7 @@ public class TheseMappee {
                 while (membresIterator.hasNext()) {
                     MembreJury m = membresIterator.next();
                     PersonneDTO mdto = new PersonneDTO();
-                    if (m.getAutoriteExterne() != null)
+                    if (m.getAutoriteExterne() != null && OutilsTef.isPPN(m.getAutoriteExterne()))
                         mdto.setPpn(m.getAutoriteExterne().getValue());
                     mdto.setNom(m.getNom());
                     mdto.setPrenom(m.getPrenom());
@@ -377,7 +378,7 @@ public class TheseMappee {
                 while (rapporteurIterator.hasNext()) {
                     Rapporteur r = rapporteurIterator.next();
                     PersonneDTO rdto = new PersonneDTO();
-                    if (r.getAutoriteExterne() != null)
+                    if (r.getAutoriteExterne() != null && OutilsTef.isPPN(r.getAutoriteExterne()))
                         rdto.setPpn(r.getAutoriteExterne().getValue());
                     rdto.setNom(r.getNom());
                     rdto.setPrenom(r.getPrenom());
