@@ -44,6 +44,9 @@
                     "exact": {
                         "type": "text",
                         "analyzer": "standard"
+                    },
+                    "sort": {
+                        "type": "keyword"
                     }
                 }
             },
@@ -55,6 +58,9 @@
                     "exact": {
                         "type": "text",
                         "analyzer": "standard"
+                    },
+                    "sort": {
+                        "type": "keyword"
                     }
                 }
             },
@@ -75,6 +81,11 @@
                         "name": "has_idref",
                         "type": "category",
                         "path": "has_idref.raw"
+                    },
+                    {
+                        "name": "roles",
+                        "type": "category",
+                        "path": "roles"
                     }
                 ]
             },
