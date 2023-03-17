@@ -1,6 +1,7 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.model.tef.*;
+import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -182,7 +183,7 @@ public class PersonneMapee {
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
-                    item.getAutoriteExterne() != null ? item.getAutoriteExterne().getValue() : null,
+                    OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
                     AUTEUR,
@@ -209,7 +210,7 @@ public class PersonneMapee {
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
-                    item.getAutoriteExterne() != null ? item.getAutoriteExterne().getValue() : null,
+                    OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
                     DIRECTEUR,
@@ -236,7 +237,7 @@ public class PersonneMapee {
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
-                    item.getAutoriteExterne() != null ? item.getAutoriteExterne().getValue() : null,
+                    OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
                     RAPPORTEUR,
@@ -258,7 +259,7 @@ public class PersonneMapee {
 
         // Construction d'un objet Personne
         PersonneModelES adto = buildPersonne(
-                item.getAutoriteExterne() != null ? item.getAutoriteExterne().getValue() : null,
+                OutilsTef.getPPN(item.getAutoriteExterne()),
                 item.getNom(),
                 item.getPrenom(),
                 PRESIDENT,
@@ -282,7 +283,7 @@ public class PersonneMapee {
 
             // Construction d'un objet Personne
             PersonneModelES adto = buildPersonne(
-                    item.getAutoriteExterne() != null ? item.getAutoriteExterne().getValue() : null,
+                    OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
                     MEMBRE_DU_JURY,
