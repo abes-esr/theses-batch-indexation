@@ -30,10 +30,6 @@ public class PersonneModelES {
 
     private List<TheseModelES> theses = new ArrayList<>();
 
-    /*
-    TODO : Pourquoi rajouter un champs roles à ce niveau
-     alors qu'il peut être retrouver depuis la liste des thèses ?
-     */
     private List<String> roles = new ArrayList<>();
 
     public PersonneModelES(String ppn, String nom, String prenom) {

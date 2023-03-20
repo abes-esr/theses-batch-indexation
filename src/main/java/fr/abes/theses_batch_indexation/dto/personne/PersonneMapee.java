@@ -5,9 +5,7 @@ import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * L'objet PersonneMappe correspond à un objet transitoire entre le format TEF (XML) et le format JSON attendu par Elastic Search.
@@ -23,13 +21,17 @@ public class PersonneMapee {
      */
     private List<PersonneModelES> personnes = new ArrayList<>();
 
-    private TheseModelESPartiel theseModelESPartiel = new TheseModelESPartiel();
+
+    private TheseModelES theseModelES = new TheseModelES();
 
     /**
      * Identifiant de la thèse
      */
     private String nnt;
 
+    /**
+     * Libellé à indexer pour les rôles
+     */
     private final String AUTEUR = "auteur";
     private final String DIRECTEUR = "directeur de thèse";
     private final String RAPPORTEUR = "rapporteur";
@@ -39,6 +41,8 @@ public class PersonneMapee {
     /**
      * CTOR
      * Cette fonction permet de remplir la liste des personnes à partir du TEF.
+     * On lit d'abord les informations de la thèse puis on lit les informations des thèses
+     * car les informations de la thèse sont communes à toutes les personnes liées à la thèse.
      * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
      *
      * @param mets
@@ -49,6 +53,10 @@ public class PersonneMapee {
         AmdSec amdSec = mets.getAmdSec().get(0);
 
         TechMD techMD = null;
+
+        /************************************************************************
+         *                    Parsing des informations de la thèse
+         * *********************************************************************/
 
         /************************************
          * Parsing du NNT
@@ -63,7 +71,7 @@ public class PersonneMapee {
                 if (isNnt(i.getValue()))
                     nnt = i.getValue();
             }
-            theseModelESPartiel.setNnt(nnt);
+            theseModelES.setNnt(nnt);
         } catch (NullPointerException e) {
             log.error("PB pour nnt " + e.toString());
         }
@@ -72,10 +80,77 @@ public class PersonneMapee {
          * Parsing du titre principal de la thèse
          * ***********************************/
         try {
-            theseModelESPartiel.setTitre(dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+            theseModelES.setTitre(dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
         } catch (NullPointerException e) {
             log.error("PB pour titrePrincipal de " + nnt + e.getMessage());
         }
+
+        /************************************
+         * Parsing des sujets
+         * ***********************************/
+        log.info("traitement de sujets");
+        try {
+            List<Subject> subjects = dmdSec.getMdWrap().getXmlData().getThesisRecord().getSubject();
+            Iterator<Subject> subjectIterator = subjects.iterator();
+            while (subjectIterator.hasNext()) {
+                Subject s = subjectIterator.next();
+
+                if (s != null && s.getLang() != null) {
+                    theseModelES.getSujets().put(s.getLang(), s.getContent());
+                }
+            }
+        } catch (NullPointerException e) {
+            log.error("PB pour sujets de " + nnt + "," + e.getMessage());
+        }
+
+        /************************************
+         * Parsing des sujets Rameau
+         * ***********************************/
+        log.info("traitement de sujetsRameau");
+
+        try {
+            List<VedetteRameauNomCommun> sujetsRameauDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauNomCommun();
+            Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauDepuisTef.iterator();
+            while (vedetteRameauNomCommunIterator.hasNext()) {
+                VedetteRameauNomCommun vdto = vedetteRameauNomCommunIterator.next();
+                if (vdto.getElementdEntree() != null)
+                    theseModelES.getSujets_rameau().add(vdto.getElementdEntree().getContent());
+            }
+        } catch (NullPointerException e) {
+            log.error("PB pour sujetsRameau de " + nnt + ", " + e.getMessage());
+        }
+
+        /************************************
+         * Parsing du résumé
+         * ***********************************/
+        log.info("traitement de resumes");
+        try {
+            List<Abstract> abstracts = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAbstract();
+            Iterator<Abstract> abstractIterator = abstracts.iterator();
+            while (abstractIterator.hasNext()) {
+                Abstract a = abstractIterator.next();
+                theseModelES.getResumes().put(a.getLang(), a.getContent());
+            }
+        } catch (NullPointerException e) {
+            log.error("PB pour resumes de " + nnt + e.getMessage());
+        }
+
+        /************************************
+         * Parsing de la discipline
+         * ***********************************/
+        log.info("traitement de discipline");
+        try {
+            ThesisDegreeDiscipline tddisc = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getThesisDegree().getThesisDegreeDiscipline();
+            theseModelES.setDiscipline(tddisc.getValue());
+        } catch (NullPointerException e) {
+            log.error("PB pour discipline de " + nnt + "," + e.getMessage());
+        }
+
+        /************************************************************************
+         *                    Parsing des personnes liées à la thèse
+         * *********************************************************************/
 
         /************************************
          * Parsing des auteurs de la thèse
@@ -136,7 +211,6 @@ public class PersonneMapee {
         } catch (NullPointerException e) {
             log.error("PB pour les membres du jury de " + nnt + "," + e.getMessage());
         }
-
     }
 
     private boolean isNnt(String identifier) {
@@ -151,18 +225,18 @@ public class PersonneMapee {
      * @param nom Nom de la personne
      * @param prenom Prénom de la personne
      * @param role Rôle de la personne
-     * @param theses Thèses de la personne au format ThesesModelESPartiel
      * @return Un objet PersonneModelES
      */
-    private PersonneModelES buildPersonne(String id, String nom, String prenom, String role, TheseModelESPartiel theses) {
+    private PersonneModelES buildPersonne(String id, String nom, String prenom, String role) {
         // Construction d'un objet Personne
         PersonneModelES item = new PersonneModelES(
                 id,
                 nom,
                 prenom
         );
-        TheseModelES e = new TheseModelES(theses, role);
-        item.getTheses().add(e);
+
+        theseModelES.setRole(role);
+        item.getTheses().add(theseModelES);
         item.getRoles().add(role);
 
         return item;
@@ -186,8 +260,7 @@ public class PersonneMapee {
                     OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
-                    AUTEUR,
-                    theseModelESPartiel
+                    AUTEUR
             );
             candidates.add(adto);
         }
@@ -213,8 +286,7 @@ public class PersonneMapee {
                     OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
-                    DIRECTEUR,
-                    theseModelESPartiel
+                    DIRECTEUR
             );
             candidates.add(adto);
         }
@@ -240,8 +312,7 @@ public class PersonneMapee {
                     OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
-                    RAPPORTEUR,
-                    theseModelESPartiel
+                    RAPPORTEUR
             );
             candidates.add(adto);
         }
@@ -262,8 +333,7 @@ public class PersonneMapee {
                 OutilsTef.getPPN(item.getAutoriteExterne()),
                 item.getNom(),
                 item.getPrenom(),
-                PRESIDENT,
-                theseModelESPartiel
+                PRESIDENT
         );
         return adto;
     }
@@ -286,8 +356,7 @@ public class PersonneMapee {
                     OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom(),
-                    MEMBRE_DU_JURY,
-                    theseModelESPartiel
+                    MEMBRE_DU_JURY
             );
             candidates.add(adto);
         }
