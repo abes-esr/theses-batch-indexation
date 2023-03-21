@@ -1,5 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
+import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
 import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.Getter;
@@ -152,6 +153,94 @@ public class PersonneMapee {
             theseModelES.setDiscipline(tddisc.getValue());
         } catch (NullPointerException e) {
             log.error("PB pour discipline de " + nnt + "," + e.getMessage());
+        }
+
+        /************************************
+         * Parsing de la date de soutenance
+         * ***********************************/
+        log.info("traitement de dateSoutenance");
+        try {
+            theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
+        } catch (NullPointerException e) {
+            log.error("PB pour dateSoutenance de " + nnt);
+        }
+
+        /************************************
+         * Parsing des etablissements
+         * ***********************************/
+        log.info("traitement de etablissements");
+
+        try {
+            List<ThesisDegreeGrantor> grantors = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getThesisDegree().getThesisDegreeGrantor();
+            Iterator<ThesisDegreeGrantor> iteGrantor = grantors.iterator();
+            // l'étab de soutenance est le premier de la liste
+            ThesisDegreeGrantor premier = iteGrantor.next();
+            if (premier.getAutoriteExterne() != null && OutilsTef.isPPN(premier.getAutoriteExterne())) {
+                theseModelES.getEtablissement_soutenance().setPpn(premier.getAutoriteExterne().getValue());
+            }
+            theseModelES.getEtablissement_soutenance().setNom(premier.getNom());
+            // les potentiels suivants sont les cotutelles
+            while (iteGrantor.hasNext()) {
+                ThesisDegreeGrantor a = iteGrantor.next();
+                OrganismeDTO ctdto = new OrganismeDTO();
+                if (a.getAutoriteExterne() != null && OutilsTef.isPPN(a.getAutoriteExterne()))
+                    ctdto.setPpn(a.getAutoriteExterne().getValue());
+                ctdto.setNom(a.getNom());
+                theseModelES.getEtablissements_cotutelle().add(ctdto);
+            }
+        } catch (NullPointerException e) {
+            log.error("PB pour etablissements de " + nnt + "," + e.getMessage());
+        }
+
+        /************************************
+         * Parsing du status
+         * ***********************************/
+        log.info("traitement de status");
+        theseModelES.setStatus("soutenue");
+        try {
+            Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+            if (stepGestion.isPresent())
+                theseModelES.setStatus("enCours");
+        } catch (NullPointerException e) {
+            log.error("PB pour status de " + nnt + e.getMessage());
+        }
+
+        /************************************
+         * Parsing de la source
+         * ***********************************/
+        log.info("traitement de source");
+        theseModelES.setSource("sudoc");
+        if (theseModelES.getStatus().equals("enCours"))
+            theseModelES.setSource("step");
+        try {
+            if (theseModelES.getStatus().equals("soutenue") &&
+                    mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
+                            .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
+                theseModelES.setSource("star");
+        } catch (NullPointerException ex) {
+            log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
+        }
+
+        /************************************
+         * Parsing des titres
+         * ***********************************/
+        log.info("traitement de titres");
+        try {
+            theseModelES.getTitres().put(
+                    dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
+                    dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+
+            if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
+                Iterator<Alternative> titreAlternativeIterator = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative().iterator();
+                while (titreAlternativeIterator.hasNext()) {
+                    Alternative a = titreAlternativeIterator.next();
+                    theseModelES.getTitres().put(
+                            a.getLang(), a.getContent());
+                }
+            }
+        } catch (NullPointerException e) {
+            log.error("PB pour titres de " + nnt + e.getMessage());
         }
 
         /************************************************************************

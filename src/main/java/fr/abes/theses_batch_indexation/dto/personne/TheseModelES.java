@@ -1,5 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
+import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,9 @@ import java.util.Map;
 public class TheseModelES {
     String role;
     String titre;
+
+    Map<String, String> titres = new HashMap<String, String>();
+
     String nnt;
 
     List<String> sujets_rameau = new ArrayList<>();
@@ -29,4 +33,15 @@ public class TheseModelES {
     String discipline;
 
     Map<String, String> resumes = new HashMap<String, String>();
+
+    String date_soutenance;
+
+    OrganismeDTO etablissement_soutenance = new OrganismeDTO();
+
+    List<OrganismeDTO> etablissements_cotutelle = new ArrayList<OrganismeDTO>();
+
+    String status;
+
+    String source;
+
 }

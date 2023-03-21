@@ -1,6 +1,6 @@
 {
   "settings": {
-    "index.max_result_window":"600000",
+    "index.max_result_window": "600000",
     "analysis": {
       "filter": {
         "french_elision": {
@@ -203,6 +203,90 @@
               "it": {
                 "type": "text",
                 "analyzer": "italian"
+              }
+            }
+          },
+          "source": {
+            "type": "keyword"
+          },
+          "status": {
+            "type": "keyword",
+            "normalizer": "exact"
+          },
+          "date_soutenance": {
+            "type": "date"
+          },
+          "titres": {
+            "properties": {
+              "fr": {
+                "type": "text",
+                "analyzer": "francais",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "en": {
+                "type": "text",
+                "analyzer": "english",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "es": {
+                "type": "text",
+                "analyzer": "spanish",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "de": {
+                "type": "text",
+                "analyzer": "german",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "it": {
+                "type": "text",
+                "analyzer": "italian",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              }
+            }
+          },
+          "etablissement_soutenance": {
+            "properties": {
+              "ppn": {
+                "type": "keyword"
+              },
+              "nom": {
+                "type": "text"
+              }
+            }
+          },
+          "etablissements_cotutelle": {
+            "properties": {
+              "ppn": {
+                "type": "keyword"
+              },
+              "nom": {
+                "type": "text"
               }
             }
           }
