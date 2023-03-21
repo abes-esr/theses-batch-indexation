@@ -24,7 +24,7 @@ public class TheseModelES {
 
     List<String> sujets_rameau = new ArrayList<>();
 
-    Map<String, String> sujets = new HashMap<String, String>();
+    Map<String, List<String>> sujets = new HashMap<>();
 
     String discipline;
 

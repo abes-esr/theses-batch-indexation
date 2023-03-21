@@ -96,7 +96,13 @@ public class PersonneMapee {
                 Subject s = subjectIterator.next();
 
                 if (s != null && s.getLang() != null) {
-                    theseModelES.getSujets().put(s.getLang(), s.getContent());
+                    if (theseModelES.getSujets().containsKey(s.getLang())) {
+                        theseModelES.getSujets().get(s.getLang()).add(s.getContent());
+                    } else {
+                        List<String> list = new ArrayList<>();
+                        list.add(s.getContent());
+                        theseModelES.getSujets().put(s.getLang(),list);
+                    }
                 }
             }
         } catch (NullPointerException e) {
