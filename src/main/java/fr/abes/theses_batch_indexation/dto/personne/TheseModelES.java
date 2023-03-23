@@ -44,10 +44,15 @@ public class TheseModelES {
 
     String source;
 
+    List<PersonneLiteES> auteurs = new ArrayList<>();
+
+    List<PersonneLiteES> directeurs = new ArrayList<>();
+
     /**
      * Ce constructeur permet de faire une copie de la thèse avec le bon rôle
      *
-     * @param another
+     * @param these
+     * @param role Rôle de la personne pour cette thèse
      */
     public TheseModelES(TheseModelES these, String role) {
         this.nnt = these.getNnt();
@@ -63,6 +68,8 @@ public class TheseModelES {
         this.etablissements_cotutelle = these.getEtablissements_cotutelle();
         this.status = these.getStatus();
         this.source = these.getSource();
+        this.auteurs = these.getAuteurs();
+        this.directeurs = these.getDirecteurs();
     }
 
 }

@@ -243,6 +243,41 @@ public class PersonneMapee {
             log.error("PB pour titres de " + nnt + e.getMessage());
         }
 
+        /************************************
+         * Parsing des auteurs de la thèse
+         * ***********************************/
+        log.info("traitement des auteurs");
+        try {
+            Iterator<Auteur> iter = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getAuteur().iterator();
+            while (iter.hasNext()) {
+                Auteur item = iter.next();
+                theseModelES.getAuteurs().add(new PersonneLiteES(OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom()));
+            }
+        } catch (NullPointerException e) {
+            log.error("PB pour auteurs de " + nnt + "," + e.getMessage());
+        }
+
+        /************************************
+         * Parsing des directeurs de la thèse
+         * ***********************************/
+        log.info("traitement de directeurs");
+        try {
+            Iterator<DirecteurThese> iter = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getDirecteurThese().iterator();
+            while (iter.hasNext()) {
+                DirecteurThese item = iter.next();
+                theseModelES.getDirecteurs().add(new PersonneLiteES(OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom()));
+            }
+
+        } catch (NullPointerException e) {
+            log.error("PB pour directeurs de " + nnt + "," + e.getMessage());
+        }
+
         /************************************************************************
          *                    Parsing des personnes liées à la thèse
          * *********************************************************************/
@@ -250,7 +285,7 @@ public class PersonneMapee {
         /************************************
          * Parsing des auteurs de la thèse
          * ***********************************/
-        log.info("traitement des rapporteurs");
+        log.info("traitement des auteurs");
         try {
             personnes.addAll(parseAuteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getAuteur()));

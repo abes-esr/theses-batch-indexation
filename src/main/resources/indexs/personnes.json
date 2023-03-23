@@ -289,6 +289,76 @@
                 "type": "text"
               }
             }
+          },
+          "auteurs": {
+            "properties": {
+              "ppn": {
+                "type": "keyword"
+              },
+              "nom": {
+                "type": "text",
+                "analyzer": "francais",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "prenom": {
+                "type": "text",
+                "analyzer": "francais",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "has_idref": {
+                "type": "boolean",
+                "fields": {
+                  "raw": {
+                    "type": "keyword"
+                  }
+                }
+              }
+            }
+          },
+          "directeurs": {
+            "properties": {
+              "ppn": {
+                "type": "keyword"
+              },
+              "nom": {
+                "type": "text",
+                "analyzer": "francais",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "prenom": {
+                "type": "text",
+                "analyzer": "francais",
+                "fields": {
+                  "exact": {
+                    "type": "text",
+                    "analyzer": "standard"
+                  }
+                }
+              },
+              "has_idref": {
+                "type": "boolean",
+                "fields": {
+                  "raw": {
+                    "type": "keyword"
+                  }
+                }
+              }
+            }
           }
         }
       }
