@@ -50,10 +50,10 @@ public class InitialiserIndexESTasklet implements Tasklet {
     private File selectIndex() {
         File f = null;
 
-        if (nomIndex.toLowerCase().startsWith("the_")) {
+        if (nomIndex.toLowerCase().startsWith("the")) {
             f = new File(pathTheses);
         }
-        if (nomIndex.toLowerCase().startsWith("per_")) {
+        if (nomIndex.toLowerCase().startsWith("per")) {
             f = new File(pathPersonnes);
         }
         return f;
