@@ -39,10 +39,12 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
     private AtomicInteger nombreDeTheses = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnes = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
+    private AtomicInteger nombreDePersonnesUpdatedDansCeChunk = new AtomicInteger(0);
 
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
 
+        nombreDePersonnesUpdatedDansCeChunk.set(0);
 
         for (TheseModel theseModel : items) {
             nombreDeTheses.incrementAndGet();
@@ -54,6 +56,7 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
                 if (estPresentDansES(personneModelES.getPpn())) {
                     updatePersonneDansES(personneModelES);
                     nombreDePersonnesUpdated.incrementAndGet();
+                    nombreDePersonnesUpdatedDansCeChunk.incrementAndGet();
                 } else {
                     ajoutPersonneDansES(personneModelES);
                 }
@@ -63,7 +66,8 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
         }
         log.info("Nombre de thèses traitées : " + nombreDeTheses.get());
         log.info("Nombre de personnes traitées : " + nombreDePersonnes.get());
-        log.info("Nombre de personnes mis à jour : " + nombreDePersonnesUpdated.get());
+        log.info("Nombre de personnes mis à jour dans ce chunk : " + nombreDePersonnesUpdatedDansCeChunk.get());
+        log.info("Nombre de personnes mis à jour en tout : " + nombreDePersonnesUpdated.get());
         log.info("Nombre de personnes dans l'index : " + (nombreDePersonnes.intValue() - nombreDePersonnesUpdated.intValue()));
 
     }
