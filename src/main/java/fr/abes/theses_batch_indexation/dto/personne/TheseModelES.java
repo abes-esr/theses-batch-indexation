@@ -19,12 +19,12 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 public class TheseModelES {
+
+    String nnt;
     String role;
     String titre;
 
     Map<String, String> titres = new HashMap<String, String>();
-
-    String nnt;
 
     List<String> sujets_rameau = new ArrayList<>();
 
@@ -43,5 +43,26 @@ public class TheseModelES {
     String status;
 
     String source;
+
+    /**
+     * Ce constructeur permet de faire une copie de la thèse avec le bon rôle
+     *
+     * @param another
+     */
+    public TheseModelES(TheseModelES these, String role) {
+        this.nnt = these.getNnt();
+        this.role = role;
+        this.titre = these.getTitre();
+        this.titres = these.getTitres();
+        this.sujets_rameau = these.getSujets_rameau();
+        this.sujets = these.getSujets();
+        this.discipline = these.getDiscipline();
+        this.resumes = these.getResumes();
+        this.date_soutenance = these.getDate_soutenance();
+        this.etablissement_soutenance = these.getEtablissement_soutenance();
+        this.etablissements_cotutelle = these.getEtablissements_cotutelle();
+        this.status = these.getStatus();
+        this.source = these.getSource();
+    }
 
 }

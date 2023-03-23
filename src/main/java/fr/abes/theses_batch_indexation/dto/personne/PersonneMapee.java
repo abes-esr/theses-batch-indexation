@@ -330,8 +330,8 @@ public class PersonneMapee {
                 prenom
         );
 
-        theseModelES.setRole(role);
-        item.getTheses().add(theseModelES);
+        TheseModelES these = new TheseModelES(theseModelES,role);
+        item.getTheses().add(these);
         item.getRoles().add(role);
 
         return item;
