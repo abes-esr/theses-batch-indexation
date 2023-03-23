@@ -3,7 +3,6 @@ package fr.abes.theses_batch_indexation.configuration;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
 import fr.abes.theses_batch_indexation.reader.TheseItemReader;
-import fr.abes.theses_batch_indexation.tasklet.InitialiserIndexESTasklet;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
@@ -74,11 +73,15 @@ public class BatchConfiguration {
     @Bean
     public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansES,
                                             Tasklet initialiserIndexESTasklet,
+                                            Tasklet initiliserIndexBDDTasklet,
+                                            Tasklet indexerDansESTasklet,
                                             JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
                 .next(stepIndexPersonnesDansES)
+                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexerDansESTasklet(indexerDansESTasklet))
                 .build();
     }
 
@@ -99,7 +102,7 @@ public class BatchConfiguration {
 
     @Bean
     public Step stepIndexPersonnesDansES(@Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
-                                         @Qualifier("personnesESWriter") ItemWriter itemWriter) {
+                                         @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexPersonnesDansES").chunk(config.getChunk())
                 .reader(theseItemReader.read())
                 .processor(itemProcessor)
@@ -110,6 +113,16 @@ public class BatchConfiguration {
     @Bean
     public Step stepInitialiserIndexES(@Qualifier("initialiserIndexESTasklet") Tasklet t) {
         return stepBuilderFactory.get("InitialiserIndexESTasklet").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+    @Bean
+    public Step stepInitiliserIndexBDDTasklet(@Qualifier("initiliserIndexBDDTasklet") Tasklet t) {
+        return stepBuilderFactory.get("InitiliserIndexBDDTasklet").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+    @Bean
+    public Step stepIndexerDansESTasklet(@Qualifier("indexerDansESTasklet") Tasklet t) {
+        return stepBuilderFactory.get("IndexerDansESTasklet").allowStartIfComplete(true)
                 .tasklet(t).build();
     }
     @Bean
