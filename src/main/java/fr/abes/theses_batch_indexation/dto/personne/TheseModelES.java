@@ -21,7 +21,11 @@ import java.util.Map;
 public class TheseModelES {
 
     String nnt;
-    String role;
+
+    /**
+     * Une personne peut avoir plusieurs rôles dans la thèse
+     */
+    List<String> roles = new ArrayList<>();
     String titre;
 
     Map<String, String> titres = new HashMap<String, String>();
@@ -49,14 +53,14 @@ public class TheseModelES {
     List<PersonneLiteES> directeurs = new ArrayList<>();
 
     /**
-     * Ce constructeur permet de faire une copie de la thèse avec le bon rôle
+     * Ce constructeur permet de faire une copie de la thèse avec le nouveau rôle
      *
      * @param these
      * @param role Rôle de la personne pour cette thèse
      */
     public TheseModelES(TheseModelES these, String role) {
         this.nnt = these.getNnt();
-        this.role = role;
+        this.roles.add(role);
         this.titre = these.getTitre();
         this.titres = these.getTitres();
         this.sujets_rameau = these.getSujets_rameau();

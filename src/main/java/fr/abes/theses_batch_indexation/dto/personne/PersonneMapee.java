@@ -323,8 +323,33 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement du président du jury de la thèse");
         try {
-            personnes.add(parsePresident(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getPresidentJury()));
+
+            PresidentJury item = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getPresidentJury();
+
+            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+
+            if (personne == null) {
+                // On ajoute la personne
+                PersonneModelES adto = buildPersonne(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom(),
+                        PRESIDENT
+                );
+                personnes.add(adto);
+
+            } else if ( personne.findThese(theseModelES.getNnt()) == null){
+                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
+                // A priori ce cas ne devrait jamais arrivé
+                TheseModelES these = new TheseModelES(theseModelES,PRESIDENT);
+                personne.getTheses().add(these);
+                personne.getRoles().add(PRESIDENT);
+            } else {
+                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
+                personne.findThese(theseModelES.getNnt()).getRoles().add(PRESIDENT);
+                personne.getRoles().add(PRESIDENT);
+            }
 
         } catch (NullPointerException e) {
             log.error("PB pour le président du jury de " + nnt + "," + e.getMessage());
@@ -372,6 +397,7 @@ public class PersonneMapee {
         return item;
     }
 
+
     /**
      * Transforme les informations sur les auteurs de la thèse au format Elastic Search
      * @param collection Liste des auteurs au format TEF
@@ -385,14 +411,28 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             Auteur item = iter.next();
 
-            // Construction d'un objet Personne
-            PersonneModelES adto = buildPersonne(
-                    OutilsTef.getPPN(item.getAutoriteExterne()),
-                    item.getNom(),
-                    item.getPrenom(),
-                    AUTEUR
-            );
-            candidates.add(adto);
+            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+
+            if (personne == null) {
+                // On ajoute la personne
+                PersonneModelES adto = buildPersonne(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom(),
+                        AUTEUR
+                );
+                candidates.add(adto);
+            } else if ( personne.findThese(theseModelES.getNnt()) == null){
+                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
+                // A priori ce cas ne devrait jamais arrivé
+                TheseModelES these = new TheseModelES(theseModelES,AUTEUR);
+                personne.getTheses().add(these);
+                personne.getRoles().add(AUTEUR);
+            } else {
+                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
+                personne.findThese(theseModelES.getNnt()).getRoles().add(AUTEUR);
+                personne.getRoles().add(AUTEUR);
+            }
         }
 
         return candidates;
@@ -411,14 +451,28 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             DirecteurThese item = iter.next();
 
-            // Construction d'un objet Personne
-            PersonneModelES adto = buildPersonne(
-                    OutilsTef.getPPN(item.getAutoriteExterne()),
-                    item.getNom(),
-                    item.getPrenom(),
-                    DIRECTEUR
-            );
-            candidates.add(adto);
+            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+
+            if (personne == null) {
+                // On ajoute la personne
+                PersonneModelES adto = buildPersonne(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom(),
+                        DIRECTEUR
+                );
+                candidates.add(adto);
+            } else if ( personne.findThese(theseModelES.getNnt()) == null){
+                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
+                // A priori ce cas ne devrait jamais arrivé
+                TheseModelES these = new TheseModelES(theseModelES,DIRECTEUR);
+                personne.getTheses().add(these);
+                personne.getRoles().add(DIRECTEUR);
+            } else {
+                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
+                personne.findThese(theseModelES.getNnt()).getRoles().add(DIRECTEUR);
+                personne.getRoles().add(DIRECTEUR);
+            }
         }
 
         return candidates;
@@ -437,35 +491,31 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             Rapporteur item = iter.next();
 
-            // Construction d'un objet Personne
-            PersonneModelES adto = buildPersonne(
-                    OutilsTef.getPPN(item.getAutoriteExterne()),
-                    item.getNom(),
-                    item.getPrenom(),
-                    RAPPORTEUR
-            );
-            candidates.add(adto);
+            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+
+            if (personne == null) {
+                // On ajoute la personne
+                PersonneModelES adto = buildPersonne(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom(),
+                        RAPPORTEUR
+                );
+                candidates.add(adto);
+            } else if ( personne.findThese(theseModelES.getNnt()) == null){
+                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
+                // A priori ce cas ne devrait jamais arrivé
+                TheseModelES these = new TheseModelES(theseModelES,RAPPORTEUR);
+                personne.getTheses().add(these);
+                personne.getRoles().add(RAPPORTEUR);
+            } else {
+                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
+                personne.findThese(theseModelES.getNnt()).getRoles().add(RAPPORTEUR);
+                personne.getRoles().add(RAPPORTEUR);
+            }
         }
 
         return candidates;
-    }
-
-    /**
-     * Transforme les informations du président du jury de la thèse au format Elastic Search
-     * @param item Information du président du jury au format TEF
-     * @return Les informations du président du jury de la thèse au format ES
-     * @throws NullPointerException si une erreur de lecture du TEF
-     */
-    private PersonneModelES parsePresident(PresidentJury item) throws NullPointerException {
-
-        // Construction d'un objet Personne
-        PersonneModelES adto = buildPersonne(
-                OutilsTef.getPPN(item.getAutoriteExterne()),
-                item.getNom(),
-                item.getPrenom(),
-                PRESIDENT
-        );
-        return adto;
     }
 
     /**
@@ -481,16 +531,42 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             MembreJury item = iter.next();
 
-            // Construction d'un objet Personne
-            PersonneModelES adto = buildPersonne(
-                    OutilsTef.getPPN(item.getAutoriteExterne()),
-                    item.getNom(),
-                    item.getPrenom(),
-                    MEMBRE_DU_JURY
-            );
-            candidates.add(adto);
+            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+
+            if (personne == null) {
+                // On ajoute la personne
+                PersonneModelES adto = buildPersonne(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom(),
+                        MEMBRE_DU_JURY
+                );
+                candidates.add(adto);
+            } else if ( personne.findThese(theseModelES.getNnt()) == null){
+                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
+                // A priori ce cas ne devrait jamais arrivé
+                TheseModelES these = new TheseModelES(theseModelES,MEMBRE_DU_JURY);
+                personne.getTheses().add(these);
+                personne.getRoles().add(MEMBRE_DU_JURY);
+            } else {
+                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
+                personne.findThese(theseModelES.getNnt()).getRoles().add(MEMBRE_DU_JURY);
+                personne.getRoles().add(MEMBRE_DU_JURY);
+            }
         }
 
         return candidates;
+    }
+
+    /**
+     * Recherche une personne identifiée dans la liste des personnes de la thèse
+     * @param id Identifiant de la personne
+     * @return PersonneModelES La personne ou null
+     */
+    private PersonneModelES findPersonne(String id) {
+        return personnes.stream()
+                .filter(item -> (item.isHas_idref() && item.getPpn().equals(id)))
+                .findAny()
+                .orElse(null);
     }
 }

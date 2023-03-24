@@ -132,7 +132,7 @@
           "ppn": {
             "type": "keyword"
           },
-          "role": {
+          "roles": {
             "type": "keyword"
           },
           "titre": {
