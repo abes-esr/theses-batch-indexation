@@ -176,16 +176,16 @@ public class PersonneMapee {
             Iterator<ThesisDegreeGrantor> iteGrantor = grantors.iterator();
             // l'étab de soutenance est le premier de la liste
             ThesisDegreeGrantor premier = iteGrantor.next();
-            if (premier.getAutoriteExterne() != null && OutilsTef.isPPN(premier.getAutoriteExterne())) {
-                theseModelES.getEtablissement_soutenance().setPpn(premier.getAutoriteExterne().getValue());
+            if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne()))    {
+                theseModelES.getEtablissement_soutenance().setPpn(OutilsTef.getPPN(premier.getAutoriteExterne()));
             }
             theseModelES.getEtablissement_soutenance().setNom(premier.getNom());
             // les potentiels suivants sont les cotutelles
             while (iteGrantor.hasNext()) {
                 ThesisDegreeGrantor a = iteGrantor.next();
                 OrganismeDTO ctdto = new OrganismeDTO();
-                if (a.getAutoriteExterne() != null && OutilsTef.isPPN(a.getAutoriteExterne()))
-                    ctdto.setPpn(a.getAutoriteExterne().getValue());
+                if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne()))
+                    ctdto.setPpn(OutilsTef.getPPN(a.getAutoriteExterne()));
                 ctdto.setNom(a.getNom());
                 theseModelES.getEtablissements_cotutelle().add(ctdto);
             }
