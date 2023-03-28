@@ -3,6 +3,25 @@
     "index.max_result_window":"600000",
     "analysis": {
       "filter": {
+        "french_elision": {
+          "type": "elision",
+          "articles_case": true,
+          "articles": [
+            "l",
+            "m",
+            "t",
+            "qu",
+            "n",
+            "s",
+            "j",
+            "d",
+            "c",
+            "jusqu",
+            "quoiqu",
+            "lorsqu",
+            "puisqu"
+          ]
+        },
         "french_stop": {
           "type": "stop",
           "stopwords": "_french_"
@@ -17,6 +36,7 @@
           "type": "custom",
           "tokenizer": "standard",
           "filter": [
+            "french_elision",
             "lowercase",
             "french_stop",
             "french_stemmer",
@@ -27,7 +47,11 @@
       "normalizer": {
         "exact": {
           "type": "custom",
-          "filter": ["lowercase", "asciifolding"]
+          "filter": [
+            "french_elision",
+            "lowercase", 
+            "asciifolding"
+          ]
         }
       }
     }

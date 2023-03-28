@@ -9,8 +9,8 @@ Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override 
  ~~~
 
 Le batch va supprimer l'index et le recréer avec le fichier qui est dans resources/indexs :
-- l'index commence par PER_ => on utilise le fichier personnes.json
-- l'index commence par THE_ => on utilise le fichier theses.json
+- l'index commence par PER ou per  => on utilise le fichier personnes.json
+- l'index commence par THE ou the  => on utilise le fichier theses.json
 
 Pour le faire fonctionner :
 
@@ -48,5 +48,7 @@ index.pathPersonnes=src/main/resources/indexs/personnes.json
 index.name=
 
 table.name=DOCUMENT_TEST
+
+oaiSets.path=src/main/resources/listeOaiSets.xml
 
 
