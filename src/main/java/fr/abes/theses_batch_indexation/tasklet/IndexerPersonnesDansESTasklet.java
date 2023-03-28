@@ -9,16 +9,13 @@ import co.elastic.clients.json.JsonpMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
-import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import jakarta.json.spi.JsonProvider;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -33,12 +30,12 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class IndexerDansESTasklet implements Tasklet {
+public class IndexerPersonnesDansESTasklet implements Tasklet {
 
     @Value("${index.name}")
     private String nomIndex;
 
-    @Value("${chunk.personneES}")
+    @Value("${job.chunk}")
     private int chunkPersonneES;
 
     @Value("${table.personne.name}")
@@ -48,7 +45,7 @@ public class IndexerDansESTasklet implements Tasklet {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public IndexerDansESTasklet(JdbcTemplate jdbcTemplate) {
+    public IndexerPersonnesDansESTasklet(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -57,16 +54,25 @@ public class IndexerDansESTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
         log.info("IndexerDansESTasklet");
+        log.info("Table personne name : " + tablePersonneName);
+        log.info("Index nom : " + nomIndex);
         while (true) {
             BulkRequest.Builder br = new BulkRequest.Builder();
 
-            log.info("Indexation de la page " + page.get());
+            int pageCourante = page.getAndIncrement();
+
+            log.info("Indexation de la page " + pageCourante);
 
             List<Map<String, Object>> r = jdbcTemplate.queryForList(
                     "select * from " + tablePersonneName + " where nom_index = ? " +
-                            "OFFSET " + chunkPersonneES * page.getAndIncrement() +
+                            "OFFSET " + chunkPersonneES * pageCourante +
                             " ROWS FETCH NEXT " + chunkPersonneES + " ROWS ONLY",
                     nomIndex);
+
+            if (r.size() == 0) {
+                log.info("Fin de ce thread");
+                break;
+            }
 
             List<PersonneModelES> items = r.stream().map(p -> mapperJson((String) p.get("PERSONNE"))).collect(Collectors.toList());
             boolean auMoinsUneOperation = false;
@@ -87,7 +93,15 @@ public class IndexerDansESTasklet implements Tasklet {
                 auMoinsUneOperation = true;
             }
             if (auMoinsUneOperation) {
-                BulkResponse result = ElasticClient.getElasticsearchClient().bulk(br.build());
+                BulkRequest bulkRequest = br.build();
+                BulkResponse result = null;
+                try {
+                    result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+                } catch (IOException e) {
+                    log.error("IOException, retry ...");
+                    result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+                }
+
 
                 if (result.errors()) {
                     log.error("Erreurs dans le bulk : ");
@@ -98,12 +112,9 @@ public class IndexerDansESTasklet implements Tasklet {
                     }
                 }
             }
-            if (r.size() < chunkPersonneES) {
-                break;
-            }
         }
 
-        return RepeatStatus.FINISHED;
+        return null;
 
     }
 
