@@ -193,9 +193,13 @@ public class TheseMappee {
 
             status = "soutenue";
             try {
-                Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
-                if (stepGestion.isPresent())
-                    status = "enCours";
+                Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+
+                if (dmdSecPourStepGestion.isPresent())
+                    status = dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
+                    || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
+                            ?"soutenue":"enCours";
+
             } catch (NullPointerException e) {
                 log.error("PB pour status de " + nnt + e.getMessage());
             }
