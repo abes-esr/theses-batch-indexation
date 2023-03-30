@@ -2,7 +2,7 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.23 à 03:29:02 PM CET 
+// Généré le : 2023.03.30 à 12:02:06 PM CEST 
 //
 
 
@@ -37,14 +37,17 @@ public class ObjectFactory {
     private final static QName _Peb_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "peb");
     private final static QName _Note_QNAME = new QName("http://www.loc.gov/METS/", "note");
     private final static QName _Rcr_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "rcr");
+    private final static QName _DateInscriptionEtab_QNAME = new QName("http://www.theses.fr/namespace/sujets", "dateInscriptionEtab");
     private final static QName _TheseSurTravaux_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "theseSurTravaux");
     private final static QName _AutoriteInterne_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "autoriteInterne");
     private final static QName _Prenom_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "prenom");
     private final static QName _NoteGenerale_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "noteGenerale");
+    private final static QName _DatePremiereInscriptionDoctorat_QNAME = new QName("http://www.theses.fr/namespace/sujets", "datePremiereInscriptionDoctorat");
     private final static QName _Collation_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "collation");
     private final static QName _AvisJury_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "avisJury");
     private final static QName _DateNaissance_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "dateNaissance");
     private final static QName _ThesisDegreeLevel_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "thesis.degree.level");
+    private final static QName _ContratDoctoral_QNAME = new QName("http://www.theses.fr/namespace/sujets", "contratDoctoral");
     private final static QName _Name_QNAME = new QName("http://www.loc.gov/METS/", "name");
     private final static QName _Nom_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "nom");
     private final static QName _BiblioIndex_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "biblioIndex");
@@ -632,6 +635,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.theses.fr/namespace/sujets", name = "dateInscriptionEtab")
+    public JAXBElement<XMLGregorianCalendar> createDateInscriptionEtab(XMLGregorianCalendar value) {
+        return new JAXBElement<XMLGregorianCalendar>(_DateInscriptionEtab_QNAME, XMLGregorianCalendar.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
@@ -670,6 +682,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.theses.fr/namespace/sujets", name = "datePremiereInscriptionDoctorat")
+    public JAXBElement<XMLGregorianCalendar> createDatePremiereInscriptionDoctorat(XMLGregorianCalendar value) {
+        return new JAXBElement<XMLGregorianCalendar>(_DatePremiereInscriptionDoctorat_QNAME, XMLGregorianCalendar.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
@@ -705,6 +726,16 @@ public class ObjectFactory {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createThesisDegreeLevel(String value) {
         return new JAXBElement<String>(_ThesisDegreeLevel_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.theses.fr/namespace/sujets", name = "contratDoctoral")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    public JAXBElement<String> createContratDoctoral(String value) {
+        return new JAXBElement<String>(_ContratDoctoral_QNAME, String.class, null, value);
     }
 
     /**

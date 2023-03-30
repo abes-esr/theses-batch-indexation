@@ -80,6 +80,9 @@
       "dateSoutenance": {
         "type": "date"
       },
+      "datePremiereInscriptionDoctorat": {
+        "type": "date"
+      },
       "dateFinEmbargo": {
         "type": "date"
       },

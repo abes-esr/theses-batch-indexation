@@ -19,6 +19,7 @@ public class TheseMappee {
     String codeEtab;
     String nnt;
     String dateSoutenance;
+    String datePremiereInscriptionDoctorat;
     String dateFinEmbargo;
     List<String> ppn;
 
@@ -152,6 +153,13 @@ public class TheseMappee {
                 dateSoutenance = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString();
             } catch (NullPointerException e) {
                 log.error("PB pour dateSoutenance de " + nnt);
+            }
+
+            // date de datePremiereInscriptionDoctorat
+            try {
+                datePremiereInscriptionDoctorat = techMD.getMdWrap().getXmlData().getThesisAdmin().getThesisDegree().getDatePremiereInscriptionDoctorat().toString();
+            } catch (NullPointerException e) {
+                log.error("PB pour datePremiereInscriptionDoctorat de " + nnt);
             }
 
             // date de fin d'embargo
@@ -519,6 +527,13 @@ public class TheseMappee {
     }
     public void setDateSoutenance(String dateSoutenance) {
         this.dateSoutenance = dateSoutenance;
+    }
+    public String getDatePremiereInscriptionDoctorat() {
+        return datePremiereInscriptionDoctorat;
+    }
+
+    public void setDatePremiereInscriptionDoctorat(String datePremiereInscriptionDoctorat) {
+        this.datePremiereInscriptionDoctorat = datePremiereInscriptionDoctorat;
     }
     public String getStatus() {
         return status;
