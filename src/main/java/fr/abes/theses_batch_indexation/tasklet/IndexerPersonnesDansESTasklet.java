@@ -9,6 +9,7 @@ import co.elastic.clients.json.JsonpMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +46,11 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public IndexerPersonnesDansESTasklet(JdbcTemplate jdbcTemplate) {
+    private final ElasticConfig elasticConfig;
+
+    public IndexerPersonnesDansESTasklet(JdbcTemplate jdbcTemplate, ElasticConfig elasticConfig) {
         this.jdbcTemplate = jdbcTemplate;
+        this.elasticConfig = elasticConfig;
     }
 
 
@@ -99,6 +103,14 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
                     result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
                 } catch (IOException e) {
                     log.error("IOException, retry ...");
+                    ElasticClient.chargeClient(
+                            elasticConfig.getHostname(),
+                            elasticConfig.getPort(),
+                            elasticConfig.getScheme(),
+                            elasticConfig.getUserName(),
+                            elasticConfig.getPassword(),
+                            elasticConfig.getProtocol());
+                    log.error("Reload elastic client done");
                     result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
                 }
 
