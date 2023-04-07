@@ -12,6 +12,7 @@ import java.util.*;
 public class TheseMappee {
 
     //String id;
+    String dateInsertionDansES;
     String cas;
     String accessible;
     String source;
@@ -60,10 +61,13 @@ public class TheseMappee {
             AmdSec amdSec = mets.getAmdSec().get(0);
 
             TechMD techMD = null;
-            // nnt
 
             try {
 
+                // dateInsertionDansES
+                dateInsertionDansES = java.time.Clock.systemUTC().instant().toString();
+
+                // nnt
                 techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
                 log.info("traitement de " + nnt);
 
