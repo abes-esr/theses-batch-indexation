@@ -58,6 +58,9 @@
   },
   "mappings": {
     "properties": {
+      "dateInsertionDansES": {
+        "type": "date"
+      },
       "cas": {
         "type": "keyword"
       },
