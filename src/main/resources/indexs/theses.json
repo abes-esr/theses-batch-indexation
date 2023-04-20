@@ -71,8 +71,7 @@
         "type": "keyword"
       },
       "status": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "codeEtab": {
         "type": "keyword"
