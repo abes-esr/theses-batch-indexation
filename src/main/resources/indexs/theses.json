@@ -89,6 +89,9 @@
       "dateFinEmbargo": {
         "type": "date"
       },
+      "dateFiltre": {
+        "type": "date"
+      },
       "titrePrincipal": {
         "type": "text",
         "fields": {
@@ -195,8 +198,7 @@
         "analyzer": "francais",
         "fields": {
           "exact": {
-            "type": "keyword",
-            "normalizer": "exact"
+            "type": "keyword"
           }
         },
         "copy_to": "suggestion"
@@ -311,8 +313,7 @@
         "type": "text",
         "fields": {
           "exact": {
-            "type": "keyword",
-            "normalizer": "exact"
+            "type": "keyword"
           }
         }
       },
@@ -345,8 +346,7 @@
         "type": "text",
         "fields": {
           "exact": {
-            "type": "keyword",
-            "normalizer": "exact"
+            "type": "keyword"
           }
         }
       },

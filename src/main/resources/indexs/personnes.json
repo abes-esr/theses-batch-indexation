@@ -98,8 +98,7 @@
                 }
             },
             "roles": {
-                "type": "keyword",
-                "normalizer": "exact"
+                "type": "keyword"
             },
             "theses": {
                 "type": "nested",
