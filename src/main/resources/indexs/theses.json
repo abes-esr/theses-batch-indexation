@@ -405,8 +405,7 @@
         }
       },
       "oaiSetNames": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "theseTravaux": {
         "type": "keyword"
