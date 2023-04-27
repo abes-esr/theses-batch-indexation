@@ -58,7 +58,6 @@ public class TheseItemReader {
         OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
         queryProvider.setSelectClause("SELECT iddoc, nnt, doc, numsujet");
         queryProvider.setFromClause("from " + nomTable);
-
         setWhereClause(queryProvider);
         queryProvider.setSortKeys(sortByIdAsc());
         return queryProvider;
