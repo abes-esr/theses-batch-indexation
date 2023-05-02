@@ -347,7 +347,7 @@ public class PersonneMapee {
                 personne.getRoles().add(PRESIDENT);
             } else {
                 // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).getRoles().add(PRESIDENT);
+                personne.findThese(theseModelES.getNnt()).setRole(PRESIDENT);
                 personne.getRoles().add(PRESIDENT);
             }
 
@@ -430,7 +430,7 @@ public class PersonneMapee {
                 personne.getRoles().add(AUTEUR);
             } else {
                 // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).getRoles().add(AUTEUR);
+                personne.findThese(theseModelES.getNnt()).setRole(AUTEUR);
                 personne.getRoles().add(AUTEUR);
             }
         }
@@ -470,7 +470,7 @@ public class PersonneMapee {
                 personne.getRoles().add(DIRECTEUR);
             } else {
                 // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).getRoles().add(DIRECTEUR);
+                personne.findThese(theseModelES.getNnt()).setRole(DIRECTEUR);
                 personne.getRoles().add(DIRECTEUR);
             }
         }
@@ -510,7 +510,7 @@ public class PersonneMapee {
                 personne.getRoles().add(RAPPORTEUR);
             } else {
                 // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).getRoles().add(RAPPORTEUR);
+                personne.findThese(theseModelES.getNnt()).setRole(RAPPORTEUR);
                 personne.getRoles().add(RAPPORTEUR);
             }
         }
@@ -550,7 +550,7 @@ public class PersonneMapee {
                 personne.getRoles().add(MEMBRE_DU_JURY);
             } else {
                 // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).getRoles().add(MEMBRE_DU_JURY);
+                personne.findThese(theseModelES.getNnt()).setRole(MEMBRE_DU_JURY);
                 personne.getRoles().add(MEMBRE_DU_JURY);
             }
         }

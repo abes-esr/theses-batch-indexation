@@ -23,9 +23,12 @@ public class TheseModelES {
     String nnt;
 
     /**
-     * Une personne peut avoir plusieurs rôles dans la thèse
+     * Une personne peut avoir plusieurs rôles dans la thèse.
+     * Précision : une personne peut avoir plusieurs rôles dans une même thèse.
+     * On compte chaque rôle, donc une même thèse peut être comptée plusieurs fois.
+     * Par ailleurs, une même thèse peut apparaître plusieurs fois sur la page d’une même personne : une fois par rôle.
      */
-    List<String> roles = new ArrayList<>();
+    String role;
     String titre;
 
     Map<String, String> titres = new HashMap<String, String>();
@@ -60,7 +63,7 @@ public class TheseModelES {
      */
     public TheseModelES(TheseModelES these, String role) {
         this.nnt = these.getNnt();
-        this.roles.add(role);
+        this.role = role;
         this.titre = these.getTitre();
         this.titres = these.getTitres();
         this.sujets_rameau = these.getSujets_rameau();

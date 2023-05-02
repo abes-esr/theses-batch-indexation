@@ -141,13 +141,11 @@ public class PersonnesESWriter implements ItemWriter<TheseModel> {
     }
 
     private void addRoles(PersonneModelES personnePresentDansES) {
-        for (List<String> roles: personnePresentDansES.getTheses().stream().map(TheseModelES::getRoles).collect(Collectors.toList())) {
-            for (String role: roles) {
-                boolean alreadyInRoles = personnePresentDansES.getRoles().stream().anyMatch(r -> r.equals(role));
+        for (String role: personnePresentDansES.getTheses().stream().map(TheseModelES::getRole).collect(Collectors.toList())) {
+            boolean alreadyInRoles = personnePresentDansES.getRoles().stream().anyMatch(r -> r.equals(role));
 
-                if (!alreadyInRoles) {
-                    personnePresentDansES.getRoles().add(role);
-                }
+            if (!alreadyInRoles) {
+                personnePresentDansES.getRoles().add(role);
             }
         }
     }
