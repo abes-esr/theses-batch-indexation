@@ -2,7 +2,7 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.23 à 03:29:02 PM CET 
+// Généré le : 2023.04.27 à 04:36:39 PM CEST 
 //
 
 
@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
@@ -34,6 +35,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}thesis.degree.grantor" maxOccurs="unbounded"/>
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}thesis.degree.level"/>
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}thesis.degree.name"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}datePremiereInscriptionDoctorat"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}dateInscriptionEtab"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}contratDoctoral"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -47,7 +51,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "thesisDegreeDiscipline",
     "thesisDegreeGrantor",
     "thesisDegreeLevel",
-    "thesisDegreeName"
+    "thesisDegreeName",
+    "datePremiereInscriptionDoctorat",
+    "dateInscriptionEtab",
+    "contratDoctoral"
 })
 @XmlRootElement(name = "thesis.degree")
 public class ThesisDegree {
@@ -62,6 +69,16 @@ public class ThesisDegree {
     protected String thesisDegreeLevel;
     @XmlElement(name = "thesis.degree.name", required = true)
     protected ThesisDegreeName thesisDegreeName;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar datePremiereInscriptionDoctorat;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar dateInscriptionEtab;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String contratDoctoral;
 
     /**
      * Obtient la valeur de la propriété thesisDegreeDiscipline.
@@ -162,6 +179,78 @@ public class ThesisDegree {
      */
     public void setThesisDegreeName(ThesisDegreeName value) {
         this.thesisDegreeName = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété datePremiereInscriptionDoctorat.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getDatePremiereInscriptionDoctorat() {
+        return datePremiereInscriptionDoctorat;
+    }
+
+    /**
+     * Définit la valeur de la propriété datePremiereInscriptionDoctorat.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setDatePremiereInscriptionDoctorat(XMLGregorianCalendar value) {
+        this.datePremiereInscriptionDoctorat = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété dateInscriptionEtab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getDateInscriptionEtab() {
+        return dateInscriptionEtab;
+    }
+
+    /**
+     * Définit la valeur de la propriété dateInscriptionEtab.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setDateInscriptionEtab(XMLGregorianCalendar value) {
+        this.dateInscriptionEtab = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété contratDoctoral.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContratDoctoral() {
+        return contratDoctoral;
+    }
+
+    /**
+     * Définit la valeur de la propriété contratDoctoral.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContratDoctoral(String value) {
+        this.contratDoctoral = value;
     }
 
 }

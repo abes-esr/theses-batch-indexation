@@ -38,10 +38,10 @@ public class InitialiserIndexESTasklet implements Tasklet {
         if (f != null) {
             //delete
             deleteIndexES();
-            log.info("Index " + nomIndex.toLowerCase()+ " supprimé");
+            log.info("Index " + nomIndex.toLowerCase() + " supprimé");
             //create
             createIndexES(f);
-            log.info("Index " + nomIndex.toLowerCase()+ " créé avec le schéma présent dans " + f.getPath());
+            log.info("Index " + nomIndex.toLowerCase() + " créé avec le schéma présent dans " + f.getPath());
         }
 
         return RepeatStatus.FINISHED;

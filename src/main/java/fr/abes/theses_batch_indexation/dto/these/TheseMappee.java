@@ -12,6 +12,7 @@ import java.util.*;
 public class TheseMappee {
 
     //String id;
+    String dateInsertionDansES;
     String cas;
     String accessible;
     String source;
@@ -19,37 +20,39 @@ public class TheseMappee {
     String codeEtab;
     String nnt;
     String dateSoutenance;
+    String datePremiereInscriptionDoctorat;
     String dateFinEmbargo;
+    String dateFiltre;
     List<String> ppn;
 
-    Map<String, String> titres = new HashMap<String, String>();
+    Map<String, String> titres = new HashMap<>();
     String titrePrincipal; // on veut ce titre dans un index à part pour faciliter l'affichage dans le front
-    Map<String, String> resumes = new HashMap<String, String>();
-    List<String> langues = new ArrayList<String>();
+    Map<String, String> resumes = new HashMap<>();
+    List<String> langues = new ArrayList<>();
     OrganismeDTO etabSoutenance = new OrganismeDTO();
     String etabSoutenanceN;
-    List<OrganismeDTO> etabsCotutelle = new ArrayList<OrganismeDTO>();
-    List<String> etabsCotutelleN = new ArrayList<String>();
-    List<OrganismeDTO> ecolesDoctorales = new ArrayList<OrganismeDTO>();
-    List<String> ecolesDoctoralesN = new ArrayList<String>();
-    List<OrganismeDTO> partenairesRecherche = new ArrayList<OrganismeDTO>();
-    List<String> partenairesRechercheN = new ArrayList<String>();
+    List<OrganismeDTO> etabsCotutelle = new ArrayList<>();
+    List<String> etabsCotutelleN = new ArrayList<>();
+    List<OrganismeDTO> ecolesDoctorales = new ArrayList<>();
+    List<String> ecolesDoctoralesN = new ArrayList<>();
+    List<OrganismeDTO> partenairesRecherche = new ArrayList<>();
+    List<String> partenairesRechercheN = new ArrayList<>();
 
 
     String discipline;
-    List<PersonneDTO> auteurs = new ArrayList<PersonneDTO>();
-    List<String> auteursNP = new ArrayList<String>();
-    List<PersonneDTO> directeurs = new ArrayList<PersonneDTO>();
-    List<String> directeursNP = new ArrayList<String>();
+    List<PersonneDTO> auteurs = new ArrayList<>();
+    List<String> auteursNP = new ArrayList<>();
+    List<PersonneDTO> directeurs = new ArrayList<>();
+    List<String> directeursNP = new ArrayList<>();
     PersonneDTO presidentJury = new PersonneDTO();
     String presidentJuryNP;
-    List<PersonneDTO> membresJury = new ArrayList<PersonneDTO>();
-    List<String> membresJuryNP = new ArrayList<String>();
-    List<PersonneDTO> rapporteurs = new ArrayList<PersonneDTO>();
-    List<String> rapporteursNP = new ArrayList<String>();
-    List<String> sujetsRameau = new ArrayList<String>();
-    Map<String, String> sujets = new HashMap<String, String>();
-    List<String> oaiSetNames = new ArrayList<String>();
+    List<PersonneDTO> membresJury = new ArrayList<>();
+    List<String> membresJuryNP = new ArrayList<>();
+    List<PersonneDTO> rapporteurs = new ArrayList<>();
+    List<String> rapporteursNP = new ArrayList<>();
+    List<String> sujetsRameau = new ArrayList<>();
+    Map<String, String> sujets = new HashMap<>();
+    List<String> oaiSetNames = new ArrayList<>();
     String theseTravaux = "non";
 
     public TheseMappee(Mets mets, List<Set> oaiSets) {
@@ -59,10 +62,13 @@ public class TheseMappee {
             AmdSec amdSec = mets.getAmdSec().get(0);
 
             TechMD techMD = null;
-            // nnt
 
             try {
 
+                // dateInsertionDansES
+                dateInsertionDansES = java.time.Clock.systemUTC().instant().toString();
+
+                // nnt
                 techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
                 log.info("traitement de " + nnt);
 
@@ -73,7 +79,7 @@ public class TheseMappee {
                         nnt = i.getValue();
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour nnt " + e.toString());
+                log.error("PB pour nnt " + e);
             }
 
 
@@ -119,6 +125,7 @@ public class TheseMappee {
             }
 
             // resumes
+
             log.info("traitement de resumes");
             try {
                 List<Abstract> abstracts = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAbstract();
@@ -154,6 +161,13 @@ public class TheseMappee {
                 log.error("PB pour dateSoutenance de " + nnt);
             }
 
+            // date de datePremiereInscriptionDoctorat
+            try {
+                datePremiereInscriptionDoctorat = techMD.getMdWrap().getXmlData().getThesisAdmin().getThesisDegree().getDatePremiereInscriptionDoctorat().toString();
+            } catch (NullPointerException e) {
+                log.error("PB pour datePremiereInscriptionDoctorat de " + nnt);
+            }
+
             // date de fin d'embargo
 
             log.info("traitement de datefinembargo ");
@@ -165,6 +179,7 @@ public class TheseMappee {
             } catch (NullPointerException e) {
                 log.error("PB pour date fin embargo de " + nnt + "," + e.getMessage());
             }
+
             // accessible
 
             log.info("traitement de accessible");
@@ -185,12 +200,27 @@ public class TheseMappee {
 
             status = "soutenue";
             try {
-                Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
-                if (stepGestion.isPresent())
-                    status = "enCours";
+                Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+
+                if (dmdSecPourStepGestion.isPresent())
+                    status = dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
+                    || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
+                            ?"soutenue":"enCours";
+
             } catch (NullPointerException e) {
                 log.error("PB pour status de " + nnt + e.getMessage());
             }
+
+            // date filtre
+
+            log.info("traitement de datefiltre ");
+
+            if (status.equals("enCours"))
+                dateFiltre = datePremiereInscriptionDoctorat;
+            else
+                dateFiltre = dateSoutenance;
+
+
 
             // source
             log.info("traitement de source");
@@ -519,6 +549,13 @@ public class TheseMappee {
     }
     public void setDateSoutenance(String dateSoutenance) {
         this.dateSoutenance = dateSoutenance;
+    }
+    public String getDatePremiereInscriptionDoctorat() {
+        return datePremiereInscriptionDoctorat;
+    }
+
+    public void setDatePremiereInscriptionDoctorat(String datePremiereInscriptionDoctorat) {
+        this.datePremiereInscriptionDoctorat = datePremiereInscriptionDoctorat;
     }
     public String getStatus() {
         return status;

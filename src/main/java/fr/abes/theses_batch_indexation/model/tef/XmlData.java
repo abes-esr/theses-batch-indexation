@@ -2,12 +2,14 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.03.23 à 03:29:02 PM CET 
+// Généré le : 2023.04.27 à 04:36:39 PM CEST 
 //
 
 
 package fr.abes.theses_batch_indexation.model.tef;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -200,13 +202,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *                                                       &lt;complexContent>
  *                                                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                                                           &lt;sequence>
- *                                                             &lt;element name="urlEtabDiffuseur" form="unqualified">
+ *                                                             &lt;element name="urlEtabDiffuseur" maxOccurs="unbounded" form="unqualified">
  *                                                               &lt;complexType>
- *                                                                 &lt;complexContent>
- *                                                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                                                                 &lt;simpleContent>
+ *                                                                   &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>anyURI">
  *                                                                     &lt;attribute name="majUrlEtabDiffuseur" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
- *                                                                   &lt;/restriction>
- *                                                                 &lt;/complexContent>
+ *                                                                   &lt;/extension>
+ *                                                                 &lt;/simpleContent>
  *                                                               &lt;/complexType>
  *                                                             &lt;/element>
  *                                                           &lt;/sequence>
@@ -306,6 +308,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *             &lt;complexType>
  *               &lt;complexContent>
  *                 &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                   &lt;attribute name="stepEtat" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *                 &lt;/restriction>
  *               &lt;/complexContent>
  *             &lt;/complexType>
@@ -629,13 +632,13 @@ public class XmlData {
      *                                           &lt;complexContent>
      *                                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *                                               &lt;sequence>
-     *                                                 &lt;element name="urlEtabDiffuseur" form="unqualified">
+     *                                                 &lt;element name="urlEtabDiffuseur" maxOccurs="unbounded" form="unqualified">
      *                                                   &lt;complexType>
-     *                                                     &lt;complexContent>
-     *                                                       &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *                                                     &lt;simpleContent>
+     *                                                       &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>anyURI">
      *                                                         &lt;attribute name="majUrlEtabDiffuseur" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-     *                                                       &lt;/restriction>
-     *                                                     &lt;/complexContent>
+     *                                                       &lt;/extension>
+     *                                                     &lt;/simpleContent>
      *                                                   &lt;/complexType>
      *                                                 &lt;/element>
      *                                               &lt;/sequence>
@@ -1128,13 +1131,13 @@ public class XmlData {
          *                                 &lt;complexContent>
          *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
          *                                     &lt;sequence>
-         *                                       &lt;element name="urlEtabDiffuseur" form="unqualified">
+         *                                       &lt;element name="urlEtabDiffuseur" maxOccurs="unbounded" form="unqualified">
          *                                         &lt;complexType>
-         *                                           &lt;complexContent>
-         *                                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+         *                                           &lt;simpleContent>
+         *                                             &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>anyURI">
          *                                               &lt;attribute name="majUrlEtabDiffuseur" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-         *                                             &lt;/restriction>
-         *                                           &lt;/complexContent>
+         *                                             &lt;/extension>
+         *                                           &lt;/simpleContent>
          *                                         &lt;/complexType>
          *                                       &lt;/element>
          *                                     &lt;/sequence>
@@ -2589,13 +2592,13 @@ public class XmlData {
              *                       &lt;complexContent>
              *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
              *                           &lt;sequence>
-             *                             &lt;element name="urlEtabDiffuseur" form="unqualified">
+             *                             &lt;element name="urlEtabDiffuseur" maxOccurs="unbounded" form="unqualified">
              *                               &lt;complexType>
-             *                                 &lt;complexContent>
-             *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+             *                                 &lt;simpleContent>
+             *                                   &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>anyURI">
              *                                     &lt;attribute name="majUrlEtabDiffuseur" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-             *                                   &lt;/restriction>
-             *                                 &lt;/complexContent>
+             *                                   &lt;/extension>
+             *                                 &lt;/simpleContent>
              *                               &lt;/complexType>
              *                             &lt;/element>
              *                           &lt;/sequence>
@@ -2915,13 +2918,13 @@ public class XmlData {
                  *             &lt;complexContent>
                  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
                  *                 &lt;sequence>
-                 *                   &lt;element name="urlEtabDiffuseur" form="unqualified">
+                 *                   &lt;element name="urlEtabDiffuseur" maxOccurs="unbounded" form="unqualified">
                  *                     &lt;complexType>
-                 *                       &lt;complexContent>
-                 *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+                 *                       &lt;simpleContent>
+                 *                         &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>anyURI">
                  *                           &lt;attribute name="majUrlEtabDiffuseur" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-                 *                         &lt;/restriction>
-                 *                       &lt;/complexContent>
+                 *                         &lt;/extension>
+                 *                       &lt;/simpleContent>
                  *                     &lt;/complexType>
                  *                   &lt;/element>
                  *                 &lt;/sequence>
@@ -3783,13 +3786,13 @@ public class XmlData {
                      *   &lt;complexContent>
                      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
                      *       &lt;sequence>
-                     *         &lt;element name="urlEtabDiffuseur" form="unqualified">
+                     *         &lt;element name="urlEtabDiffuseur" maxOccurs="unbounded" form="unqualified">
                      *           &lt;complexType>
-                     *             &lt;complexContent>
-                     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+                     *             &lt;simpleContent>
+                     *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>anyURI">
                      *                 &lt;attribute name="majUrlEtabDiffuseur" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-                     *               &lt;/restriction>
-                     *             &lt;/complexContent>
+                     *               &lt;/extension>
+                     *             &lt;/simpleContent>
                      *           &lt;/complexType>
                      *         &lt;/element>
                      *       &lt;/sequence>
@@ -3810,7 +3813,7 @@ public class XmlData {
                     public static class EtabDiffuseur {
 
                         @XmlElement(namespace = "", required = true)
-                        protected XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur urlEtabDiffuseur;
+                        protected List<XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur> urlEtabDiffuseur;
                         @XmlAttribute(name = "editeurScientifiqueLieu", required = true)
                         @XmlSchemaType(name = "anySimpleType")
                         protected String editeurScientifiqueLieu;
@@ -3823,27 +3826,32 @@ public class XmlData {
                         protected String etabDiffuseurPolEtablissement;
 
                         /**
-                         * Obtient la valeur de la propriété urlEtabDiffuseur.
+                         * Gets the value of the urlEtabDiffuseur property.
                          * 
-                         * @return
-                         *     possible object is
-                         *     {@link XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur }
-                         *     
-                         */
-                        public XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur getUrlEtabDiffuseur() {
-                            return urlEtabDiffuseur;
-                        }
-
-                        /**
-                         * Définit la valeur de la propriété urlEtabDiffuseur.
+                         * <p>
+                         * This accessor method returns a reference to the live list,
+                         * not a snapshot. Therefore any modification you make to the
+                         * returned list will be present inside the JAXB object.
+                         * This is why there is not a <CODE>set</CODE> method for the urlEtabDiffuseur property.
                          * 
-                         * @param value
-                         *     allowed object is
-                         *     {@link XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur }
-                         *     
+                         * <p>
+                         * For example, to add a new item, do as follows:
+                         * <pre>
+                         *    getUrlEtabDiffuseur().add(newItem);
+                         * </pre>
+                         * 
+                         * 
+                         * <p>
+                         * Objects of the following type(s) are allowed in the list
+                         * {@link XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur }
+                         * 
+                         * 
                          */
-                        public void setUrlEtabDiffuseur(XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur value) {
-                            this.urlEtabDiffuseur = value;
+                        public List<XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur> getUrlEtabDiffuseur() {
+                            if (urlEtabDiffuseur == null) {
+                                urlEtabDiffuseur = new ArrayList<XmlData.StarGestion.Traitements.Sorties.Diffusion.EtabDiffuseur.UrlEtabDiffuseur>();
+                            }
+                            return this.urlEtabDiffuseur;
                         }
 
                         /**
@@ -3926,23 +3934,52 @@ public class XmlData {
                          * 
                          * <pre>
                          * &lt;complexType>
-                         *   &lt;complexContent>
-                         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+                         *   &lt;simpleContent>
+                         *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>anyURI">
                          *       &lt;attribute name="majUrlEtabDiffuseur" use="required" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" />
-                         *     &lt;/restriction>
-                         *   &lt;/complexContent>
+                         *     &lt;/extension>
+                         *   &lt;/simpleContent>
                          * &lt;/complexType>
                          * </pre>
                          * 
                          * 
                          */
                         @XmlAccessorType(XmlAccessType.FIELD)
-                        @XmlType(name = "")
+                        @XmlType(name = "", propOrder = {
+                            "value"
+                        })
                         public static class UrlEtabDiffuseur {
 
+                            @XmlValue
+                            @XmlSchemaType(name = "anyURI")
+                            protected String value;
                             @XmlAttribute(name = "majUrlEtabDiffuseur", required = true)
                             @XmlSchemaType(name = "anySimpleType")
                             protected String majUrlEtabDiffuseur;
+
+                            /**
+                             * Obtient la valeur de la propriété value.
+                             * 
+                             * @return
+                             *     possible object is
+                             *     {@link String }
+                             *     
+                             */
+                            public String getValue() {
+                                return value;
+                            }
+
+                            /**
+                             * Définit la valeur de la propriété value.
+                             * 
+                             * @param value
+                             *     allowed object is
+                             *     {@link String }
+                             *     
+                             */
+                            public void setValue(String value) {
+                                this.value = value;
+                            }
 
                             /**
                              * Obtient la valeur de la propriété majUrlEtabDiffuseur.
@@ -4580,6 +4617,7 @@ public class XmlData {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="stepEtat" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
      * &lt;/complexType>
@@ -4591,6 +4629,34 @@ public class XmlData {
     @XmlType(name = "")
     public static class StepGestion {
 
+        @XmlAttribute(name = "stepEtat", required = true)
+        @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+        @XmlSchemaType(name = "NCName")
+        protected String stepEtat;
+
+        /**
+         * Obtient la valeur de la propriété stepEtat.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getStepEtat() {
+            return stepEtat;
+        }
+
+        /**
+         * Définit la valeur de la propriété stepEtat.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setStepEtat(String value) {
+            this.stepEtat = value;
+        }
 
     }
 

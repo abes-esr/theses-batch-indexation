@@ -41,7 +41,13 @@ public class TheseItemReader {
         log.info("début du reader these thread safe...");
 
         try {
-            return new JdbcPagingItemReaderBuilder<TheseModel>().name("theseReader").dataSource(dataSourceLecture).queryProvider(createQueryProvider()).rowMapper(new TheseRowMapper()).pageSize(config.getChunk()).build();
+            return new JdbcPagingItemReaderBuilder<TheseModel>()
+                    .name("theseReader")
+                    .dataSource(dataSourceLecture)
+                    .queryProvider(createQueryProvider())
+                    .rowMapper(new TheseRowMapper())
+                    .pageSize(config.getChunk())
+                    .build();
         } catch (Exception e) {
             log.error("erreur lors de la creation du JdbcPagingItemReader : " + e);
             return null;
@@ -52,7 +58,6 @@ public class TheseItemReader {
         OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
         queryProvider.setSelectClause("SELECT iddoc, nnt, doc, numsujet");
         queryProvider.setFromClause("from " + nomTable);
-
         setWhereClause(queryProvider);
         queryProvider.setSortKeys(sortByIdAsc());
         return queryProvider;

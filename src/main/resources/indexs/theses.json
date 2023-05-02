@@ -58,6 +58,9 @@
   },
   "mappings": {
     "properties": {
+      "dateInsertionDansES": {
+        "type": "date"
+      },
       "cas": {
         "type": "keyword"
       },
@@ -68,8 +71,7 @@
         "type": "keyword"
       },
       "status": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "codeEtab": {
         "type": "keyword"
@@ -80,7 +82,13 @@
       "dateSoutenance": {
         "type": "date"
       },
+      "datePremiereInscriptionDoctorat": {
+        "type": "date"
+      },
       "dateFinEmbargo": {
+        "type": "date"
+      },
+      "dateFiltre": {
         "type": "date"
       },
       "titrePrincipal": {
@@ -189,8 +197,7 @@
         "analyzer": "francais",
         "fields": {
           "exact": {
-            "type": "keyword",
-            "normalizer": "exact"
+            "type": "keyword"
           }
         },
         "copy_to": "suggestion"
@@ -305,8 +312,7 @@
         "type": "text",
         "fields": {
           "exact": {
-            "type": "keyword",
-            "normalizer": "exact"
+            "type": "keyword"
           }
         }
       },
@@ -339,8 +345,7 @@
         "type": "text",
         "fields": {
           "exact": {
-            "type": "keyword",
-            "normalizer": "exact"
+            "type": "keyword"
           }
         }
       },
@@ -400,8 +405,7 @@
         }
       },
       "oaiSetNames": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "theseTravaux": {
         "type": "keyword"
