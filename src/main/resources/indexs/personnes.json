@@ -114,6 +114,9 @@
           }
         ]
       },
+      "thematiques": {
+        "type": "completion"
+      },
       "has_idref": {
         "type": "boolean",
         "fields": {
@@ -141,6 +144,7 @@
           "sujets_rameau": {
             "type": "text",
             "analyzer": "francais",
+            "copy_to": "suggestion",
             "fields": {
               "exact": {
                 "type": "keyword",
@@ -152,29 +156,35 @@
             "properties": {
               "fr": {
                 "type": "text",
-                "analyzer": "francais"
+                "analyzer": "francais",
+                "copy_to": "suggestion"
               },
               "en": {
                 "type": "text",
-                "analyzer": "english"
+                "analyzer": "english",
+                "copy_to": "suggestion"
               },
               "es": {
                 "type": "text",
-                "analyzer": "spanish"
+                "analyzer": "spanish",
+                "copy_to": "suggestion"
               },
               "de": {
                 "type": "text",
-                "analyzer": "german"
+                "analyzer": "german",
+                "copy_to": "suggestion"
               },
               "it": {
                 "type": "text",
-                "analyzer": "italian"
+                "analyzer": "italian",
+                "copy_to": "suggestion"
               }
             }
           },
           "discipline": {
             "type": "text",
             "analyzer": "francais",
+            "copy_to": "suggestion",
             "fields": {
               "exact": {
                 "type": "keyword",
