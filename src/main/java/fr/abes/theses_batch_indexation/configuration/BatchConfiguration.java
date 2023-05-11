@@ -82,7 +82,7 @@ public class BatchConfiguration {
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
                 .next(stepIndexPersonnesDansBDD)
                 .next(stepInitialiserIndexES(initialiserIndexESTasklet))
-                .next(stepIndexerDansESTasklet(indexerPersonnesDansESTasklet))
+                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
 
@@ -93,7 +93,7 @@ public class BatchConfiguration {
         return jobs.get("indexationPersonnesDeBddVersES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitialiserIndexES(initialiserIndexESTasklet))
-                .next(stepIndexerDansESTasklet(indexerPersonnesDansESTasklet))
+                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
 
@@ -135,7 +135,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexerDansESTasklet(@Qualifier("indexerPersonnesDansESTasklet") Tasklet t) {
+    public Step stepIndexerPersonnesDansESTasklet(@Qualifier("indexerPersonnesDansESTasklet") Tasklet t) {
         return stepBuilderFactory.get("IndexerDansESTasklet").allowStartIfComplete(true)
                 .tasklet(t)
                 .taskExecutor(taskExecutor())

@@ -127,7 +127,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
 
     public boolean estPresentDansBDD(String ppn) throws IOException {
         if (ppn != null && !ppn.equals("")) {
-            return jdbcTemplate.queryForList("select * from "+tablePersonneName+" where ppn = ?", ppn).size() > 0;
+            return jdbcTemplate.queryForList("select * from "+tablePersonneName+" where ppn = ? and nom_index = ?", ppn, nomIndex).size() > 0;
         } else {
             return false;
         }
