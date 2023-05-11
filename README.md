@@ -38,6 +38,10 @@ elastic.hostname=127.0.0.1
 elastic.port=9200
 elastic.scheme=http
 
+elastic.userName=
+elastic.password=
+elastic.protocol=https
+
 job.chunk=100
 job.throttle=6
 # Limite de la clause where, mettre 0 pour tout prendre
@@ -48,6 +52,7 @@ index.pathPersonnes=src/main/resources/indexs/personnes.json
 index.name=
 
 table.name=DOCUMENT_TEST
+table.personne.name=personne_cache
 
 oaiSets.path=src/main/resources/listeOaiSets.xml
 
