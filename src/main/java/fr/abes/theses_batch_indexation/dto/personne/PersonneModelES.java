@@ -35,7 +35,7 @@ public class PersonneModelES {
     private List<TheseModelES> theses = new ArrayList<>();
 
     /**
-     * Récapitulatif des rôles de la personne pour la fonction de filtre
+     * Récapitulatif des rôles de la personne, utilisé pour la fonction de filtre
      */
     private List<String> roles = new ArrayList<>();
 

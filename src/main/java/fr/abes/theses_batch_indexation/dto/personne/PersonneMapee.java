@@ -42,8 +42,9 @@ public class PersonneMapee {
     /**
      * CTOR
      * Cette fonction permet de remplir la liste des personnes à partir du TEF.
-     * On lit d'abord les informations de la thèse puis on lit les informations des thèses
-     * car les informations de la thèse sont communes à toutes les personnes liées à la thèse.
+     * On lit d'abord les informations de la thèse puis on lit les informations de la personne.
+     * Les informations de la thèse sont communes à toutes les personnes liées à la thèse.
+     * On duplique la thèse pour chaque rôle des personnes
      * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
      *
      * @param mets
@@ -102,7 +103,7 @@ public class PersonneMapee {
                     } else {
                         List<String> list = new ArrayList<>();
                         list.add(s.getContent());
-                        theseModelES.getSujets().put(s.getLang(),list);
+                        theseModelES.getSujets().put(s.getLang(), list);
                     }
                 }
             }
@@ -176,7 +177,7 @@ public class PersonneMapee {
             Iterator<ThesisDegreeGrantor> iteGrantor = grantors.iterator();
             // l'étab de soutenance est le premier de la liste
             ThesisDegreeGrantor premier = iteGrantor.next();
-            if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne()))    {
+            if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne())) {
                 theseModelES.getEtablissement_soutenance().setPpn(OutilsTef.getPPN(premier.getAutoriteExterne()));
             }
             theseModelES.getEtablissement_soutenance().setNom(premier.getNom());
@@ -279,7 +280,7 @@ public class PersonneMapee {
         }
 
         /************************************************************************
-         *                    Parsing des personnes liées à la thèse
+         *                    Traitement des personnes liées à la thèse
          * *********************************************************************/
 
         /************************************
@@ -287,8 +288,8 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement des auteurs");
         try {
-            personnes.addAll(parseAuteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getAuteur()));
+            traiterAuteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getAuteur());
 
         } catch (NullPointerException e) {
             log.error("PB pour auteurs de " + nnt + "," + e.getMessage());
@@ -299,8 +300,8 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement de directeurs");
         try {
-            personnes.addAll(parseDirecteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getDirecteurThese()));
+            traiterDirecteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getDirecteurThese());
 
         } catch (NullPointerException e) {
             log.error("PB pour directeurs de " + nnt + "," + e.getMessage());
@@ -311,8 +312,8 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement des rapporteurs");
         try {
-            personnes.addAll(parseRapporteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getRapporteur()));
+            traiterRapporteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getRapporteur());
 
         } catch (NullPointerException e) {
             log.error("PB pour les rapporteurs de " + nnt + "," + e.getMessage());
@@ -323,33 +324,8 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement du président du jury de la thèse");
         try {
-
-            PresidentJury item = techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getPresidentJury();
-
-            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
-
-            if (personne == null) {
-                // On ajoute la personne
-                PersonneModelES adto = buildPersonne(
-                        OutilsTef.getPPN(item.getAutoriteExterne()),
-                        item.getNom(),
-                        item.getPrenom(),
-                        PRESIDENT
-                );
-                personnes.add(adto);
-
-            } else if ( personne.findThese(theseModelES.getNnt()) == null){
-                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
-                // A priori ce cas ne devrait jamais arrivé
-                TheseModelES these = new TheseModelES(theseModelES,PRESIDENT);
-                personne.getTheses().add(these);
-                personne.getRoles().add(PRESIDENT);
-            } else {
-                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).setRole(PRESIDENT);
-                personne.getRoles().add(PRESIDENT);
-            }
+            traiterPresident(techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getPresidentJury());
 
         } catch (NullPointerException e) {
             log.error("PB pour le président du jury de " + nnt + "," + e.getMessage());
@@ -360,8 +336,8 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement des membres du jury de la thèse");
         try {
-            personnes.addAll(parseMembreJury(techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getMembreJury()));
+            traiterMembreJury(techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getMembreJury());
 
         } catch (NullPointerException e) {
             log.error("PB pour les membres du jury de " + nnt + "," + e.getMessage());
@@ -375,42 +351,34 @@ public class PersonneMapee {
     }
 
     /**
-     * Instancie un objet Personne à partir des informations de base
-     * @param id Identifiant de la personne
-     * @param nom Nom de la personne
-     * @param prenom Prénom de la personne
+     * Instancie un objet Thèse à partir des informations de la thèse
+     * Assigne le rôle à la personne
+     * Renseigne les champs d'autocomplétion sur la thématique
+     *
+     * @param item La personne
      * @param role Rôle de la personne
-     * @return Un objet PersonneModelES
      */
-    private PersonneModelES buildPersonne(String id, String nom, String prenom, String role) {
-        // Construction d'un objet Personne
-        PersonneModelES item = new PersonneModelES(
-                id,
-                nom,
-                prenom
-        );
-
-        TheseModelES these = new TheseModelES(theseModelES,role);
+    private void traiterThese(PersonneModelES item, String role) {
+        TheseModelES these = new TheseModelES(theseModelES, role);
         item.getTheses().add(these);
         item.getRoles().add(role);
 
-        // On configure l'auto-complétion sur la thématique
+        // On configure l'autocomplétion sur la thématique
         these.getSujets_rameau().stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build()));
         these.getSujets().forEach((k, v) -> v.stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build())));
         item.getCompletion_thematique().add(SuggestionES.builder().input(these.getDiscipline()).weight(10).build());
-
-        return item;
     }
 
-
     /**
-     * Transforme les informations sur les auteurs de la thèse au format Elastic Search
+     * Traite les auteurs de la thèse
+     * Cette méthode transforme les informations des auteurs au format Elastic Search, crée la personne si besoin
+     * et ajoute la thèse avec le rôle
+     * La thèse est dupliquée pour chaque rôle
+     *
      * @param collection Liste des auteurs au format TEF
-     * @return La liste des auteurs de la thèse au format ES
      * @throws NullPointerException si une erreur de lecture du TEF
      */
-    private List<PersonneModelES> parseAuteurs(List<Auteur> collection) throws NullPointerException {
-        List<PersonneModelES> candidates = new ArrayList<>();
+    private void traiterAuteurs(List<Auteur> collection) throws NullPointerException {
 
         Iterator<Auteur> iter = collection.iterator();
         while (iter.hasNext()) {
@@ -419,38 +387,29 @@ public class PersonneMapee {
             PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
 
             if (personne == null) {
-                // On ajoute la personne
-                PersonneModelES adto = buildPersonne(
+                // On créé la personne
+                personne = new PersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
-                        item.getPrenom(),
-                        AUTEUR
+                        item.getPrenom()
                 );
-                candidates.add(adto);
-            } else if ( personne.findThese(theseModelES.getNnt()) == null){
-                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
-                // A priori ce cas ne devrait jamais arrivé
-                TheseModelES these = new TheseModelES(theseModelES,AUTEUR);
-                personne.getTheses().add(these);
-                personne.getRoles().add(AUTEUR);
-            } else {
-                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).setRole(AUTEUR);
-                personne.getRoles().add(AUTEUR);
+                personnes.add(personne);
             }
-        }
 
-        return candidates;
+            traiterThese(personne, AUTEUR);
+        }
     }
 
     /**
-     * Transforme les informations sur les directeurs de la thèse au format Elastic Search
+     * Traite les directeurs de la thèse
+     * Cette méthode transforme les informations des directeurs au format Elastic Search, crée la personne si besoin
+     * et ajoute la thèse avec le rôle
+     * La thèse est dupliquée pour chaque rôle
+     *
      * @param collection Liste des directeurs au format TEF
-     * @return La liste des directeurs de la thèse au format ES
      * @throws NullPointerException si une erreur de lecture du TEF
      */
-    private List<PersonneModelES> parseDirecteurs(List<DirecteurThese> collection) throws NullPointerException {
-        List<PersonneModelES> candidates = new ArrayList<>();
+    private void traiterDirecteurs(List<DirecteurThese> collection) throws NullPointerException {
 
         Iterator<DirecteurThese> iter = collection.iterator();
         while (iter.hasNext()) {
@@ -460,37 +419,28 @@ public class PersonneMapee {
 
             if (personne == null) {
                 // On ajoute la personne
-                PersonneModelES adto = buildPersonne(
+                personne = new PersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
-                        item.getPrenom(),
-                        DIRECTEUR
+                        item.getPrenom()
                 );
-                candidates.add(adto);
-            } else if ( personne.findThese(theseModelES.getNnt()) == null){
-                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
-                // A priori ce cas ne devrait jamais arrivé
-                TheseModelES these = new TheseModelES(theseModelES,DIRECTEUR);
-                personne.getTheses().add(these);
-                personne.getRoles().add(DIRECTEUR);
-            } else {
-                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).setRole(DIRECTEUR);
-                personne.getRoles().add(DIRECTEUR);
+                personnes.add(personne);
             }
-        }
 
-        return candidates;
+            traiterThese(personne, DIRECTEUR);
+        }
     }
 
     /**
-     * Transforme les informations sur les rapporteurs de la thèse au format Elastic Search
+     * Traite les rapporteurs de la thèse
+     * Cette méthode transforme les informations des rapporteurs au format Elastic Search, crée la personne si besoin
+     * et ajoute la thèse avec le rôle
+     * La thèse est dupliquée pour chaque rôle
+     *
      * @param collection Liste des rapporteurs au format TEF
-     * @return La liste des rapporteurs de la thèse au format ES
      * @throws NullPointerException si une erreur de lecture du TEF
      */
-    private List<PersonneModelES> parseRapporteurs(List<Rapporteur> collection) throws NullPointerException {
-        List<PersonneModelES> candidates = new ArrayList<>();
+    private void traiterRapporteurs(List<Rapporteur> collection) throws NullPointerException {
 
         Iterator<Rapporteur> iter = collection.iterator();
         while (iter.hasNext()) {
@@ -500,38 +450,52 @@ public class PersonneMapee {
 
             if (personne == null) {
                 // On ajoute la personne
-                PersonneModelES adto = buildPersonne(
+                personne = new PersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
-                        item.getPrenom(),
-                        RAPPORTEUR
+                        item.getPrenom()
                 );
-                candidates.add(adto);
-            } else if ( personne.findThese(theseModelES.getNnt()) == null){
-                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
-                // A priori ce cas ne devrait jamais arrivé
-                TheseModelES these = new TheseModelES(theseModelES,RAPPORTEUR);
-                personne.getTheses().add(these);
-                personne.getRoles().add(RAPPORTEUR);
-            } else {
-                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).setRole(RAPPORTEUR);
-                personne.getRoles().add(RAPPORTEUR);
+                personnes.add(personne);
             }
+            traiterThese(personne, RAPPORTEUR);
         }
-
-        return candidates;
     }
 
     /**
-     * Transforme les informations sur les membre du jury de la thèse au format Elastic Search
-     * @param collection Liste des membres du jury au format TEF
-     * @return La liste des membres du jury de la thèse au format ES
+     * Traite les informations du président du jury de la thèse
+     * Cette méthode transforme les informations du président du jury au format Elastic Search, crée la personne si besoin
+     * et ajoute la thèse avec le rôle
+     * La thèse est dupliquée pour chaque rôle
+     *
+     * @param item Président du jury au format TEF
      * @throws NullPointerException si une erreur de lecture du TEF
      */
-    private List<PersonneModelES> parseMembreJury(List<MembreJury> collection) throws NullPointerException {
-        List<PersonneModelES> candidates = new ArrayList<>();
+    private void traiterPresident(PresidentJury item) throws NullPointerException {
+        PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
 
+        if (personne == null) {
+            // On ajoute la personne
+            personne = new PersonneModelES(
+                    OutilsTef.getPPN(item.getAutoriteExterne()),
+                    item.getNom(),
+                    item.getPrenom()
+            );
+            personnes.add(personne);
+        }
+
+        traiterThese(personne, PRESIDENT);
+    }
+
+    /**
+     * Traite les informations sur les membres du jury de la thèse
+     * Cette méthode transforme les informations les membres du jury au format Elastic Search, crée la personne si besoin
+     * et ajoute la thèse avec le rôle
+     * La thèse est dupliquée pour chaque rôle
+     *
+     * @param collection Liste des membres du jury au format TEF
+     * @throws NullPointerException si une erreur de lecture du TEF
+     */
+    private void traiterMembreJury(List<MembreJury> collection) throws NullPointerException {
         Iterator<MembreJury> iter = collection.iterator();
         while (iter.hasNext()) {
             MembreJury item = iter.next();
@@ -540,31 +504,21 @@ public class PersonneMapee {
 
             if (personne == null) {
                 // On ajoute la personne
-                PersonneModelES adto = buildPersonne(
+                personne = new PersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
-                        item.getPrenom(),
-                        MEMBRE_DU_JURY
+                        item.getPrenom()
                 );
-                candidates.add(adto);
-            } else if ( personne.findThese(theseModelES.getNnt()) == null){
-                // La personne existe mais la thèse n'existe pas => première fois qu'on trouve son rôle
-                // A priori ce cas ne devrait jamais arrivé
-                TheseModelES these = new TheseModelES(theseModelES,MEMBRE_DU_JURY);
-                personne.getTheses().add(these);
-                personne.getRoles().add(MEMBRE_DU_JURY);
-            } else {
-                // La personne existe et la thèse existe => deuxième fois qu'on trouve son rôle
-                personne.findThese(theseModelES.getNnt()).setRole(MEMBRE_DU_JURY);
-                personne.getRoles().add(MEMBRE_DU_JURY);
+                personnes.add(personne);
             }
-        }
 
-        return candidates;
+            traiterThese(personne, MEMBRE_DU_JURY);
+        }
     }
 
     /**
      * Recherche une personne identifiée dans la liste des personnes de la thèse
+     *
      * @param id Identifiant de la personne
      * @return PersonneModelES La personne ou null
      */
