@@ -394,6 +394,11 @@ public class PersonneMapee {
         item.getTheses().add(these);
         item.getRoles().add(role);
 
+        // On configure l'auto-complétion sur la thématique
+        these.getSujets_rameau().stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build()));
+        these.getSujets().forEach((k, v) -> v.stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build())));
+        item.getCompletion_thematique().add(SuggestionES.builder().input(these.getDiscipline()).weight(10).build());
+
         return item;
     }
 

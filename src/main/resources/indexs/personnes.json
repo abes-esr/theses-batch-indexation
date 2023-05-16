@@ -99,7 +99,7 @@
           }
         }
       },
-      "suggestion": {
+      "completion_nom": {
         "type": "completion",
         "contexts": [
           {
@@ -114,7 +114,7 @@
           }
         ]
       },
-      "thematiques": {
+      "completion_thematique": {
         "type": "completion"
       },
       "has_idref": {
@@ -144,7 +144,6 @@
           "sujets_rameau": {
             "type": "text",
             "analyzer": "francais",
-            "copy_to": "suggestion",
             "fields": {
               "exact": {
                 "type": "keyword",
@@ -156,35 +155,29 @@
             "properties": {
               "fr": {
                 "type": "text",
-                "analyzer": "francais",
-                "copy_to": "suggestion"
+                "analyzer": "francais"
               },
               "en": {
                 "type": "text",
-                "analyzer": "english",
-                "copy_to": "suggestion"
+                "analyzer": "english"
               },
               "es": {
                 "type": "text",
-                "analyzer": "spanish",
-                "copy_to": "suggestion"
+                "analyzer": "spanish"
               },
               "de": {
                 "type": "text",
-                "analyzer": "german",
-                "copy_to": "suggestion"
+                "analyzer": "german"
               },
               "it": {
                 "type": "text",
-                "analyzer": "italian",
-                "copy_to": "suggestion"
+                "analyzer": "italian"
               }
             }
           },
           "discipline": {
             "type": "text",
             "analyzer": "francais",
-            "copy_to": "suggestion",
             "fields": {
               "exact": {
                 "type": "keyword",

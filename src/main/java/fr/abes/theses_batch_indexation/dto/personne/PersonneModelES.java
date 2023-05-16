@@ -28,12 +28,14 @@ public class PersonneModelES {
     private String nom;
     private String prenom;
     private List<String> nom_complet = new ArrayList<>();
-    private List<SuggestionES> suggestion = new ArrayList<>();
+    private List<SuggestionES> completion_nom = new ArrayList<>();
+
+    private List<SuggestionES> completion_thematique = new ArrayList<>();
 
     private List<TheseModelES> theses = new ArrayList<>();
 
     /**
-     * Récapitulatif des rôles de la personne pour le fonction de filtre
+     * Récapitulatif des rôles de la personne pour la fonction de filtre
      */
     private List<String> roles = new ArrayList<>();
 
@@ -50,8 +52,8 @@ public class PersonneModelES {
         nom_complet.add(String.format("%1$s %2$s",prenom,nom));
         nom_complet.add(String.format("%1$s %2$s",nom,prenom));
 
-        suggestion.add(SuggestionES.builder().input(String.format("%1$s %2$s",prenom,nom)).weight(10).build());
-        suggestion.add(SuggestionES.builder().input(String.format("%1$s %2$s",nom,prenom)).weight(10).build());
+        completion_nom.add(SuggestionES.builder().input(String.format("%1$s %2$s",prenom,nom)).weight(10).build());
+        completion_nom.add(SuggestionES.builder().input(String.format("%1$s %2$s",nom,prenom)).weight(10).build());
     }
 
     /**
