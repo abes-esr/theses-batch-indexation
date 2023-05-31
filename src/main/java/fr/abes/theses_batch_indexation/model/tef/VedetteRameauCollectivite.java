@@ -10,13 +10,9 @@ package fr.abes.theses_batch_indexation.model.tef;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -28,7 +24,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute ref="{http://www.w3.org/XML/1998/namespace}lang use="required""/>
+ *       &lt;sequence>
+ *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}elementdEntree"/>
+ *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}subdivision"/>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -38,64 +37,63 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "content"
+    "elementdEntree",
+    "subdivision"
 })
-@XmlRootElement(name = "title", namespace = "http://purl.org/dc/elements/1.1/")
-public class Title {
+@XmlRootElement(name = "vedetteRameauCollectivite")
+public class VedetteRameauCollectivite {
 
-    @XmlValue
-    protected String content;
-    @XmlAttribute(name = "lang", namespace = "http://www.w3.org/XML/1998/namespace", required = true)
-    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-    @XmlSchemaType(name = "NCName")
-    protected String lang;
+    @XmlElement(required = true)
+    protected ElementdEntree elementdEntree;
+    @XmlElement(required = true)
+    protected Subdivision subdivision;
 
     /**
-     * Obtient la valeur de la propriété content.
+     * Obtient la valeur de la propriété elementdEntree.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ElementdEntree }
      *     
      */
-    public String getContent() {
-        return content;
+    public ElementdEntree getElementdEntree() {
+        return elementdEntree;
     }
 
     /**
-     * Définit la valeur de la propriété content.
+     * Définit la valeur de la propriété elementdEntree.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ElementdEntree }
      *     
      */
-    public void setContent(String value) {
-        this.content = value;
+    public void setElementdEntree(ElementdEntree value) {
+        this.elementdEntree = value;
     }
 
     /**
-     * Obtient la valeur de la propriété lang.
+     * Obtient la valeur de la propriété subdivision.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Subdivision }
      *     
      */
-    public String getLang() {
-        return lang;
+    public Subdivision getSubdivision() {
+        return subdivision;
     }
 
     /**
-     * Définit la valeur de la propriété lang.
+     * Définit la valeur de la propriété subdivision.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Subdivision }
      *     
      */
-    public void setLang(String value) {
-        this.lang = value;
+    public void setSubdivision(Subdivision value) {
+        this.subdivision = value;
     }
 
 }
