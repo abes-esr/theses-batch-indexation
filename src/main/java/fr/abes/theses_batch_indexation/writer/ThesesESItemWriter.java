@@ -47,7 +47,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
             log.error("Erreurs dans le bulk : ");
             for (BulkResponseItem item: result.items()) {
                 if (item.error() != null) {
-                    log.error(item.error().reason());
+                    log.error(item.error().reason().concat(" pour ").concat(item.id()));
                 }
             }
         }

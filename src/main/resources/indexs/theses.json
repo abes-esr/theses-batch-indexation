@@ -366,10 +366,23 @@
       "partenairesRechercheN": {
         "type": "text"
       },
-      "sujetsRameau": {
-        "type": "text",
-        "analyzer": "francais",
-        "copy_to": "suggestion"
+      "sujetsRameau" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "libelle": {
+            "type": "keyword",
+            "copy_to": "suggestion"
+          }
+        }
+      },
+      "sujetsRameauPpn": {
+        "type": "text"
+      },
+      "sujetsRameauLibelle": {
+        "type": "text"
       },
       "sujets": {
         "properties": {

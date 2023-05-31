@@ -50,7 +50,9 @@ public class TheseMappee {
     List<String> membresJuryNP = new ArrayList<>();
     List<PersonneDTO> rapporteurs = new ArrayList<>();
     List<String> rapporteursNP = new ArrayList<>();
-    List<String> sujetsRameau = new ArrayList<>();
+    List<SujetDTO> sujetsRameau = new ArrayList<>();
+    List<String> sujetsRameauPpn = new ArrayList<>();
+    List<String> sujetsRameauLibelle = new ArrayList<>();
     Map<String, String> sujets = new HashMap<>();
     List<String> oaiSetNames = new ArrayList<>();
     String theseTravaux = "non";
@@ -445,8 +447,14 @@ public class TheseMappee {
                 Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauDepuisTef.iterator();
                 while (vedetteRameauNomCommunIterator.hasNext()) {
                     VedetteRameauNomCommun vdto = vedetteRameauNomCommunIterator.next();
-                    if (vdto.getElementdEntree() != null)
-                        sujetsRameau.add(vdto.getElementdEntree().getContent());
+                    SujetDTO sujetDTO = new SujetDTO();
+                    if (vdto.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vdto.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vdto.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetDTO);
+                        sujetsRameauPpn.add(vdto.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vdto.getElementdEntree().getContent());
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour sujetsRameau de " + nnt + ", " + e.getMessage());

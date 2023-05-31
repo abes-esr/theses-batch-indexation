@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OrganismeDTO {
-
+public class SujetDTO {
     private String ppn;
-    private String nom;
-    private String type;
+    private String libelle;
+
 }
