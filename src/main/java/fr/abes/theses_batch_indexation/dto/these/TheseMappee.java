@@ -442,18 +442,102 @@ public class TheseMappee {
             log.info("traitement de sujetsRameau");
 
             try {
-                List<VedetteRameauNomCommun> sujetsRameauDepuisTef = dmdSec.getMdWrap().getXmlData()
+                List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()
                         .getThesisRecord().getSujetRameau().getVedetteRameauNomCommun();
-                Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauDepuisTef.iterator();
+                Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauNomCommunDepuisTef.iterator();
                 while (vedetteRameauNomCommunIterator.hasNext()) {
-                    VedetteRameauNomCommun vdto = vedetteRameauNomCommunIterator.next();
+                    VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
                     SujetDTO sujetDTO = new SujetDTO();
-                    if (vdto.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vdto.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vdto.getElementdEntree().getContent());
+                    if (vedette.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetDTO);
-                        sujetsRameauPpn.add(vdto.getElementdEntree().getAutoriteExterne());
-                        sujetsRameauLibelle.add(vdto.getElementdEntree().getContent());
+                        sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                }
+                List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauAuteurTitre();
+                Iterator<VedetteRameauAuteurTitre> vedetteRameauAuteurTitreIterator = sujetsRameauAuteurTitreDepuisTef.iterator();
+                while (vedetteRameauAuteurTitreIterator.hasNext()) {
+                    VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
+                    SujetDTO sujetDTO = new SujetDTO();
+                    if (vedette.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetDTO);
+                        sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                }
+                List<VedetteRameauCollectivite> sujetsRameauCollectiviteDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauCollectivite();
+                Iterator<VedetteRameauCollectivite> vedetteRameauCollectiviteIterator = sujetsRameauCollectiviteDepuisTef.iterator();
+                while (vedetteRameauCollectiviteIterator.hasNext()) {
+                    VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
+                    SujetDTO sujetDTO = new SujetDTO();
+                    if (vedette.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetDTO);
+                        sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                }
+                List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauFamille();
+                Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator= sujetsRameauFamilleDepuisTef.iterator();
+                while (vedetteRameauFamilleIterator.hasNext()) {
+                    VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
+                    SujetDTO sujetDTO = new SujetDTO();
+                    if (vedette.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetDTO);
+                        sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                }
+                List<VedetteRameauPersonne> sujetsRameauPersonneDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauPersonne();
+                Iterator<VedetteRameauPersonne> vedetteRameauPersonneIterator = sujetsRameauPersonneDepuisTef.iterator();
+                while (vedetteRameauPersonneIterator.hasNext()) {
+                    VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
+                    SujetDTO sujetDTO = new SujetDTO();
+                    if (vedette.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetDTO);
+                        sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                }
+                List<VedetteRameauNomGeographique> sujetsRameauNomGeographiqueDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauNomGeographique();
+                Iterator<VedetteRameauNomGeographique> vedetteRameauNomGeographiqueIterator = sujetsRameauNomGeographiqueDepuisTef.iterator();
+                while (vedetteRameauNomGeographiqueIterator.hasNext()) {
+                    VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
+                    SujetDTO sujetDTO = new SujetDTO();
+                    if (vedette.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetDTO);
+                        sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                }
+                List<VedetteRameauTitre> sujetsRameauTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauTitre();
+                Iterator<VedetteRameauTitre> vedetteRameauTitreIterator = sujetsRameauTitreDepuisTef.iterator();
+                while (vedetteRameauTitreIterator.hasNext()) {
+                    VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
+                    SujetDTO sujetDTO = new SujetDTO();
+                    if (vedette.getElementdEntree() != null) {
+                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetDTO);
+                        sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
                 }
             } catch (NullPointerException e) {
