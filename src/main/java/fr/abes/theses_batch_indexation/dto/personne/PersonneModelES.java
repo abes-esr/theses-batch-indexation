@@ -2,6 +2,7 @@ package fr.abes.theses_batch_indexation.dto.personne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,10 @@ public class PersonneModelES {
      * Récapitulatif des rôles de la personne, utilisé pour la fonction de filtre
      */
     private List<String> roles = new ArrayList<>();
+
+    private List<String> etablissements = new ArrayList<>();
+
+    private List<String> domaines = new ArrayList<>();
 
     public PersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
