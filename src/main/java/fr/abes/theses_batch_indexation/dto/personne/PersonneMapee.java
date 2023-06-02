@@ -418,6 +418,8 @@ public class PersonneMapee {
         TheseModelES these = new TheseModelES(theseModelES, role);
         item.getTheses().add(these);
         item.getRoles().add(role);
+        item.getTheses_id().add(these.getNnt());
+        item.getTheses_date().add(these.getDate_soutenance());
 
         // On configure l'autocomplétion sur la thématique
         these.getSujets_rameau().stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet.getLibelle()).weight(10).build()));

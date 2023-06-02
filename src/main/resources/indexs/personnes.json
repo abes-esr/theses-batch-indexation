@@ -129,6 +129,14 @@
         "type": "keyword",
         "normalizer": "exact"
       },
+      "theses_id": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
+      "theses_date": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
       "theses": {
         "type": "nested",
         "properties": {
