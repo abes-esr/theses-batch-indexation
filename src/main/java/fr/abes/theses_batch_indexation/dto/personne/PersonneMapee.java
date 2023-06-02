@@ -1,6 +1,7 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
+import fr.abes.theses_batch_indexation.dto.these.SujetDTO;
 import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.Getter;
@@ -117,14 +118,69 @@ public class PersonneMapee {
         log.info("traitement de sujetsRameau");
 
         try {
-            List<VedetteRameauNomCommun> sujetsRameauDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauNomCommun();
-            Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauDepuisTef.iterator();
-            while (vedetteRameauNomCommunIterator.hasNext()) {
-                VedetteRameauNomCommun vdto = vedetteRameauNomCommunIterator.next();
-                if (vdto.getElementdEntree() != null)
-                    theseModelES.getSujets_rameau().add(vdto.getElementdEntree().getContent());
-            }
+                List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauNomCommun();
+                Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauNomCommunDepuisTef.iterator();
+                while (vedetteRameauNomCommunIterator.hasNext()) {
+                    VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
+                    if (vedette.getElementdEntree() != null) {
+                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
+                    }
+                }
+                List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauAuteurTitre();
+                Iterator<VedetteRameauAuteurTitre> vedetteRameauAuteurTitreIterator = sujetsRameauAuteurTitreDepuisTef.iterator();
+                while (vedetteRameauAuteurTitreIterator.hasNext()) {
+                    VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
+                    if (vedette.getElementdEntree() != null) {
+                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
+                    }
+                }
+                List<VedetteRameauCollectivite> sujetsRameauCollectiviteDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauCollectivite();
+                Iterator<VedetteRameauCollectivite> vedetteRameauCollectiviteIterator = sujetsRameauCollectiviteDepuisTef.iterator();
+                while (vedetteRameauCollectiviteIterator.hasNext()) {
+                    VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
+                    if (vedette.getElementdEntree() != null) {
+                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
+                    }
+                }
+                List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauFamille();
+                Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator= sujetsRameauFamilleDepuisTef.iterator();
+                while (vedetteRameauFamilleIterator.hasNext()) {
+                    VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
+                    if (vedette.getElementdEntree() != null) {
+                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
+                    }
+                }
+                List<VedetteRameauPersonne> sujetsRameauPersonneDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauPersonne();
+                Iterator<VedetteRameauPersonne> vedetteRameauPersonneIterator = sujetsRameauPersonneDepuisTef.iterator();
+                while (vedetteRameauPersonneIterator.hasNext()) {
+                    VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
+                    if (vedette.getElementdEntree() != null) {
+                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
+                    }
+                }
+                List<VedetteRameauNomGeographique> sujetsRameauNomGeographiqueDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauNomGeographique();
+                Iterator<VedetteRameauNomGeographique> vedetteRameauNomGeographiqueIterator = sujetsRameauNomGeographiqueDepuisTef.iterator();
+                while (vedetteRameauNomGeographiqueIterator.hasNext()) {
+                    VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
+                    if (vedette.getElementdEntree() != null) {
+                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
+                    }
+                }
+                List<VedetteRameauTitre> sujetsRameauTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
+                        .getThesisRecord().getSujetRameau().getVedetteRameauTitre();
+                Iterator<VedetteRameauTitre> vedetteRameauTitreIterator = sujetsRameauTitreDepuisTef.iterator();
+                while (vedetteRameauTitreIterator.hasNext()) {
+                    VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
+                    if (vedette.getElementdEntree() != null) {
+                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
+                    }
+                }
         } catch (NullPointerException e) {
             log.error("PB pour sujetsRameau de " + nnt + ", " + e.getMessage());
         }
@@ -364,7 +420,7 @@ public class PersonneMapee {
         item.getRoles().add(role);
 
         // On configure l'autocomplétion sur la thématique
-        these.getSujets_rameau().stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build()));
+        these.getSujets_rameau().stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet.getLibelle()).weight(10).build()));
         these.getSujets().forEach((k, v) -> v.stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build())));
         item.getCompletion_thematique().add(SuggestionES.builder().input(these.getDiscipline()).weight(10).build());
     }

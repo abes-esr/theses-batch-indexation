@@ -142,12 +142,20 @@
             "type": "text"
           },
           "sujets_rameau": {
-            "type": "text",
-            "analyzer": "francais",
-            "fields": {
-              "exact": {
-                "type": "keyword",
-                "normalizer": "exact"
+            "type": "nested",
+            "properties": {
+              "ppn": {
+                "type": "keyword"
+              },
+              "libelle": {
+                "type": "text",
+                "analyzer": "francais",
+                "fields": {
+                  "exact": {
+                    "type": "keyword",
+                    "normalizer": "exact"
+                  }
+                }
               }
             }
           },
