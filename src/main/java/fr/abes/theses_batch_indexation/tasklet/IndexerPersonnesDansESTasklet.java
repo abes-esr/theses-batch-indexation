@@ -119,7 +119,7 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
                     log.error("Erreurs dans le bulk : ");
                     for (BulkResponseItem item : result.items()) {
                         if (item.error() != null) {
-                            log.error(item.error().reason());
+                            log.error(item.id() + item.error());
                         }
                     }
                 }
