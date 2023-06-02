@@ -9,6 +9,7 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.gson.Gson;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.database.TheseModel;
@@ -135,15 +136,23 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
     }
 
     public void updatePersonneDansBDD(PersonneModelES personneCourante) throws IOException, InterruptedException {
-        PersonneModelES personnePresentDansES = getPersonneModelBDD(personneCourante.getPpn());
-        personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
-        addRoles(personnePresentDansES);
 
-        jdbcTemplate.update("update "+ tablePersonneName + " set personne = ?" +
-                        " where ppn = ? and nom_index = ?",
-                readJson(personnePresentDansES),
-                personnePresentDansES.getPpn(),
-                nomIndex);
+        try {
+            PersonneModelES personnePresentDansES = getPersonneModelBDD(personneCourante.getPpn());
+            personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
+            addRoles(personnePresentDansES);
+
+            jdbcTemplate.update("update "+ tablePersonneName + " set personne = ?" +
+                            " where ppn = ? and nom_index = ?",
+                    readJson(personnePresentDansES),
+                    personnePresentDansES.getPpn(),
+                    nomIndex);
+        } catch (MismatchedInputException ex) {
+            log.error("Le JSON stocké dans la base et le modèle Java ne correspondent pas : " + ex);
+            log.info("On remplace la personne "+personneCourante.getPpn()+" de la base par le modèle Java");
+            deletePersonneBDD(personneCourante.getPpn());
+            ajoutPersonneDansBDD(personneCourante);
+        }
         //jdbcTemplate.update("commit");
     }
 
