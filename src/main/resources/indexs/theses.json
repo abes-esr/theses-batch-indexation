@@ -1,0 +1,433 @@
+{
+  "settings": {
+    "index.max_result_window":"600000",
+    "analysis": {
+      "filter": {
+        "french_elision": {
+          "type": "elision",
+          "articles_case": true,
+          "articles": [
+            "l",
+            "m",
+            "t",
+            "qu",
+            "n",
+            "s",
+            "j",
+            "d",
+            "c",
+            "jusqu",
+            "quoiqu",
+            "lorsqu",
+            "puisqu"
+          ]
+        },
+        "french_stop": {
+          "type": "stop",
+          "stopwords": "_french_"
+        },
+        "french_stemmer": {
+          "type": "stemmer",
+          "language": "light_french"
+        }
+      },
+      "analyzer": {
+        "francais": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "french_elision",
+            "lowercase",
+            "french_stop",
+            "french_stemmer",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "exact": {
+          "type": "custom",
+          "filter": [
+            "french_elision",
+            "lowercase", 
+            "asciifolding"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "dateInsertionDansES": {
+        "type": "date"
+      },
+      "cas": {
+        "type": "keyword"
+      },
+      "accessible": {
+        "type": "keyword"
+      },
+      "source": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "codeEtab": {
+        "type": "keyword"
+      },
+      "nnt": {
+        "type": "keyword"
+      },
+      "dateSoutenance": {
+        "type": "date"
+      },
+      "datePremiereInscriptionDoctorat": {
+        "type": "date"
+      },
+      "dateFinEmbargo": {
+        "type": "date"
+      },
+      "dateFiltre": {
+        "type": "date"
+      },
+      "titrePrincipal": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "text",
+            "analyzer": "standard"
+          }
+        }
+      },
+      "titres": {
+        "properties": {
+          "fr" : {
+            "type": "text",
+            "analyzer": "francais"
+          ,
+            "fields": {
+              "exact": {
+                "type": "text",
+                "analyzer": "standard"
+              }
+            }
+          },
+          "en" : {
+
+            "type": "text",
+            "analyzer": "english"
+          ,
+            "fields": {
+              "exact": {
+                "type": "text",
+                "analyzer": "standard"
+              }
+            }
+          },
+          "es" : {
+
+            "type": "text",
+            "analyzer": "spanish"
+          ,
+            "fields": {
+              "exact": {
+                "type": "text",
+                "analyzer": "standard"
+              }
+            }
+          },
+          "de" : {
+
+            "type": "text",
+            "analyzer": "german"
+          ,
+            "fields": {
+              "exact": {
+                "type": "text",
+                "analyzer": "standard"
+              }
+            }
+          },
+          "it" : {
+
+            "type": "text",
+            "analyzer": "italian"
+          ,
+            "fields": {
+              "exact": {
+                "type": "text",
+                "analyzer": "standard"
+              }
+            }
+          }
+        }
+      },
+      "resumes": {
+        "properties": {
+          "fr" : {
+
+            "type": "text",
+            "analyzer": "francais"
+          },
+          "en" : {
+
+            "type": "text",
+            "analyzer": "english"
+          },
+          "es" : {
+
+            "type": "text",
+            "analyzer": "spanish"
+          },
+          "de" : {
+
+            "type": "text",
+            "analyzer": "german"
+          },
+          "it" : {
+
+            "type": "text",
+            "analyzer": "italian"
+          }
+        }
+      },
+      "discipline": {
+        "type": "text",
+        "analyzer": "francais",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        },
+        "copy_to": "suggestion"
+      },
+      "langues": {
+        "type": "keyword"
+      },
+      "auteurs" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          },
+          "prenom": {
+            "type": "text"
+          }
+        }
+      },
+      "auteursNP": {
+        "type": "text",
+        "analyzer": "francais",
+        "fields": {
+          "exact": {
+            "type": "keyword",
+            "normalizer": "exact"
+          }
+        }
+      },
+      "directeurs" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          },
+          "prenom": {
+            "type": "text"
+          }
+        }
+      },
+      "directeursNP": {
+        "type": "text"
+      },
+      "presidentJury" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          },
+          "prenom": {
+            "type": "text"
+          }
+        }
+      },
+      "presidentJuryNP": {
+        "type": "text"
+      },
+      "membresJury" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          },
+          "prenom": {
+            "type": "text"
+          }
+        }
+      },
+      "membresJuryNP": {
+        "type": "text"
+      },
+      "rapporteurs" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          },
+          "prenom": {
+            "type": "text"
+          }
+        }
+      },
+      "rapporteursNP": {
+        "type": "text"
+      },
+      "etabSoutenance": {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          }
+        }
+      },
+      "etabSoutenanceN": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "etabsCotutelle": {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          }
+        }
+      },
+      "etabsCotutelleN": {
+        "type": "text"
+      },
+      "ecolesDoctorales": {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          }
+        }
+      },
+      "ecolesDoctoralesN": {
+        "type": "text",
+        "fields": {
+          "exact": {
+            "type": "keyword"
+          }
+        }
+      },
+      "partenairesRecherche" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "nom": {
+            "type": "text"
+          },
+          "type": {
+            "type": "text"
+          }
+        }
+      },
+      "partenairesRechercheN": {
+        "type": "text"
+      },
+      "sujetsRameau" : {
+        "type": "nested",
+        "properties": {
+          "ppn": {
+            "type": "keyword"
+          },
+          "libelle": {
+            "type": "keyword",
+            "copy_to": "suggestion"
+          }
+        }
+      },
+      "sujetsRameauPpn": {
+        "type": "text"
+      },
+      "sujetsRameauLibelle": {
+        "type": "text"
+      },
+      "sujets": {
+        "properties": {
+          "fr" : {
+            "type": "text",
+            "analyzer": "francais",
+            "copy_to": "suggestion"
+          },
+          "en" : {
+
+            "type": "text",
+            "analyzer": "english",
+            "copy_to": "suggestion"
+          },
+          "es" : {
+
+            "type": "text",
+            "analyzer": "spanish",
+            "copy_to": "suggestion"
+          },
+          "de" : {
+
+            "type": "text",
+            "analyzer": "german",
+            "copy_to": "suggestion"
+          },
+          "it" : {
+
+            "type": "text",
+            "analyzer": "italian",
+            "copy_to": "suggestion"
+          }
+        }
+      },
+      "oaiSetNames": {
+        "type": "keyword"
+      },
+      "theseTravaux": {
+        "type": "keyword"
+      },
+      "suggestion": {
+        "type": "completion",
+        "analyzer": "francais",
+        "max_input_length" : 200
+      }
+    }
+  }
+}
