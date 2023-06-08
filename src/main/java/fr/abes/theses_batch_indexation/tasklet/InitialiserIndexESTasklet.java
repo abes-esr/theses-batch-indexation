@@ -24,11 +24,17 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Value("${index.name}")
     private String nomIndex;
 
+    @Value("${typeIndex}")
+    private String typeIndex;
+
     @Value("${index.pathTheses}")
     private String pathTheses;
 
     @Value("${index.pathPersonnes}")
     private String pathPersonnes;
+
+    @Value("${index.pathThematiques}")
+    private String pathThematiques;
 
 
     @Override
@@ -50,11 +56,14 @@ public class InitialiserIndexESTasklet implements Tasklet {
     private File selectIndex() {
         File f = null;
 
-        if (nomIndex.toLowerCase().startsWith("the")) {
+        if (typeIndex.toLowerCase().equals("theses")) {
             f = new File(pathTheses);
         }
-        if (nomIndex.toLowerCase().startsWith("per")) {
+        if (typeIndex.toLowerCase().equals("personnes")) {
             f = new File(pathPersonnes);
+        }
+        if (typeIndex.toLowerCase().equals("thematiques")) {
+            f = new File(pathThematiques);
         }
         return f;
     }
