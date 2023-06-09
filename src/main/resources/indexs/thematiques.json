@@ -50,8 +50,9 @@
       "dateInsertionDansES": {
         "type": "date"
       },
-      "libelle": {
-        "type": "keyword"
+      "libelles": {
+        "type": "keyword",
+        "copy_to": "suggestion"
       },
       "suggestion": {
         "type": "completion",
