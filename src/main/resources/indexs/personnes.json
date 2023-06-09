@@ -137,6 +137,14 @@
         "type": "keyword",
         "normalizer": "exact"
       },
+      "theses_id": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
+      "theses_date": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
       "theses": {
         "type": "nested",
         "properties": {
@@ -150,12 +158,20 @@
             "type": "text"
           },
           "sujets_rameau": {
-            "type": "text",
-            "analyzer": "francais",
-            "fields": {
-              "exact": {
-                "type": "keyword",
-                "normalizer": "exact"
+            "type": "nested",
+            "properties": {
+              "ppn": {
+                "type": "keyword"
+              },
+              "libelle": {
+                "type": "text",
+                "analyzer": "francais",
+                "fields": {
+                  "exact": {
+                    "type": "keyword",
+                    "normalizer": "exact"
+                  }
+                }
               }
             }
           },

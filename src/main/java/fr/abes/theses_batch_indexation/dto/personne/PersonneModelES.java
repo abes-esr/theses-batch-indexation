@@ -44,6 +44,10 @@ public class PersonneModelES {
 
     private List<String> domaines = new ArrayList<>();
 
+    private List<String> theses_id = new ArrayList<>();
+
+    private List<String> theses_date = new ArrayList<>();
+
     public PersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
             this.ppn = ppn;

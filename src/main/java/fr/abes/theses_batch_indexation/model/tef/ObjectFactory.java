@@ -2,7 +2,7 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.04.27 à 04:36:39 PM CEST 
+// Généré le : 2023.05.31 à 04:22:21 PM CEST 
 //
 
 
@@ -133,6 +133,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link VedetteRameauFamille }
+     * 
+     */
+    public VedetteRameauFamille createVedetteRameauFamille() {
+        return new VedetteRameauFamille();
+    }
+
+    /**
+     * Create an instance of {@link ElementdEntree }
+     * 
+     */
+    public ElementdEntree createElementdEntree() {
+        return new ElementdEntree();
+    }
+
+    /**
+     * Create an instance of {@link Subdivision }
+     * 
+     */
+    public Subdivision createSubdivision() {
+        return new Subdivision();
+    }
+
+    /**
      * Create an instance of {@link PartenaireRecherche }
      * 
      */
@@ -245,19 +269,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ElementdEntree }
+     * Create an instance of {@link VedetteRameauAuteurTitre }
      * 
      */
-    public ElementdEntree createElementdEntree() {
-        return new ElementdEntree();
+    public VedetteRameauAuteurTitre createVedetteRameauAuteurTitre() {
+        return new VedetteRameauAuteurTitre();
     }
 
     /**
-     * Create an instance of {@link Subdivision }
+     * Create an instance of {@link VedetteRameauCollectivite }
      * 
      */
-    public Subdivision createSubdivision() {
-        return new Subdivision();
+    public VedetteRameauCollectivite createVedetteRameauCollectivite() {
+        return new VedetteRameauCollectivite();
+    }
+
+    /**
+     * Create an instance of {@link VedetteRameauNomGeographique }
+     * 
+     */
+    public VedetteRameauNomGeographique createVedetteRameauNomGeographique() {
+        return new VedetteRameauNomGeographique();
+    }
+
+    /**
+     * Create an instance of {@link VedetteRameauPersonne }
+     * 
+     */
+    public VedetteRameauPersonne createVedetteRameauPersonne() {
+        return new VedetteRameauPersonne();
+    }
+
+    /**
+     * Create an instance of {@link VedetteRameauTitre }
+     * 
+     */
+    public VedetteRameauTitre createVedetteRameauTitre() {
+        return new VedetteRameauTitre();
     }
 
     /**
