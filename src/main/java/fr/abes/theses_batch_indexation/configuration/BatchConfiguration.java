@@ -76,10 +76,12 @@ public class BatchConfiguration {
                                             Tasklet initialiserIndexESTasklet,
                                             Tasklet initiliserIndexBDDTasklet,
                                             Tasklet indexerPersonnesDansESTasklet,
+                                            Tasklet chargerOaiSetsTasklet,
                                             JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
+                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepIndexPersonnesDansBDD)
                 .next(stepInitialiserIndexES(initialiserIndexESTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
