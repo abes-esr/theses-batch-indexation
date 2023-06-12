@@ -97,6 +97,20 @@ public class BatchConfiguration {
                 .build();
     }
 
+    @Bean
+    public Job jobIndexationThematiquesDansES(Step stepIndexThematiquesDansES,
+                                         JobRepository jobRepository,
+                                         Tasklet initialiserIndexESTasklet,
+                                         JobTheseCompletionNotificationListener listener) {
+        log.info("debut du job indexation des thematiques dans ES...");
+
+        return jobs.get("indexationThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexThematiquesDansES)
+                .build();
+    }
+
     // ---------- STEP --------------------------------------------
     @Bean
     public Step stepIndexThesesDansES(@Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
@@ -147,6 +161,16 @@ public class BatchConfiguration {
     public Step stepChargerListeOaiSets(@Qualifier("chargerOaiSetsTasklet") Tasklet t) {
         return stepBuilderFactory.get("ChargerOaiSetsTasklet").allowStartIfComplete(true)
                 .tasklet(t).build();
+    }
+
+    @Bean
+    public Step stepIndexThematiquesDansES(@Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
+                                      @Qualifier("thematiquesESItemWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
+                .reader(theseItemReader.read())
+                .processor(itemProcessor)
+                .writer(itemWriter)
+                .build();
     }
 
     // ---------------- TASK EXECUTOR ----------------------------

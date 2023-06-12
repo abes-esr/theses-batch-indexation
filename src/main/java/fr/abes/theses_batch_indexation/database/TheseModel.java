@@ -15,6 +15,7 @@ public class TheseModel {
     private String doc;
     private String jsonThese;
     private List<PersonneModelES> personnes;
+    private String jsonThematiques;
     private String idSujet;
 
 
@@ -56,6 +57,13 @@ public class TheseModel {
 
     public void setJsonThese(String jsonThese) {
         this.jsonThese = jsonThese;
+    }
+
+    public String getJsonThematiques() {
+        return jsonThematiques;
+    }
+    public void setJsonThematiques(String thematiques) {
+        this.jsonThematiques = thematiques;
     }
 
     public String getIdSujet() {
