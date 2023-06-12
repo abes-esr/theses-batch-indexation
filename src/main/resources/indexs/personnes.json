@@ -114,9 +114,6 @@
           }
         ]
       },
-      "completion_thematique": {
-        "type": "completion"
-      },
       "has_idref": {
         "type": "boolean",
         "fields": {
@@ -239,6 +236,9 @@
           "status": {
             "type": "keyword",
             "normalizer": "exact"
+          },
+          "date_inscription": {
+            "type": "date"
           },
           "date_soutenance": {
             "type": "date"

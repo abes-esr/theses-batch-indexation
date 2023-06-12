@@ -31,8 +31,6 @@ public class PersonneModelES {
     private List<String> nom_complet = new ArrayList<>();
     private List<SuggestionES> completion_nom = new ArrayList<>();
 
-    private List<SuggestionES> completion_thematique = new ArrayList<>();
-
     private List<TheseModelES> theses = new ArrayList<>();
 
     /**

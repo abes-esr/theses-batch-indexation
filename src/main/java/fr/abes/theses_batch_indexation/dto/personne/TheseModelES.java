@@ -44,6 +44,8 @@ public class TheseModelES {
 
     String date_soutenance;
 
+    String date_inscription;
+
     OrganismeDTO etablissement_soutenance = new OrganismeDTO();
 
     List<OrganismeDTO> etablissements_cotutelle = new ArrayList<OrganismeDTO>();
@@ -73,6 +75,7 @@ public class TheseModelES {
         this.sujets = these.getSujets();
         this.discipline = these.getDiscipline();
         this.resumes = these.getResumes();
+        this.date_inscription = these.getDate_inscription();
         this.date_soutenance = these.getDate_soutenance();
         this.etablissement_soutenance = these.getEtablissement_soutenance();
         this.etablissements_cotutelle = these.getEtablissements_cotutelle();
