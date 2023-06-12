@@ -56,6 +56,8 @@ public class TheseModelES {
 
     List<PersonneLiteES> directeurs = new ArrayList<>();
 
+    List<String> oaiSetNames = new ArrayList<>();
+
     /**
      * Ce constructeur permet de faire une copie de la thèse avec le nouveau rôle
      *
@@ -78,6 +80,7 @@ public class TheseModelES {
         this.source = these.getSource();
         this.auteurs = these.getAuteurs();
         this.directeurs = these.getDirecteurs();
+        this.oaiSetNames = these.getOaiSetNames();
     }
 
 }

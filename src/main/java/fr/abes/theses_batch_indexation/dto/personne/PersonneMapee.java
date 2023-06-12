@@ -1,7 +1,8 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
-import fr.abes.theses_batch_indexation.dto.these.SujetDTO;
+
+import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.Getter;
@@ -50,7 +51,7 @@ public class PersonneMapee {
      *
      * @param mets
      */
-    public PersonneMapee(Mets mets) {
+    public PersonneMapee(Mets mets, List<Set> oaiSets) {
 
         DmdSec dmdSec = mets.getDmdSec().get(1);
         AmdSec amdSec = mets.getAmdSec().get(0);
@@ -344,6 +345,25 @@ public class PersonneMapee {
         }
 
         /************************************
+         * Parsing des Domaines
+         * ***********************************/
+        log.info("traitement de oaiSets");
+        try {
+            Iterator<String> oaiSetSpecIterator = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getOaiSetSpec().iterator();
+            while (oaiSetSpecIterator.hasNext()) {
+                String oaiSetSpec  = oaiSetSpecIterator.next();
+                Optional<Set> leSet = oaiSets.stream().filter(d -> d.getSetSpec().equals(oaiSetSpec)).findFirst();
+                theseModelES.getOaiSetNames().add(leSet.get().getSetName());
+            }
+
+        } catch (NullPointerException e) {
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Domaines (oaiSets)"));
+        } catch (Exception e) {
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Domaines (oaiSets)",e.getMessage()));
+        }
+
+        /************************************
          * Parsing des auteurs de la thèse
          * ***********************************/
         log.info("traitement des auteurs");
@@ -485,6 +505,12 @@ public class PersonneMapee {
         these.getSujets_rameau().stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet.getLibelle()).weight(10).build()));
         these.getSujets().forEach((k, v) -> v.stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build())));
         item.getCompletion_thematique().add(SuggestionES.builder().input(these.getDiscipline()).weight(10).build());
+
+        // On ajoute l'établissement de soutenance
+        item.getEtablissements().add(these.getEtablissement_soutenance().getNom());
+
+        // On ajoute les domaines
+        item.getDomaines().addAll(these.getOaiSetNames());
     }
 
     /**

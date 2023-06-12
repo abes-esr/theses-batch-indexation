@@ -129,6 +129,14 @@
         "type": "keyword",
         "normalizer": "exact"
       },
+      "etablissements": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
+      "domaines": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
       "theses_id": {
         "type": "keyword",
         "normalizer": "exact"
@@ -379,6 +387,9 @@
                 }
               }
             }
+          },
+          "oaiSetNames": {
+            "type": "keyword"
           }
         }
       }
