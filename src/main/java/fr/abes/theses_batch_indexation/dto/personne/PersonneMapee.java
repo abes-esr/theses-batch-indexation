@@ -30,13 +30,6 @@ public class PersonneMapee {
     private TheseModelES theseModelES = new TheseModelES();
 
     /**
-     * Identifiant de la thèse
-     * NNT pour une thèse soutenue
-     * idStep pour une thèse en préparation
-     */
-    private String id;
-
-    /**
      * Libellé à indexer pour les rôles
      */
     private final String AUTEUR = "auteur";
@@ -53,14 +46,27 @@ public class PersonneMapee {
      * On duplique la thèse pour chaque rôle des personnes
      * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
      *
-     * @param mets
+     * @param mets Fichier TEF
+     * @param id Identifiant de la thèse
+     *           NNT pour une thèse soutenue
+     *           idStep pour une thèse en préparation
+     *           Source : base Oracle champs 'iddoc'
+     * @param oaiSets Liste des domaines
      */
-    public PersonneMapee(Mets mets, List<Set> oaiSets) {
+    public PersonneMapee(Mets mets, String id, List<Set> oaiSets) {
 
         DmdSec dmdSec = mets.getDmdSec().get(1);
         AmdSec amdSec = mets.getAmdSec().get(0);
 
         TechMD techMD = null;
+
+        try {
+            techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
+        } catch (NullPointerException e) {
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "techMD"));
+        } catch (Exception e) {
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "techMD", e.getMessage()));
+        }
 
         /************************************************************************
          *                    Parsing des informations de la thèse
@@ -69,29 +75,7 @@ public class PersonneMapee {
         /************************************
          * Parsing de l'identifiant
          * ***********************************/
-        try {
-
-            techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
-
-            Iterator<Identifier> iteIdentifiers = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
-            while (iteIdentifiers.hasNext()) {
-                Identifier i = iteIdentifiers.next();
-                if (isNnt(i.getValue()))
-                    id = i.getValue();
-            }
-
-            if (id == null) {
-                // Thèse en préparation, on prend l'identifiant STEP
-                id = dmdSec.getID();
-            }
-
-            theseModelES.setNnt(id);
-
-        } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", "null", "NNT"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", "null", "NNT", e.getMessage()));
-        }
+        theseModelES.setId(id);
 
         /************************************
          * Parsing du status
@@ -501,12 +485,6 @@ public class PersonneMapee {
         }
     }
 
-    private boolean isNnt(String identifier) {
-        if (identifier.length() == 12)
-            return true;
-        return false;
-    }
-
     /**
      * Instancie un objet Thèse à partir des informations de la thèse
      * Assigne le rôle à la personne
@@ -519,7 +497,7 @@ public class PersonneMapee {
         TheseModelES these = new TheseModelES(theseModelES, role);
         item.getTheses().add(these);
         item.getRoles().add(role);
-        item.getTheses_id().add(these.getNnt());
+        item.getTheses_id().add(these.getId());
         item.getTheses_date().add(these.getDate_soutenance());
 
         // On ajoute l'établissement de soutenance

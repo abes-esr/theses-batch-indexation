@@ -145,7 +145,7 @@
       "theses": {
         "type": "nested",
         "properties": {
-          "ppn": {
+          "id": {
             "type": "keyword"
           },
           "role": {

@@ -1,12 +1,9 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
-import fr.abes.theses_batch_indexation.dto.these.SujetDTO;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +18,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class TheseModelES {
 
-    String nnt;
+    String id;
 
     /**
      * Une personne peut avoir plusieurs rôles dans la thèse.
@@ -67,7 +64,7 @@ public class TheseModelES {
      * @param role Rôle de la personne pour cette thèse
      */
     public TheseModelES(TheseModelES these, String role) {
-        this.nnt = these.getNnt();
+        this.id = these.getId();
         this.role = role;
         this.titre = these.getTitre();
         this.titres = these.getTitres();
