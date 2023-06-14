@@ -30,9 +30,9 @@ public class PersonneItemProcessor implements ItemProcessor<TheseModel, TheseMod
 
     @Override
     public TheseModel process(TheseModel theseModel) throws Exception {
-        log.info("debut de traitement de " + theseModel.getNnt());
+        log.info("debut de traitement de " + theseModel.getId());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
-        PersonneMapee personneMapee = new PersonneMapee(mets, oaiSets);
+        PersonneMapee personneMapee = new PersonneMapee(mets,theseModel.getId(), oaiSets);
         theseModel.setPersonnes(personneMapee.getPersonnes());
         return theseModel;
     }
@@ -49,4 +49,5 @@ public class PersonneItemProcessor implements ItemProcessor<TheseModel, TheseMod
     public ExitStatus afterStep(StepExecution stepExecution) {
         return null;
     }
+
 }

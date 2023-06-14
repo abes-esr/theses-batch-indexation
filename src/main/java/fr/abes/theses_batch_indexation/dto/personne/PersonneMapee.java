@@ -2,6 +2,8 @@ package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
 
+import fr.abes.theses_batch_indexation.dto.these.Source;
+import fr.abes.theses_batch_indexation.dto.these.Status;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
@@ -28,11 +30,6 @@ public class PersonneMapee {
     private TheseModelES theseModelES = new TheseModelES();
 
     /**
-     * Identifiant de la thèse
-     */
-    private String nnt;
-
-    /**
      * Libellé à indexer pour les rôles
      */
     private final String AUTEUR = "auteur";
@@ -49,38 +46,52 @@ public class PersonneMapee {
      * On duplique la thèse pour chaque rôle des personnes
      * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
      *
-     * @param mets
+     * @param mets Fichier TEF
+     * @param id Identifiant de la thèse
+     *           NNT pour une thèse soutenue
+     *           idStep pour une thèse en préparation
+     *           Source : base Oracle champs 'iddoc'
+     * @param oaiSets Liste des domaines
      */
-    public PersonneMapee(Mets mets, List<Set> oaiSets) {
+    public PersonneMapee(Mets mets, String id, List<Set> oaiSets) {
 
         DmdSec dmdSec = mets.getDmdSec().get(1);
         AmdSec amdSec = mets.getAmdSec().get(0);
 
         TechMD techMD = null;
 
+        try {
+            techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
+        } catch (NullPointerException e) {
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "techMD"));
+        } catch (Exception e) {
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "techMD", e.getMessage()));
+        }
+
         /************************************************************************
          *                    Parsing des informations de la thèse
          * *********************************************************************/
 
         /************************************
-         * Parsing du NNT
+         * Parsing de l'identifiant
          * ***********************************/
+        theseModelES.setId(id);
+
+        /************************************
+         * Parsing du status
+         * ***********************************/
+        log.info("traitement de status");
+        theseModelES.setStatus(Status.SOUTENUE);
         try {
-
-            techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
-
-            Iterator<Identifier> iteIdentifiers = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
-            while (iteIdentifiers.hasNext()) {
-                Identifier i = iteIdentifiers.next();
-                if (isNnt(i.getValue()))
-                    nnt = i.getValue();
-            }
-            theseModelES.setNnt(nnt);
+            Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+            if (stepGestion.isPresent())
+                theseModelES.setStatus(Status.EN_PREPARATION);
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", "null", "NNT"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Status"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", "null", "NNT",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Status", e.getMessage()));
         }
+
 
         /************************************
          * Parsing du titre principal de la thèse
@@ -88,9 +99,9 @@ public class PersonneMapee {
         try {
             theseModelES.setTitre(dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Titre principal"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titre principal"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Titre principal",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titre principal", e.getMessage()));
         }
 
         /************************************
@@ -114,9 +125,9 @@ public class PersonneMapee {
                 }
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Sujets"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Sujets"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Sujets",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Sujets", e.getMessage()));
         }
 
         /************************************
@@ -125,77 +136,77 @@ public class PersonneMapee {
         log.info("traitement de sujetsRameau");
 
         try {
-                List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()
-                        .getThesisRecord().getSujetRameau().getVedetteRameauNomCommun();
-                Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauNomCommunDepuisTef.iterator();
-                while (vedetteRameauNomCommunIterator.hasNext()) {
-                    VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
-                    if (vedette.getElementdEntree() != null) {
-                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
-                    }
+            List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauNomCommun();
+            Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauNomCommunDepuisTef.iterator();
+            while (vedetteRameauNomCommunIterator.hasNext()) {
+                VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
+                if (vedette.getElementdEntree() != null) {
+                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
                 }
-                List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
-                        .getThesisRecord().getSujetRameau().getVedetteRameauAuteurTitre();
-                Iterator<VedetteRameauAuteurTitre> vedetteRameauAuteurTitreIterator = sujetsRameauAuteurTitreDepuisTef.iterator();
-                while (vedetteRameauAuteurTitreIterator.hasNext()) {
-                    VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
-                    if (vedette.getElementdEntree() != null) {
-                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
-                    }
+            }
+            List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauAuteurTitre();
+            Iterator<VedetteRameauAuteurTitre> vedetteRameauAuteurTitreIterator = sujetsRameauAuteurTitreDepuisTef.iterator();
+            while (vedetteRameauAuteurTitreIterator.hasNext()) {
+                VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
+                if (vedette.getElementdEntree() != null) {
+                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
                 }
-                List<VedetteRameauCollectivite> sujetsRameauCollectiviteDepuisTef = dmdSec.getMdWrap().getXmlData()
-                        .getThesisRecord().getSujetRameau().getVedetteRameauCollectivite();
-                Iterator<VedetteRameauCollectivite> vedetteRameauCollectiviteIterator = sujetsRameauCollectiviteDepuisTef.iterator();
-                while (vedetteRameauCollectiviteIterator.hasNext()) {
-                    VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
-                    if (vedette.getElementdEntree() != null) {
-                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
-                    }
+            }
+            List<VedetteRameauCollectivite> sujetsRameauCollectiviteDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauCollectivite();
+            Iterator<VedetteRameauCollectivite> vedetteRameauCollectiviteIterator = sujetsRameauCollectiviteDepuisTef.iterator();
+            while (vedetteRameauCollectiviteIterator.hasNext()) {
+                VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
+                if (vedette.getElementdEntree() != null) {
+                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
                 }
-                List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
-                        .getThesisRecord().getSujetRameau().getVedetteRameauFamille();
-                Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator= sujetsRameauFamilleDepuisTef.iterator();
-                while (vedetteRameauFamilleIterator.hasNext()) {
-                    VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
-                    if (vedette.getElementdEntree() != null) {
-                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
-                    }
+            }
+            List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauFamille();
+            Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator = sujetsRameauFamilleDepuisTef.iterator();
+            while (vedetteRameauFamilleIterator.hasNext()) {
+                VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
+                if (vedette.getElementdEntree() != null) {
+                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
                 }
-                List<VedetteRameauPersonne> sujetsRameauPersonneDepuisTef = dmdSec.getMdWrap().getXmlData()
-                        .getThesisRecord().getSujetRameau().getVedetteRameauPersonne();
-                Iterator<VedetteRameauPersonne> vedetteRameauPersonneIterator = sujetsRameauPersonneDepuisTef.iterator();
-                while (vedetteRameauPersonneIterator.hasNext()) {
-                    VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
-                    if (vedette.getElementdEntree() != null) {
-                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
-                    }
+            }
+            List<VedetteRameauPersonne> sujetsRameauPersonneDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauPersonne();
+            Iterator<VedetteRameauPersonne> vedetteRameauPersonneIterator = sujetsRameauPersonneDepuisTef.iterator();
+            while (vedetteRameauPersonneIterator.hasNext()) {
+                VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
+                if (vedette.getElementdEntree() != null) {
+                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
                 }
-                List<VedetteRameauNomGeographique> sujetsRameauNomGeographiqueDepuisTef = dmdSec.getMdWrap().getXmlData()
-                        .getThesisRecord().getSujetRameau().getVedetteRameauNomGeographique();
-                Iterator<VedetteRameauNomGeographique> vedetteRameauNomGeographiqueIterator = sujetsRameauNomGeographiqueDepuisTef.iterator();
-                while (vedetteRameauNomGeographiqueIterator.hasNext()) {
-                    VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
-                    if (vedette.getElementdEntree() != null) {
-                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
-                    }
+            }
+            List<VedetteRameauNomGeographique> sujetsRameauNomGeographiqueDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauNomGeographique();
+            Iterator<VedetteRameauNomGeographique> vedetteRameauNomGeographiqueIterator = sujetsRameauNomGeographiqueDepuisTef.iterator();
+            while (vedetteRameauNomGeographiqueIterator.hasNext()) {
+                VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
+                if (vedette.getElementdEntree() != null) {
+                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
                 }
-                List<VedetteRameauTitre> sujetsRameauTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
-                        .getThesisRecord().getSujetRameau().getVedetteRameauTitre();
-                Iterator<VedetteRameauTitre> vedetteRameauTitreIterator = sujetsRameauTitreDepuisTef.iterator();
-                while (vedetteRameauTitreIterator.hasNext()) {
-                    VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
-                    if (vedette.getElementdEntree() != null) {
-                        theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(),vedette.getElementdEntree().getContent()));
-                    }
+            }
+            List<VedetteRameauTitre> sujetsRameauTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
+                    .getThesisRecord().getSujetRameau().getVedetteRameauTitre();
+            Iterator<VedetteRameauTitre> vedetteRameauTitreIterator = sujetsRameauTitreDepuisTef.iterator();
+            while (vedetteRameauTitreIterator.hasNext()) {
+                VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
+                if (vedette.getElementdEntree() != null) {
+                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
                 }
+            }
         } catch (NullPointerException e) {
-            if (nnt != null) {
-                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Sujets Rameau"));
+            if (theseModelES.getStatus() == Status.SOUTENUE) {
+                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Sujets Rameau"));
             } else {
                 // Pas de sujets Rameau pour les thèses en préparation
             }
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Sujets Rameau",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Sujets Rameau", e.getMessage()));
         }
 
         /************************************
@@ -210,13 +221,13 @@ public class PersonneMapee {
                 if (!a.getLang().isEmpty()) {
                     theseModelES.getResumes().put(a.getLang(), a.getContent());
                 } else {
-                    log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du résumé : %s", nnt, "Résumé",a.getContent().substring(0,30)+"..."));
+                    log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du résumé : %s", id, "Résumé", a.getContent().substring(0, 30) + "..."));
                 }
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Résumé"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Résumé"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Résumé",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Résumé", e.getMessage()));
         }
 
         /************************************
@@ -228,26 +239,36 @@ public class PersonneMapee {
                     .getThesisDegree().getThesisDegreeDiscipline();
             theseModelES.setDiscipline(tddisc.getValue());
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Discipline"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Discipline"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Discipline",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Discipline", e.getMessage()));
         }
 
-        /************************************
-         * Parsing de la date de soutenance
-         * ***********************************/
-        log.info("traitement de dateSoutenance");
-        try {
-            theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
-        } catch (NullPointerException e) {
-            if (nnt != null) {
-                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Date de soutenance"));
-            } else {
-                // Pas de date de soutenance pour les thèses en préparation
+        if (theseModelES.getStatus() == Status.SOUTENUE) {
+            /************************************
+             * Parsing de la date de soutenance
+             * ***********************************/
+            log.info("traitement de dateSoutenance");
+            try {
+                theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
+            } catch (NullPointerException e) {
+                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date de soutenance"));
+            } catch (Exception e) {
+                log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date de soutenance", e.getMessage()));
             }
 
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Date de soutenance",e.getMessage()));
+        } else if (theseModelES.getStatus() == Status.EN_PREPARATION) {
+            /************************************
+             * Parsing de la date d'inscription
+             * ***********************************/
+            log.info("traitement de datePremiereInscriptionDoctorat");
+            try {
+                theseModelES.setDate_inscription(techMD.getMdWrap().getXmlData().getThesisAdmin().getThesisDegree().getDatePremiereInscriptionDoctorat().toString());
+            } catch (NullPointerException e) {
+                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date d'inscription"));
+            } catch (Exception e) {
+                log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date d'inscription", e.getMessage()));
+            }
         }
 
         /************************************
@@ -275,44 +296,29 @@ public class PersonneMapee {
                 theseModelES.getEtablissements_cotutelle().add(ctdto);
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Etablissements"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Etablissements"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Etablissements",e.getMessage()));
-        }
-
-        /************************************
-         * Parsing du status
-         * ***********************************/
-        log.info("traitement de status");
-        theseModelES.setStatus("soutenue");
-        try {
-            Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
-            if (stepGestion.isPresent())
-                theseModelES.setStatus("enCours");
-        } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Status"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Status",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Etablissements", e.getMessage()));
         }
 
         /************************************
          * Parsing de la source
          * ***********************************/
         log.info("traitement de source");
-        theseModelES.setSource("sudoc");
-        if (theseModelES.getStatus().equals("enCours")) {
-            theseModelES.setSource("step");
+        theseModelES.setSource(Source.SUDOC);
+        if (theseModelES.getStatus().equals(Status.EN_PREPARATION)) {
+            theseModelES.setSource(Source.STEP);
         }
         try {
-            if (theseModelES.getStatus().equals("soutenue") &&
+            if (theseModelES.getStatus().equals(Status.SOUTENUE) &&
                     mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                             .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
-                theseModelES.setSource("star");
+                theseModelES.setSource(Source.STAR);
         } catch (NullPointerException e) {
             // Il s'agit d'une thèse Sudoc, il n’y a pas de lien avec le CINES (ce sont des thèses imprimées)
             //log.error(String.format("%s - Champs '%s' : La valeur (getIndicCines) est nulle dans le TEF", nnt, "Source"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Source",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Source", e.getMessage()));
         }
 
         /************************************
@@ -333,15 +339,15 @@ public class PersonneMapee {
                         theseModelES.getTitres().put(
                                 a.getLang(), a.getContent());
                     } else {
-                        log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", nnt, "Titres",a.getContent().substring(0,30)+"..."));
+                        log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titres", a.getContent().substring(0, 30) + "..."));
                     }
 
                 }
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Titres"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titres"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Titres",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titres", e.getMessage()));
         }
 
         /************************************
@@ -352,15 +358,15 @@ public class PersonneMapee {
             Iterator<String> oaiSetSpecIterator = techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getOaiSetSpec().iterator();
             while (oaiSetSpecIterator.hasNext()) {
-                String oaiSetSpec  = oaiSetSpecIterator.next();
+                String oaiSetSpec = oaiSetSpecIterator.next();
                 Optional<Set> leSet = oaiSets.stream().filter(d -> d.getSetSpec().equals(oaiSetSpec)).findFirst();
                 theseModelES.getOaiSetNames().add(leSet.get().getSetName());
             }
 
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Domaines (oaiSets)"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Domaines (oaiSets)"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Domaines (oaiSets)",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Domaines (oaiSets)", e.getMessage()));
         }
 
         /************************************
@@ -377,9 +383,9 @@ public class PersonneMapee {
                         item.getPrenom()));
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Auteurs"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Auteurs"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Auteurs",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Auteurs", e.getMessage()));
         }
 
         /************************************
@@ -397,9 +403,9 @@ public class PersonneMapee {
             }
 
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Directeurs"));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Directeurs"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Directeurs",e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Directeurs", e.getMessage()));
         }
 
         /************************************************************************
@@ -415,9 +421,9 @@ public class PersonneMapee {
                     .getAuteur());
 
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+AUTEUR));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + AUTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Rôle "+AUTEUR,e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + AUTEUR, e.getMessage()));
         }
 
         /************************************
@@ -427,11 +433,10 @@ public class PersonneMapee {
         try {
             traiterDirecteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getDirecteurThese());
-
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+DIRECTEUR));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + DIRECTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Rôle "+DIRECTEUR,e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + DIRECTEUR, e.getMessage()));
         }
 
         /************************************
@@ -446,7 +451,7 @@ public class PersonneMapee {
             // Ce champs est optionnel
             //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+RAPPORTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Rôle "+RAPPORTEUR,e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + RAPPORTEUR, e.getMessage()));
         }
 
         /************************************
@@ -461,7 +466,7 @@ public class PersonneMapee {
             // Ce champs est optionnel
             //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+PRESIDENT));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Rôle "+PRESIDENT,e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + PRESIDENT, e.getMessage()));
         }
 
         /************************************
@@ -476,14 +481,8 @@ public class PersonneMapee {
             // Ce champs est optionnel
             //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+MEMBRE_DU_JURY));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", nnt, "Rôle "+MEMBRE_DU_JURY,e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + MEMBRE_DU_JURY, e.getMessage()));
         }
-    }
-
-    private boolean isNnt(String identifier) {
-        if (identifier.length() == 12)
-            return true;
-        return false;
     }
 
     /**
@@ -498,13 +497,8 @@ public class PersonneMapee {
         TheseModelES these = new TheseModelES(theseModelES, role);
         item.getTheses().add(these);
         item.getRoles().add(role);
-        item.getTheses_id().add(these.getNnt());
+        item.getTheses_id().add(these.getId());
         item.getTheses_date().add(these.getDate_soutenance());
-
-        // On configure l'autocomplétion sur la thématique
-        these.getSujets_rameau().stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet.getLibelle()).weight(10).build()));
-        these.getSujets().forEach((k, v) -> v.stream().forEach((sujet) -> item.getCompletion_thematique().add(SuggestionES.builder().input(sujet).weight(10).build())));
-        item.getCompletion_thematique().add(SuggestionES.builder().input(these.getDiscipline()).weight(10).build());
 
         // On ajoute l'établissement de soutenance
         item.getEtablissements().add(these.getEtablissement_soutenance().getNom());

@@ -1,18 +1,11 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Représente une personne au format de l'index Elastic Search.
@@ -30,8 +23,6 @@ public class PersonneModelES {
     private String prenom;
     private List<String> nom_complet = new ArrayList<>();
     private List<SuggestionES> completion_nom = new ArrayList<>();
-
-    private List<SuggestionES> completion_thematique = new ArrayList<>();
 
     private List<TheseModelES> theses = new ArrayList<>();
 
@@ -72,7 +63,7 @@ public class PersonneModelES {
      */
     public TheseModelES findThese(String nnt) {
         return theses.stream()
-                .filter(item -> (item.getNnt() != null && item.getNnt().equals(nnt)))
+                .filter(item -> (item.getId() != null && item.getId().equals(nnt)))
                 .findAny()
                 .orElse(null);
     }
