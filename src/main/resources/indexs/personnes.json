@@ -139,8 +139,7 @@
         "normalizer": "exact"
       },
       "theses_date": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "date"
       },
       "theses": {
         "type": "nested",

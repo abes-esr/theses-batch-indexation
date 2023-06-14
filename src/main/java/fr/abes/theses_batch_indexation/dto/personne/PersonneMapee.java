@@ -361,7 +361,7 @@ public class PersonneMapee {
             while (oaiSetSpecIterator.hasNext()) {
                 String oaiSetSpec = oaiSetSpecIterator.next();
                 Optional<Set> leSet = oaiSets.stream().filter(d -> d.getSetSpec().equals(oaiSetSpec)).findFirst();
-                theseModelES.getOaiSetNames().add(leSet.get().getSetName());
+                theseModelES.getOaiSetNames().add(leSet.get().getSetName().trim());
             }
 
         } catch (NullPointerException e) {
@@ -499,7 +499,9 @@ public class PersonneMapee {
         item.getTheses().add(these);
         item.getRoles().add(role);
         item.getTheses_id().add(these.getId());
-        item.getTheses_date().add(these.getDate_soutenance());
+        if (these.getDate_soutenance() != null) {
+            item.getTheses_date().add(these.getDate_soutenance());
+        }
 
         // On ajoute l'établissement de soutenance
         item.getEtablissements().add(these.getEtablissement_soutenance().getNom());
