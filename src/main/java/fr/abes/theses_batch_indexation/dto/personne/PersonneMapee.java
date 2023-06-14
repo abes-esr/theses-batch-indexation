@@ -46,11 +46,11 @@ public class PersonneMapee {
      * On duplique la thèse pour chaque rôle des personnes
      * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
      *
-     * @param mets Fichier TEF
-     * @param id Identifiant de la thèse
-     *           NNT pour une thèse soutenue
-     *           idStep pour une thèse en préparation
-     *           Source : base Oracle champs 'iddoc'
+     * @param mets    Fichier TEF
+     * @param id      Identifiant de la thèse
+     *                NNT pour une thèse soutenue
+     *                idStep pour une thèse en préparation
+     *                Source : base Oracle champs 'iddoc'
      * @param oaiSets Liste des domaines
      */
     public PersonneMapee(Mets mets, String id, List<Set> oaiSets) {
@@ -244,20 +244,21 @@ public class PersonneMapee {
             log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Discipline", e.getMessage()));
         }
 
-        if (theseModelES.getStatus() == Status.SOUTENUE) {
-            /************************************
-             * Parsing de la date de soutenance
-             * ***********************************/
-            log.info("traitement de dateSoutenance");
-            try {
-                theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
-            } catch (NullPointerException e) {
+        /************************************
+         * Parsing de la date de soutenance
+         * ***********************************/
+        log.info("traitement de dateSoutenance");
+        try {
+            theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
+        } catch (NullPointerException e) {
+            if (theseModelES.getStatus() == Status.SOUTENUE) {
                 log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date de soutenance"));
-            } catch (Exception e) {
-                log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date de soutenance", e.getMessage()));
             }
+        } catch (Exception e) {
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date de soutenance", e.getMessage()));
+        }
 
-        } else if (theseModelES.getStatus() == Status.EN_PREPARATION) {
+        if (theseModelES.getStatus() == Status.EN_PREPARATION) {
             /************************************
              * Parsing de la date d'inscription
              * ***********************************/
