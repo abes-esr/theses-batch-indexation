@@ -46,11 +46,11 @@ public class PersonneMapee {
      * On duplique la thèse pour chaque rôle des personnes
      * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
      *
-     * @param mets Fichier TEF
-     * @param id Identifiant de la thèse
-     *           NNT pour une thèse soutenue
-     *           idStep pour une thèse en préparation
-     *           Source : base Oracle champs 'iddoc'
+     * @param mets    Fichier TEF
+     * @param id      Identifiant de la thèse
+     *                NNT pour une thèse soutenue
+     *                idStep pour une thèse en préparation
+     *                Source : base Oracle champs 'iddoc'
      * @param oaiSets Liste des domaines
      */
     public PersonneMapee(Mets mets, String id, List<Set> oaiSets) {
@@ -244,20 +244,21 @@ public class PersonneMapee {
             log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Discipline", e.getMessage()));
         }
 
-        if (theseModelES.getStatus() == Status.SOUTENUE) {
-            /************************************
-             * Parsing de la date de soutenance
-             * ***********************************/
-            log.info("traitement de dateSoutenance");
-            try {
-                theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
-            } catch (NullPointerException e) {
+        /************************************
+         * Parsing de la date de soutenance
+         * ***********************************/
+        log.info("traitement de dateSoutenance");
+        try {
+            theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
+        } catch (NullPointerException e) {
+            if (theseModelES.getStatus() == Status.SOUTENUE) {
                 log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date de soutenance"));
-            } catch (Exception e) {
-                log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date de soutenance", e.getMessage()));
             }
+        } catch (Exception e) {
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date de soutenance", e.getMessage()));
+        }
 
-        } else if (theseModelES.getStatus() == Status.EN_PREPARATION) {
+        if (theseModelES.getStatus() == Status.EN_PREPARATION) {
             /************************************
              * Parsing de la date d'inscription
              * ***********************************/
@@ -360,7 +361,7 @@ public class PersonneMapee {
             while (oaiSetSpecIterator.hasNext()) {
                 String oaiSetSpec = oaiSetSpecIterator.next();
                 Optional<Set> leSet = oaiSets.stream().filter(d -> d.getSetSpec().equals(oaiSetSpec)).findFirst();
-                theseModelES.getOaiSetNames().add(leSet.get().getSetName());
+                theseModelES.getOaiSetNames().add(leSet.get().getSetName().trim());
             }
 
         } catch (NullPointerException e) {
@@ -498,7 +499,9 @@ public class PersonneMapee {
         item.getTheses().add(these);
         item.getRoles().add(role);
         item.getTheses_id().add(these.getId());
-        item.getTheses_date().add(these.getDate_soutenance());
+        if (these.getDate_soutenance() != null) {
+            item.getTheses_date().add(these.getDate_soutenance());
+        }
 
         // On ajoute l'établissement de soutenance
         item.getEtablissements().add(these.getEtablissement_soutenance().getNom());

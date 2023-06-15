@@ -5,7 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Représente une personne au format de l'index Elastic Search.
@@ -29,15 +31,15 @@ public class PersonneModelES {
     /**
      * Récapitulatif des rôles de la personne, utilisé pour la fonction de filtre
      */
-    private List<String> roles = new ArrayList<>();
+    private Set<String> roles = new LinkedHashSet<>();
 
-    private List<String> etablissements = new ArrayList<>();
+    private Set<String> etablissements = new LinkedHashSet<>();
 
-    private List<String> domaines = new ArrayList<>();
+    private Set<String> domaines = new LinkedHashSet<>();
 
-    private List<String> theses_id = new ArrayList<>();
+    private Set<String> theses_id = new LinkedHashSet<>();
 
-    private List<String> theses_date = new ArrayList<>();
+    private Set<String> theses_date = new LinkedHashSet<>();
 
     public PersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
