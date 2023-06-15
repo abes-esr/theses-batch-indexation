@@ -1,17 +1,13 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Représente une personne au format de l'index Elastic Search.
@@ -30,18 +26,20 @@ public class PersonneModelES {
     private List<String> nom_complet = new ArrayList<>();
     private List<SuggestionES> completion_nom = new ArrayList<>();
 
-    private List<SuggestionES> completion_thematique = new ArrayList<>();
-
     private List<TheseModelES> theses = new ArrayList<>();
 
     /**
      * Récapitulatif des rôles de la personne, utilisé pour la fonction de filtre
      */
-    private List<String> roles = new ArrayList<>();
+    private Set<String> roles = new LinkedHashSet<>();
 
-    private List<String> theses_id = new ArrayList<>();
+    private Set<String> etablissements = new LinkedHashSet<>();
 
-    private List<String> theses_date = new ArrayList<>();
+    private Set<String> domaines = new LinkedHashSet<>();
+
+    private Set<String> theses_id = new LinkedHashSet<>();
+
+    private Set<String> theses_date = new LinkedHashSet<>();
 
     public PersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
@@ -67,7 +65,7 @@ public class PersonneModelES {
      */
     public TheseModelES findThese(String nnt) {
         return theses.stream()
-                .filter(item -> (item.getNnt() != null && item.getNnt().equals(nnt)))
+                .filter(item -> (item.getId() != null && item.getId().equals(nnt)))
                 .findAny()
                 .orElse(null);
     }

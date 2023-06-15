@@ -1,12 +1,9 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
-import fr.abes.theses_batch_indexation.dto.these.SujetDTO;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +18,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class TheseModelES {
 
-    String nnt;
+    String id;
 
     /**
      * Une personne peut avoir plusieurs rôles dans la thèse.
@@ -44,6 +41,8 @@ public class TheseModelES {
 
     String date_soutenance;
 
+    String date_inscription;
+
     OrganismeDTO etablissement_soutenance = new OrganismeDTO();
 
     List<OrganismeDTO> etablissements_cotutelle = new ArrayList<OrganismeDTO>();
@@ -56,6 +55,8 @@ public class TheseModelES {
 
     List<PersonneLiteES> directeurs = new ArrayList<>();
 
+    List<String> oaiSetNames = new ArrayList<>();
+
     /**
      * Ce constructeur permet de faire une copie de la thèse avec le nouveau rôle
      *
@@ -63,7 +64,7 @@ public class TheseModelES {
      * @param role Rôle de la personne pour cette thèse
      */
     public TheseModelES(TheseModelES these, String role) {
-        this.nnt = these.getNnt();
+        this.id = these.getId();
         this.role = role;
         this.titre = these.getTitre();
         this.titres = these.getTitres();
@@ -71,6 +72,7 @@ public class TheseModelES {
         this.sujets = these.getSujets();
         this.discipline = these.getDiscipline();
         this.resumes = these.getResumes();
+        this.date_inscription = these.getDate_inscription();
         this.date_soutenance = these.getDate_soutenance();
         this.etablissement_soutenance = these.getEtablissement_soutenance();
         this.etablissements_cotutelle = these.getEtablissements_cotutelle();
@@ -78,6 +80,7 @@ public class TheseModelES {
         this.source = these.getSource();
         this.auteurs = these.getAuteurs();
         this.directeurs = these.getDirecteurs();
+        this.oaiSetNames = these.getOaiSetNames();
     }
 
 }

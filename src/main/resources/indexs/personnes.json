@@ -114,9 +114,6 @@
           }
         ]
       },
-      "completion_thematique": {
-        "type": "completion"
-      },
       "has_idref": {
         "type": "boolean",
         "fields": {
@@ -129,18 +126,25 @@
         "type": "keyword",
         "normalizer": "exact"
       },
+      "etablissements": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
+      "domaines": {
+        "type": "keyword",
+        "normalizer": "exact"
+      },
       "theses_id": {
         "type": "keyword",
         "normalizer": "exact"
       },
       "theses_date": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "date"
       },
       "theses": {
         "type": "nested",
         "properties": {
-          "ppn": {
+          "id": {
             "type": "keyword"
           },
           "role": {
@@ -231,6 +235,9 @@
           "status": {
             "type": "keyword",
             "normalizer": "exact"
+          },
+          "date_inscription": {
+            "type": "date"
           },
           "date_soutenance": {
             "type": "date"
@@ -379,6 +386,9 @@
                 }
               }
             }
+          },
+          "oaiSetNames": {
+            "type": "keyword"
           }
         }
       }

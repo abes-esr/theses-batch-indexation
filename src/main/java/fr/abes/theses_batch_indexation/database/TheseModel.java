@@ -15,6 +15,7 @@ public class TheseModel {
     private String doc;
     private String jsonThese;
     private List<PersonneModelES> personnes;
+    private String jsonThematiques;
     private String idSujet;
 
 
@@ -58,12 +59,33 @@ public class TheseModel {
         this.jsonThese = jsonThese;
     }
 
+    public String getJsonThematiques() {
+        return jsonThematiques;
+    }
+    public void setJsonThematiques(String thematiques) {
+        this.jsonThematiques = thematiques;
+    }
+
     public String getIdSujet() {
         return idSujet;
     }
 
     public void setIdSujet(String idSujet) {
         this.idSujet = idSujet;
+    }
+
+    /**
+     * Retourne l'identifiant de la thèse
+     * Numéro NNT pour une thèse soutenue
+     * Numéro idSujet pour une thèse en préparation (source : idStep)
+     * @return Identifiant de la thèse
+     */
+    public String getId() {
+        if(this.getNnt() != null) {
+            return this.getNnt();
+        } else {
+            return this.getIdSujet();
+        }
     }
 
 }

@@ -76,10 +76,12 @@ public class BatchConfiguration {
                                             Tasklet initialiserIndexESTasklet,
                                             Tasklet initiliserIndexBDDTasklet,
                                             Tasklet indexerPersonnesDansESTasklet,
+                                            Tasklet chargerOaiSetsTasklet,
                                             JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
+                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepIndexPersonnesDansBDD)
                 .next(stepInitialiserIndexES(initialiserIndexESTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
@@ -94,6 +96,20 @@ public class BatchConfiguration {
                 .listener(listener)
                 .start(stepInitialiserIndexES(initialiserIndexESTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .build();
+    }
+
+    @Bean
+    public Job jobIndexationThematiquesDansES(Step stepIndexThematiquesDansES,
+                                         JobRepository jobRepository,
+                                         Tasklet initialiserIndexESTasklet,
+                                         JobTheseCompletionNotificationListener listener) {
+        log.info("debut du job indexation des thematiques dans ES...");
+
+        return jobs.get("indexationThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexThematiquesDansES)
                 .build();
     }
 
@@ -147,6 +163,16 @@ public class BatchConfiguration {
     public Step stepChargerListeOaiSets(@Qualifier("chargerOaiSetsTasklet") Tasklet t) {
         return stepBuilderFactory.get("ChargerOaiSetsTasklet").allowStartIfComplete(true)
                 .tasklet(t).build();
+    }
+
+    @Bean
+    public Step stepIndexThematiquesDansES(@Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
+                                      @Qualifier("thematiquesESItemWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
+                .reader(theseItemReader.read())
+                .processor(itemProcessor)
+                .writer(itemWriter)
+                .build();
     }
 
     // ---------------- TASK EXECUTOR ----------------------------
