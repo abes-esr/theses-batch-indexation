@@ -497,7 +497,7 @@ public class PersonneMapee {
     private void traiterThese(PersonneModelES item, String role) {
         TheseModelES these = new TheseModelES(theseModelES, role);
         item.getTheses().add(these);
-        item.getRoles().add(role);
+        item.getRoles().add(role.substring(0, 1).toUpperCase() + role.substring(1));
         item.getTheses_id().add(these.getId());
         if (these.getDate_soutenance() != null) {
             item.getTheses_date().add(these.getDate_soutenance());

@@ -123,20 +123,16 @@
         }
       },
       "roles": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "etablissements": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "domaines": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "theses_id": {
-        "type": "keyword",
-        "normalizer": "exact"
+        "type": "keyword"
       },
       "theses_date": {
         "type": "date"
