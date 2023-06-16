@@ -327,10 +327,17 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement de titres");
         try {
-            theseModelES.getTitres().put(
-                    dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
-                    dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
 
+            // Titre principal
+            if (!dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang().isEmpty()) {
+                theseModelES.getTitres().put(
+                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
+                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+            } else {
+                log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titre principal", dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().substring(0, 30) + "..."));
+            }
+
+            // Titres alternatifs
             if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
                 Iterator<Alternative> titreAlternativeIterator = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative().iterator();
                 while (titreAlternativeIterator.hasNext()) {
