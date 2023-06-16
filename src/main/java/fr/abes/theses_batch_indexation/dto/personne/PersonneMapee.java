@@ -1,7 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
-import fr.abes.theses_batch_indexation.dto.these.SujetDTO;
 import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.Getter;

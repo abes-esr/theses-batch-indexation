@@ -385,37 +385,19 @@
         "type": "text"
       },
       "sujets": {
+        "type": "nested",
         "properties": {
-          "fr" : {
-            "type": "text",
-            "analyzer": "francais",
-            "copy_to": "suggestion"
+          "langue" : {
+            "type": "keyword"
           },
-          "en" : {
-
-            "type": "text",
-            "analyzer": "english",
-            "copy_to": "suggestion"
-          },
-          "es" : {
-
-            "type": "text",
-            "analyzer": "spanish",
-            "copy_to": "suggestion"
-          },
-          "de" : {
-
-            "type": "text",
-            "analyzer": "german",
-            "copy_to": "suggestion"
-          },
-          "it" : {
-
-            "type": "text",
-            "analyzer": "italian",
+          "libelle": {
+            "type": "keyword",
             "copy_to": "suggestion"
           }
         }
+      },
+      "sujetsLibelle": {
+        "type": "text"
       },
       "oaiSetNames": {
         "type": "keyword"

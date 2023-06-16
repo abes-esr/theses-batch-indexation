@@ -5,9 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SujetDTO {
-
-    private String langue;
+public class SujetRameauDTO {
+    private String ppn;
     private String libelle;
 
 }
