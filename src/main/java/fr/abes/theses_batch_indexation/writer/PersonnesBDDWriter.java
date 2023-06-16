@@ -140,7 +140,11 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         try {
             PersonneModelES personnePresentDansES = getPersonneModelBDD(personneCourante.getPpn());
             personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
-            addRoles(personnePresentDansES);
+            personnePresentDansES.getRoles().addAll((personneCourante.getRoles()));
+            personnePresentDansES.getDomaines().addAll(personneCourante.getDomaines());
+            personnePresentDansES.getEtablissements().addAll(personneCourante.getEtablissements());
+            personnePresentDansES.getTheses_id().addAll(personneCourante.getTheses_id());
+            personnePresentDansES.getTheses_date().addAll(personneCourante.getTheses_date());
 
             jdbcTemplate.update("update "+ tablePersonneName + " set personne = ?" +
                             " where ppn = ? and nom_index = ?",
@@ -154,16 +158,6 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
             ajoutPersonneDansBDD(personneCourante);
         }
         //jdbcTemplate.update("commit");
-    }
-
-    private void addRoles(PersonneModelES personnePresentDansES) {
-        for (String role : personnePresentDansES.getTheses().stream().map(TheseModelES::getRole).collect(Collectors.toList())) {
-            boolean alreadyInRoles = personnePresentDansES.getRoles().stream().anyMatch(r -> r.equals(role));
-
-            if (!alreadyInRoles) {
-                personnePresentDansES.getRoles().add(role);
-            }
-        }
     }
 
     private boolean deletePersonneBDD(String ppn) throws IOException {

@@ -74,4 +74,18 @@ public class TheseModel {
         this.idSujet = idSujet;
     }
 
+    /**
+     * Retourne l'identifiant de la thèse
+     * Numéro NNT pour une thèse soutenue
+     * Numéro idSujet pour une thèse en préparation (source : idStep)
+     * @return Identifiant de la thèse
+     */
+    public String getId() {
+        if(this.getNnt() != null) {
+            return this.getNnt();
+        } else {
+            return this.getIdSujet();
+        }
+    }
+
 }
