@@ -1,7 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
-
 import fr.abes.theses_batch_indexation.dto.these.Source;
 import fr.abes.theses_batch_indexation.dto.these.Status;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
@@ -83,9 +82,12 @@ public class PersonneMapee {
         log.info("traitement de status");
         theseModelES.setStatus(Status.SOUTENUE);
         try {
-            Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
-            if (stepGestion.isPresent())
-                theseModelES.setStatus(Status.EN_PREPARATION);
+            Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+
+            if (dmdSecPourStepGestion.isPresent())
+                theseModelES.setStatus(dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
+                        || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
+                        ? Status.SOUTENUE : Status.EN_PREPARATION);
         } catch (NullPointerException e) {
             log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Status"));
         } catch (Exception e) {
@@ -327,10 +329,17 @@ public class PersonneMapee {
          * ***********************************/
         log.info("traitement de titres");
         try {
-            theseModelES.getTitres().put(
-                    dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
-                    dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
 
+            // Titre principal
+            if (!dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang().isEmpty()) {
+                theseModelES.getTitres().put(
+                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
+                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+            } else {
+                log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titre principal", dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().substring(0, 30) + "..."));
+            }
+
+            // Titres alternatifs
             if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
                 Iterator<Alternative> titreAlternativeIterator = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative().iterator();
                 while (titreAlternativeIterator.hasNext()) {

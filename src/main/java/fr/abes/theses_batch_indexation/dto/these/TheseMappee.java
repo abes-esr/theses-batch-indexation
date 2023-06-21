@@ -50,10 +50,11 @@ public class TheseMappee {
     List<String> membresJuryNP = new ArrayList<>();
     List<PersonneDTO> rapporteurs = new ArrayList<>();
     List<String> rapporteursNP = new ArrayList<>();
-    List<SujetDTO> sujetsRameau = new ArrayList<>();
+    List<SujetRameauDTO> sujetsRameau = new ArrayList<>();
     List<String> sujetsRameauPpn = new ArrayList<>();
     List<String> sujetsRameauLibelle = new ArrayList<>();
-    Map<String, String> sujets = new HashMap<>();
+    List<SujetDTO> sujets = new ArrayList<>();
+    List<String> sujetsLibelle = new ArrayList<>();
     List<String> oaiSetNames = new ArrayList<>();
     String theseTravaux = "non";
 
@@ -428,9 +429,13 @@ public class TheseMappee {
                 Iterator<Subject> subjectIterator = subjects.iterator();
                 while (subjectIterator.hasNext()) {
                     Subject s = subjectIterator.next();
+                    SujetDTO sujetDTO = new SujetDTO();
 
                     if (s != null && s.getLang() != null) {
-                        sujets.put(s.getLang(), s.getContent());
+                        sujetDTO.setLangue(s.getLang());
+                        sujetDTO.setLibelle(s.getContent());
+                        sujets.add(sujetDTO);
+                        sujetsLibelle.add(s.getContent());
                     }
                 }
             } catch (NullPointerException e) {
@@ -447,11 +452,11 @@ public class TheseMappee {
                 Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauNomCommunDepuisTef.iterator();
                 while (vedetteRameauNomCommunIterator.hasNext()) {
                     VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
-                    SujetDTO sujetDTO = new SujetDTO();
+                    SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
-                        sujetsRameau.add(sujetDTO);
+                        sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
@@ -461,11 +466,11 @@ public class TheseMappee {
                 Iterator<VedetteRameauAuteurTitre> vedetteRameauAuteurTitreIterator = sujetsRameauAuteurTitreDepuisTef.iterator();
                 while (vedetteRameauAuteurTitreIterator.hasNext()) {
                     VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
-                    SujetDTO sujetDTO = new SujetDTO();
+                    SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
-                        sujetsRameau.add(sujetDTO);
+                        sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
@@ -475,11 +480,11 @@ public class TheseMappee {
                 Iterator<VedetteRameauCollectivite> vedetteRameauCollectiviteIterator = sujetsRameauCollectiviteDepuisTef.iterator();
                 while (vedetteRameauCollectiviteIterator.hasNext()) {
                     VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
-                    SujetDTO sujetDTO = new SujetDTO();
+                    SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
-                        sujetsRameau.add(sujetDTO);
+                        sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
@@ -489,11 +494,11 @@ public class TheseMappee {
                 Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator= sujetsRameauFamilleDepuisTef.iterator();
                 while (vedetteRameauFamilleIterator.hasNext()) {
                     VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
-                    SujetDTO sujetDTO = new SujetDTO();
+                    SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
-                        sujetsRameau.add(sujetDTO);
+                        sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
@@ -503,11 +508,11 @@ public class TheseMappee {
                 Iterator<VedetteRameauPersonne> vedetteRameauPersonneIterator = sujetsRameauPersonneDepuisTef.iterator();
                 while (vedetteRameauPersonneIterator.hasNext()) {
                     VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
-                    SujetDTO sujetDTO = new SujetDTO();
+                    SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
-                        sujetsRameau.add(sujetDTO);
+                        sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
@@ -517,11 +522,11 @@ public class TheseMappee {
                 Iterator<VedetteRameauNomGeographique> vedetteRameauNomGeographiqueIterator = sujetsRameauNomGeographiqueDepuisTef.iterator();
                 while (vedetteRameauNomGeographiqueIterator.hasNext()) {
                     VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
-                    SujetDTO sujetDTO = new SujetDTO();
+                    SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
-                        sujetsRameau.add(sujetDTO);
+                        sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
@@ -531,11 +536,11 @@ public class TheseMappee {
                 Iterator<VedetteRameauTitre> vedetteRameauTitreIterator = sujetsRameauTitreDepuisTef.iterator();
                 while (vedetteRameauTitreIterator.hasNext()) {
                     VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
-                    SujetDTO sujetDTO = new SujetDTO();
+                    SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null) {
-                        sujetDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
-                        sujetDTO.setLibelle(vedette.getElementdEntree().getContent());
-                        sujetsRameau.add(sujetDTO);
+                        sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
+                        sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
+                        sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
@@ -721,10 +726,10 @@ public class TheseMappee {
     public void setOaiSetNames(List<String> oaiSetNames) {
         this.oaiSetNames = oaiSetNames;
     }
-    public Map<String, String> getSujets() {
+    public List<SujetDTO> getSujets() {
         return sujets;
     }
-    public void setSujets(Map<String, String> sujets) {
+    public void setSujets(List<SujetDTO> sujets) {
         this.sujets = sujets;
     }
 }
