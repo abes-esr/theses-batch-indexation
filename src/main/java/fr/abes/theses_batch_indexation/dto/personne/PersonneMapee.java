@@ -82,9 +82,12 @@ public class PersonneMapee {
         log.info("traitement de status");
         theseModelES.setStatus(Status.SOUTENUE);
         try {
-            Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
-            if (stepGestion.isPresent())
-                theseModelES.setStatus(Status.EN_PREPARATION);
+            Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+
+            if (dmdSecPourStepGestion.isPresent())
+                theseModelES.setStatus(dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
+                        || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
+                        ? Status.SOUTENUE : Status.EN_PREPARATION);
         } catch (NullPointerException e) {
             log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Status"));
         } catch (Exception e) {
