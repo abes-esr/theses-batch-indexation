@@ -8,9 +8,11 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.database.TheseModel;
+import fr.abes.theses_batch_indexation.utils.ProxyRetry;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -23,6 +25,10 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
 
     @Value("${index.name}")
     private String nomIndex;
+
+    @Autowired
+    ProxyRetry proxyRetry;
+
 
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
@@ -41,7 +47,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
             );
         }
 
-        BulkResponse result = ElasticClient.getElasticsearchClient().bulk(br.build());
+        BulkResponse result = proxyRetry.indexerDansES(br);
 
         if (result.errors()) {
             log.error("Erreurs dans le bulk : ");

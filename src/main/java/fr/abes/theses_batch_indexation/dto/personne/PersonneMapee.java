@@ -1,7 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import fr.abes.theses_batch_indexation.dto.these.OrganismeDTO;
-
 import fr.abes.theses_batch_indexation.dto.these.Source;
 import fr.abes.theses_batch_indexation.dto.these.Status;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
