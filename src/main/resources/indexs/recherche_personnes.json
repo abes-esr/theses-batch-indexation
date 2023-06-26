@@ -134,6 +134,9 @@
       "theses_id": {
         "type": "keyword"
       },
+      "nb_theses": {
+        "type": "rank_feature"
+      },
       "theses_date": {
         "type": "date"
       },

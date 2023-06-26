@@ -34,6 +34,8 @@ public class RecherchePersonneModelES {
 
     private Set<String> theses_id = new LinkedHashSet<>();
 
+    private Integer nb_theses;
+
     private Set<String> theses_date = new LinkedHashSet<>();
 
     Map<String, List<String>> thematiques = new HashMap<>();
