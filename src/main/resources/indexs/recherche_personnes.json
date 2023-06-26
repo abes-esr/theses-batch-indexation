@@ -1,0 +1,166 @@
+{
+  "settings": {
+    "index.max_result_window": "600000",
+    "analysis": {
+      "filter": {
+        "french_elision": {
+          "type": "elision",
+          "articles_case": true,
+          "articles": [
+            "l",
+            "m",
+            "t",
+            "qu",
+            "n",
+            "s",
+            "j",
+            "d",
+            "c",
+            "jusqu",
+            "quoiqu",
+            "lorsqu",
+            "puisqu"
+          ]
+        },
+        "french_stop": {
+          "type": "stop",
+          "stopwords": "_french_"
+        },
+        "french_stemmer": {
+          "type": "stemmer",
+          "language": "light_french"
+        }
+      },
+      "analyzer": {
+        "francais": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "french_elision",
+            "lowercase",
+            "french_stop",
+            "french_stemmer",
+            "asciifolding"
+          ]
+        }
+      },
+      "normalizer": {
+        "exact": {
+          "type": "custom",
+          "filter": [
+            "french_elision",
+            "lowercase",
+            "asciifolding"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "ppn": {
+        "type": "keyword"
+      },
+      "nom": {
+        "type": "text",
+        "copy_to": "nom_complet",
+        "analyzer": "francais",
+        "fields": {
+          "exact": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "sort": {
+            "type": "keyword"
+          }
+        }
+      },
+      "prenom": {
+        "type": "text",
+        "copy_to": "nom_complet",
+        "analyzer": "francais",
+        "fields": {
+          "exact": {
+            "type": "text",
+            "analyzer": "standard"
+          },
+          "sort": {
+            "type": "keyword"
+          }
+        }
+      },
+      "nom_complet": {
+        "type": "text",
+        "analyzer": "francais",
+        "fields": {
+          "exact": {
+            "type": "text",
+            "analyzer": "standard"
+          }
+        }
+      },
+      "completion_nom": {
+        "type": "completion",
+        "contexts": [
+          {
+            "name": "has_idref",
+            "type": "category",
+            "path": "has_idref.raw"
+          },
+          {
+            "name": "roles",
+            "type": "category",
+            "path": "roles"
+          }
+        ]
+      },
+      "has_idref": {
+        "type": "boolean",
+        "fields": {
+          "raw": {
+            "type": "keyword"
+          }
+        }
+      },
+      "roles": {
+        "type": "keyword"
+      },
+      "etablissements": {
+        "type": "keyword"
+      },
+      "domaines": {
+        "type": "keyword"
+      },
+      "theses_id": {
+        "type": "keyword"
+      },
+      "theses_date": {
+        "type": "date"
+      },
+      "thematiques": {
+        "properties": {
+          "fr": {
+            "type": "text",
+            "analyzer": "francais"
+          },
+          "en": {
+            "type": "text",
+            "analyzer": "english"
+          },
+          "es": {
+            "type": "text",
+            "analyzer": "spanish"
+          },
+          "de": {
+            "type": "text",
+            "analyzer": "german"
+          },
+          "it": {
+            "type": "text",
+            "analyzer": "italian"
+          }
+        }
+      }
+    }
+  }
+}
