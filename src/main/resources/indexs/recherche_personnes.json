@@ -122,15 +122,6 @@
           }
         }
       },
-      "roles": {
-        "type": "keyword"
-      },
-      "etablissements": {
-        "type": "keyword"
-      },
-      "domaines": {
-        "type": "keyword"
-      },
       "theses_id": {
         "type": "keyword"
       },
@@ -139,6 +130,22 @@
       },
       "theses_date": {
         "type": "date"
+      },
+      "roles": {
+        "type": "keyword"
+      },
+      "etablissements": {
+        "type": "keyword"
+      },
+      "discipline": {
+        "type": "text",
+        "analyzer": "francais",
+        "fields": {
+          "exact": {
+            "type": "keyword",
+            "normalizer": "exact"
+          }
+        }
       },
       "thematiques": {
         "properties": {
@@ -163,6 +170,15 @@
             "analyzer": "italian"
           }
         }
+      },
+      "facette_roles": {
+        "type": "keyword"
+      },
+      "facette_etablissements": {
+        "type": "keyword"
+      },
+      "facette_domaines": {
+        "type": "keyword"
       }
     }
   }

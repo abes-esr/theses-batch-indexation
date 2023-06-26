@@ -23,22 +23,28 @@ public class RecherchePersonneModelES {
     private List<String> nom_complet = new ArrayList<>();
     private List<SuggestionES> completion_nom = new ArrayList<>();
 
-    /**
-     * Récapitulatif des rôles de la personne, utilisé pour la fonction de filtre
-     */
-    private Set<String> roles = new LinkedHashSet<>();
-
-    private Set<String> etablissements = new LinkedHashSet<>();
-
-    private Set<String> domaines = new LinkedHashSet<>();
-
     private Set<String> theses_id = new LinkedHashSet<>();
 
     private Integer nb_theses;
 
     private Set<String> theses_date = new LinkedHashSet<>();
 
+    private List<String> roles = new ArrayList<>();
+
+    private List<String> etablissements = new ArrayList<>();
+
+    private List<String> discipline = new ArrayList<>();
+
     Map<String, List<String>> thematiques = new HashMap<>();
+
+    /**
+     * Champs utilisés pour les filtres
+     */
+    private Set<String> facette_roles = new LinkedHashSet<>();
+
+    private Set<String> facette_etablissements = new LinkedHashSet<>();
+
+    private Set<String> facette_domaines = new LinkedHashSet<>();
 
     public RecherchePersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
