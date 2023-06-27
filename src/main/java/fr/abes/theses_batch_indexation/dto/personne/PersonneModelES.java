@@ -24,22 +24,7 @@ public class PersonneModelES {
     private String nom;
     private String prenom;
     private List<String> nom_complet = new ArrayList<>();
-    private List<SuggestionES> completion_nom = new ArrayList<>();
-
     private List<TheseModelES> theses = new ArrayList<>();
-
-    /**
-     * Récapitulatif des rôles de la personne, utilisé pour la fonction de filtre
-     */
-    private Set<String> roles = new LinkedHashSet<>();
-
-    private Set<String> etablissements = new LinkedHashSet<>();
-
-    private Set<String> domaines = new LinkedHashSet<>();
-
-    private Set<String> theses_id = new LinkedHashSet<>();
-
-    private Set<String> theses_date = new LinkedHashSet<>();
 
     public PersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
@@ -53,9 +38,6 @@ public class PersonneModelES {
 
         nom_complet.add(String.format("%1$s %2$s",prenom,nom));
         nom_complet.add(String.format("%1$s %2$s",nom,prenom));
-
-        completion_nom.add(SuggestionES.builder().input(String.format("%1$s %2$s",prenom,nom)).weight(10).build());
-        completion_nom.add(SuggestionES.builder().input(String.format("%1$s %2$s",nom,prenom)).weight(10).build());
     }
 
     /**

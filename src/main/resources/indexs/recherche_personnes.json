@@ -137,7 +137,7 @@
       "etablissements": {
         "type": "keyword"
       },
-      "discipline": {
+      "disciplines": {
         "type": "text",
         "analyzer": "francais",
         "fields": {

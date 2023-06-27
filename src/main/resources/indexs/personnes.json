@@ -99,21 +99,6 @@
           }
         }
       },
-      "completion_nom": {
-        "type": "completion",
-        "contexts": [
-          {
-            "name": "has_idref",
-            "type": "category",
-            "path": "has_idref.raw"
-          },
-          {
-            "name": "roles",
-            "type": "category",
-            "path": "roles"
-          }
-        ]
-      },
       "has_idref": {
         "type": "boolean",
         "fields": {
@@ -121,21 +106,6 @@
             "type": "keyword"
           }
         }
-      },
-      "roles": {
-        "type": "keyword"
-      },
-      "etablissements": {
-        "type": "keyword"
-      },
-      "domaines": {
-        "type": "keyword"
-      },
-      "theses_id": {
-        "type": "keyword"
-      },
-      "theses_date": {
-        "type": "date"
       },
       "theses": {
         "type": "nested",

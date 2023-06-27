@@ -15,7 +15,6 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 public class RecherchePersonneModelES {
-
     private String ppn;
     private boolean has_idref;
     private String nom;
@@ -33,7 +32,7 @@ public class RecherchePersonneModelES {
 
     private List<String> etablissements = new ArrayList<>();
 
-    private List<String> discipline = new ArrayList<>();
+    private List<String> disciplines = new ArrayList<>();
 
     Map<String, List<String>> thematiques = new HashMap<>();
 

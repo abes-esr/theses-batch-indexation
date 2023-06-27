@@ -140,11 +140,6 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         try {
             PersonneModelES personnePresentDansES = getPersonneModelBDD(personneCourante.getPpn());
             personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
-            personnePresentDansES.getRoles().addAll((personneCourante.getRoles()));
-            personnePresentDansES.getDomaines().addAll(personneCourante.getDomaines());
-            personnePresentDansES.getEtablissements().addAll(personneCourante.getEtablissements());
-            personnePresentDansES.getTheses_id().addAll(personneCourante.getTheses_id());
-            personnePresentDansES.getTheses_date().addAll(personneCourante.getTheses_date());
 
             jdbcTemplate.update("update "+ tablePersonneName + " set personne = ?" +
                             " where ppn = ? and nom_index = ?",

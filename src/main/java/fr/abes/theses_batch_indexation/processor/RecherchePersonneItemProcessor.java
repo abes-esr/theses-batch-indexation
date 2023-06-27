@@ -34,7 +34,7 @@ public class RecherchePersonneItemProcessor implements ItemProcessor<TheseModel,
         log.info("debut de traitement de " + theseModel.getId());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
         RecherchePersonneMappe recherchePersonneMappe = new RecherchePersonneMappe(mets,theseModel.getId(), oaiSets);
-        theseModel.setPersonnes(recherchePersonneMappe.getPersonnes());
+        theseModel.setRecherchePersonnes(recherchePersonneMappe.getPersonnes());
         return theseModel;
     }
 
