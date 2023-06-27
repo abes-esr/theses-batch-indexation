@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
+import fr.abes.theses_batch_indexation.model.bdd.PersonnesCacheModel;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -78,19 +79,22 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
                 break;
             }
 
-            List<PersonneModelES> items = r.stream().map(p -> mapperJson((String) p.get("PERSONNE"))).collect(Collectors.toList());
+            List<PersonnesCacheModel> items = r.stream()
+                    .map(p -> new PersonnesCacheModel((String) p.get("PPN"),(String) p.get("NOM_INDEX"),(String) p.get("PERSONNE")))
+                    .collect(Collectors.toList());
             boolean auMoinsUneOperation = false;
-            for (PersonneModelES personneModelES : items) {
+            for (PersonnesCacheModel personnesCacheModel : items) {
+
                 JsonData json = readJson(
                         new ByteArrayInputStream(
-                                modelToJson(personneModelES).getBytes()),
+                                personnesCacheModel.getPersonne().getBytes()),
                         ElasticClient.getElasticsearchClient()
                 );
 
                 br.operations(op -> op
                         .index(idx -> idx
                                 .index(nomIndex.toLowerCase())
-                                .id(personneModelES.getPpn())
+                                .id(personnesCacheModel.getPpn())
                                 .document(json)
                         )
                 );

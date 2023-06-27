@@ -36,6 +36,9 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Value("${index.pathThematiques}")
     private String pathThematiques;
 
+    @Value("${index.pathRecherchePersonnes}")
+    private String pathRecherchePersonnes;
+
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -64,6 +67,9 @@ public class InitialiserIndexESTasklet implements Tasklet {
         }
         if (typeIndex.toLowerCase().equals("thematiques")) {
             f = new File(pathThematiques);
+        }
+        if (typeIndex.toLowerCase().equals("recherche_personnes")) {
+            f = new File(pathRecherchePersonnes);
         }
         return f;
     }
