@@ -1,6 +1,7 @@
 package fr.abes.theses_batch_indexation.database;
 
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
+import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
 
 import java.util.List;
 
@@ -9,12 +10,13 @@ import java.util.List;
  * personnes : Liste de personnes à indexer dans ES
  */
 public class TheseModel {
-
     private int idDoc;
     private String nnt;
     private String doc;
     private String jsonThese;
     private List<PersonneModelES> personnes;
+
+    private List<RecherchePersonneModelES> recherchePersonnes;
     private String jsonThematiques;
     private String idSujet;
 
@@ -25,6 +27,14 @@ public class TheseModel {
 
     public void setPersonnes(List<PersonneModelES> personnes) {
         this.personnes = personnes;
+    }
+
+    public List<RecherchePersonneModelES> getRecherchePersonnes() {
+        return recherchePersonnes;
+    }
+
+    public void setRecherchePersonnes(List<RecherchePersonneModelES> personnes) {
+        this.recherchePersonnes = personnes;
     }
 
     public int getIdDoc() {

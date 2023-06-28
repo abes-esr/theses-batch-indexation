@@ -10,39 +10,16 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * L'objet PersonneMappe correspond à un objet transitoire entre le format TEF (XML) et le format JSON attendu par Elastic Search.
- * L'objectif est de faire correspondre les données du format TEF (préparser par la libraire Mets) avec les données au format Elastic Search.
- * Les transformations sont réalisées directement dans le constructeur de l'objet.
- */
 @Slf4j
 @Getter
-public class PersonneMapee {
+public class RecherchePersonneMappe {
 
-    /**
-     * Liste des personnes (au format Elastic Search) figurant dans le fichier TEF
-     */
-    private List<PersonneModelES> personnes = new ArrayList<>();
-
+    private List<RecherchePersonneModelES> personnes = new ArrayList<>();
     private TheseModelES theseModelES = new TheseModelES();
 
-    /**
-     * CTOR
-     * Cette fonction permet de remplir la liste des personnes à partir du TEF.
-     * On lit d'abord les informations de la thèse puis on lit les informations de la personne.
-     * Les informations de la thèse sont communes à toutes les personnes liées à la thèse.
-     * On duplique la thèse pour chaque rôle des personnes
-     * En cas d'erreur de lecture, les erreurs sont affichées dans les logs.
-     *
-     * @param mets    Fichier TEF
-     * @param id      Identifiant de la thèse
-     *                NNT pour une thèse soutenue
-     *                idStep pour une thèse en préparation
-     *                Source : base Oracle champs 'iddoc'
-     * @param oaiSets Liste des domaines
-     */
-    public PersonneMapee(Mets mets, String id, List<Set> oaiSets) {
+    public RecherchePersonneMappe(Mets mets, String id, List<Set> oaiSets) {
 
         DmdSec dmdSec = mets.getDmdSec().get(1);
         AmdSec amdSec = mets.getAmdSec().get(0);
@@ -65,36 +42,6 @@ public class PersonneMapee {
          * Parsing de l'identifiant
          * ***********************************/
         theseModelES.setId(id);
-
-        /************************************
-         * Parsing du status
-         * ***********************************/
-        log.info("traitement de status");
-        theseModelES.setStatus(Status.SOUTENUE);
-        try {
-            Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
-
-            if (dmdSecPourStepGestion.isPresent())
-                theseModelES.setStatus(dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
-                        || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
-                        ? Status.SOUTENUE : Status.EN_PREPARATION);
-        } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Status"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Status", e.getMessage()));
-        }
-
-
-        /************************************
-         * Parsing du titre principal de la thèse
-         * ***********************************/
-        try {
-            theseModelES.setTitre(dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
-        } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titre principal"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titre principal", e.getMessage()));
-        }
 
         /************************************
          * Parsing des sujets
@@ -295,62 +242,6 @@ public class PersonneMapee {
         }
 
         /************************************
-         * Parsing de la source
-         * ***********************************/
-        log.info("traitement de source");
-        theseModelES.setSource(Source.SUDOC);
-        if (theseModelES.getStatus().equals(Status.EN_PREPARATION)) {
-            theseModelES.setSource(Source.STEP);
-        }
-        try {
-            if (theseModelES.getStatus().equals(Status.SOUTENUE) &&
-                    mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                            .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
-                theseModelES.setSource(Source.STAR);
-        } catch (NullPointerException e) {
-            // Il s'agit d'une thèse Sudoc, il n’y a pas de lien avec le CINES (ce sont des thèses imprimées)
-            //log.error(String.format("%s - Champs '%s' : La valeur (getIndicCines) est nulle dans le TEF", nnt, "Source"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Source", e.getMessage()));
-        }
-
-        /************************************
-         * Parsing des titres
-         * ***********************************/
-        log.info("traitement de titres");
-        try {
-
-            // Titre principal
-            if (!dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang().isEmpty()) {
-                theseModelES.getTitres().put(
-                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
-                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
-            } else {
-                log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titre principal", dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().substring(0, 30) + "..."));
-            }
-
-            // Titres alternatifs
-            if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
-                Iterator<Alternative> titreAlternativeIterator = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative().iterator();
-                while (titreAlternativeIterator.hasNext()) {
-                    Alternative a = titreAlternativeIterator.next();
-
-                    if (!a.getLang().isEmpty()) {
-                        theseModelES.getTitres().put(
-                                a.getLang(), a.getContent());
-                    } else {
-                        log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titres", a.getContent().substring(0, 30) + "..."));
-                    }
-
-                }
-            }
-        } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titres"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titres", e.getMessage()));
-        }
-
-        /************************************
          * Parsing des Domaines
          * ***********************************/
         log.info("traitement de oaiSets");
@@ -367,45 +258,6 @@ public class PersonneMapee {
             log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Domaines (oaiSets)"));
         } catch (Exception e) {
             log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Domaines (oaiSets)", e.getMessage()));
-        }
-
-        /************************************
-         * Parsing des auteurs de la thèse
-         * ***********************************/
-        log.info("traitement des auteurs");
-        try {
-            Iterator<Auteur> iter = techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getAuteur().iterator();
-            while (iter.hasNext()) {
-                Auteur item = iter.next();
-                theseModelES.getAuteurs().add(new PersonneLiteES(OutilsTef.getPPN(item.getAutoriteExterne()),
-                        item.getNom(),
-                        item.getPrenom()));
-            }
-        } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Auteurs"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Auteurs", e.getMessage()));
-        }
-
-        /************************************
-         * Parsing des directeurs de la thèse
-         * ***********************************/
-        log.info("traitement de directeurs");
-        try {
-            Iterator<DirecteurThese> iter = techMD.getMdWrap().getXmlData().getThesisAdmin()
-                    .getDirecteurThese().iterator();
-            while (iter.hasNext()) {
-                DirecteurThese item = iter.next();
-                theseModelES.getDirecteurs().add(new PersonneLiteES(OutilsTef.getPPN(item.getAutoriteExterne()),
-                        item.getNom(),
-                        item.getPrenom()));
-            }
-
-        } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Directeurs"));
-        } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Directeurs", e.getMessage()));
         }
 
         /************************************************************************
@@ -488,17 +340,81 @@ public class PersonneMapee {
     /**
      * Instancie un objet Thèse à partir des informations de la thèse
      * Assigne le rôle à la personne
+     * Renseigne les champs d'autocomplétion sur la thématique
      *
      * @param item La personne
      * @param role Rôle de la personne
      */
-    private void traiterThese(PersonneModelES item, String role) {
+    private void traiterThese(RecherchePersonneModelES item, String role) {
         TheseModelES these = new TheseModelES(theseModelES, role);
+
+        // On ajoute l'identifiant de la thèse et le nombre de thèses
+        item.getTheses_id().add(these.getId());
+        item.setNb_theses(item.getTheses_id().size());
+
         // On ajoute le rôle
         item.getRoles().add(role);
 
-        // On ajoute les thèses
-        item.getTheses().add(these);
+        // On ajoute la date de soutenance
+        if (these.getDate_soutenance() != null) {
+            item.getTheses_date().add(these.getDate_soutenance());
+        }
+
+        // On ajoute l'établissement de soutenance
+        item.getEtablissements().add(these.getEtablissement_soutenance().getNom());
+
+        // On ajoute les disciplines
+        item.getDisciplines().add(these.getDiscipline());
+
+        // On ajoute les thématiques (sujets libres, sujets Rameau, resumes, discipline)
+        // Sujets libres
+        if (these.getSujets() != null) {
+            for (String lang : these.getSujets().keySet()) {
+                if (item.getThematiques().containsKey(lang)) {
+                    item.getThematiques().get(lang).addAll(these.getSujets().get(lang));
+                } else {
+                    item.getThematiques().put(lang, new ArrayList<>());
+                    item.getThematiques().get(lang).addAll(these.getSujets().get(lang));
+                }
+            }
+        }
+
+        // Sujets Rameau
+        if (these.getSujets_rameau() != null) {
+            if (!item.getThematiques().containsKey("fr")) {
+                item.getThematiques().put("fr", new ArrayList<>());
+            }
+
+            item.getThematiques().get("fr").addAll(these.getSujets_rameau().stream()
+                    .map(e -> e.getLibelle())
+                    .collect(Collectors.toList()));
+        }
+
+        // Resumes
+        if (these.getResumes() != null) {
+            for (String lang : these.getResumes().keySet()) {
+                if (item.getThematiques().containsKey(lang)) {
+                    item.getThematiques().get(lang).add(these.getResumes().get(lang));
+                } else {
+                    item.getThematiques().put(lang, new ArrayList<>());
+                    item.getThematiques().get(lang).add(these.getResumes().get(lang));
+                }
+            }
+        }
+
+        // Disciplines
+        if (these.getDiscipline() != null) {
+            if (!item.getThematiques().containsKey("fr")) {
+                item.getThematiques().put("fr", new ArrayList<>());
+            }
+
+            item.getThematiques().get("fr").add(these.getDiscipline());
+        }
+
+        // Facettes
+        item.getFacette_roles().add(role.substring(0, 1).toUpperCase() + role.substring(1));
+        item.getFacette_etablissements().add(these.getEtablissement_soutenance().getNom());
+        item.getFacette_domaines().addAll(these.getOaiSetNames());
     }
 
     /**
@@ -516,11 +432,11 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             Auteur item = iter.next();
 
-            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+            RecherchePersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
 
             if (personne == null) {
                 // On créé la personne
-                personne = new PersonneModelES(
+                personne = new RecherchePersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
                         item.getPrenom()
@@ -547,11 +463,11 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             DirecteurThese item = iter.next();
 
-            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+            RecherchePersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
 
             if (personne == null) {
                 // On ajoute la personne
-                personne = new PersonneModelES(
+                personne = new RecherchePersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
                         item.getPrenom()
@@ -578,11 +494,11 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             Rapporteur item = iter.next();
 
-            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+            RecherchePersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
 
             if (personne == null) {
                 // On ajoute la personne
-                personne = new PersonneModelES(
+                personne = new RecherchePersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
                         item.getPrenom()
@@ -603,11 +519,11 @@ public class PersonneMapee {
      * @throws NullPointerException si une erreur de lecture du TEF
      */
     private void traiterPresident(PresidentJury item) throws NullPointerException {
-        PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+        RecherchePersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
 
         if (personne == null) {
             // On ajoute la personne
-            personne = new PersonneModelES(
+            personne = new RecherchePersonneModelES(
                     OutilsTef.getPPN(item.getAutoriteExterne()),
                     item.getNom(),
                     item.getPrenom()
@@ -632,11 +548,11 @@ public class PersonneMapee {
         while (iter.hasNext()) {
             MembreJury item = iter.next();
 
-            PersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
+            RecherchePersonneModelES personne = findPersonne(OutilsTef.getPPN(item.getAutoriteExterne()));
 
             if (personne == null) {
                 // On ajoute la personne
-                personne = new PersonneModelES(
+                personne = new RecherchePersonneModelES(
                         OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
                         item.getPrenom()
@@ -652,9 +568,9 @@ public class PersonneMapee {
      * Recherche une personne identifiée dans la liste des personnes de la thèse
      *
      * @param id Identifiant de la personne
-     * @return PersonneModelES La personne ou null
+     * @return RecherchePersonneModelES La personne ou null
      */
-    private PersonneModelES findPersonne(String id) {
+    private RecherchePersonneModelES findPersonne(String id) {
         return personnes.stream()
                 .filter(item -> (item.isHas_idref() && item.getPpn().equals(id)))
                 .findAny()
