@@ -107,6 +107,9 @@
           }
         }
       },
+      "roles": {
+        "type": "keyword"
+      },
       "theses": {
         "type": "nested",
         "properties": {

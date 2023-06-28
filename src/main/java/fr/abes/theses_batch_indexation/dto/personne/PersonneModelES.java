@@ -24,6 +24,8 @@ public class PersonneModelES {
     private String nom;
     private String prenom;
     private List<String> nom_complet = new ArrayList<>();
+
+    private List<String> roles = new ArrayList<>();
     private List<TheseModelES> theses = new ArrayList<>();
 
     public PersonneModelES(String ppn, String nom, String prenom) {
@@ -36,12 +38,13 @@ public class PersonneModelES {
         this.nom = nom;
         this.prenom = prenom;
 
-        nom_complet.add(String.format("%1$s %2$s",prenom,nom));
-        nom_complet.add(String.format("%1$s %2$s",nom,prenom));
+        nom_complet.add(String.format("%1$s %2$s", prenom, nom));
+        nom_complet.add(String.format("%1$s %2$s", nom, prenom));
     }
 
     /**
      * Recherche une thèse dans la liste des thèses
+     *
      * @param nnt Identifiant de la thèse
      * @return TheseModelES La thèse ou null
      */

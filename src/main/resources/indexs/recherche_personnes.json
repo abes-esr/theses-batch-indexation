@@ -126,7 +126,7 @@
         "type": "keyword"
       },
       "nb_theses": {
-        "type": "rank_feature"
+        "type": "integer"
       },
       "theses_date": {
         "type": "date"

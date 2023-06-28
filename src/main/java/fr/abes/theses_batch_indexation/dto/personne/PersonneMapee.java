@@ -494,6 +494,10 @@ public class PersonneMapee {
      */
     private void traiterThese(PersonneModelES item, String role) {
         TheseModelES these = new TheseModelES(theseModelES, role);
+        // On ajoute le rôle
+        item.getRoles().add(role);
+
+        // On ajoute les thèses
         item.getTheses().add(these);
     }
 

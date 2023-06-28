@@ -9,10 +9,8 @@ import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
@@ -350,8 +348,9 @@ public class RecherchePersonneMappe {
     private void traiterThese(RecherchePersonneModelES item, String role) {
         TheseModelES these = new TheseModelES(theseModelES, role);
 
-        // On ajoute l'identifiant de la thèse
+        // On ajoute l'identifiant de la thèse et le nombre de thèses
         item.getTheses_id().add(these.getId());
+        item.setNb_theses(item.getTheses_id().size());
 
         // On ajoute le rôle
         item.getRoles().add(role);
@@ -366,6 +365,51 @@ public class RecherchePersonneMappe {
 
         // On ajoute les disciplines
         item.getDisciplines().add(these.getDiscipline());
+
+        // On ajoute les thématiques (sujets libres, sujets Rameau, resumes, discipline)
+        // Sujets libres
+        if (these.getSujets() != null) {
+            for (String lang : these.getSujets().keySet()) {
+                if (item.getThematiques().containsKey(lang)) {
+                    item.getThematiques().get(lang).addAll(these.getSujets().get(lang));
+                } else {
+                    item.getThematiques().put(lang, new ArrayList<>());
+                    item.getThematiques().get(lang).addAll(these.getSujets().get(lang));
+                }
+            }
+        }
+
+        // Sujets Rameau
+        if (these.getSujets_rameau() != null) {
+            if (!item.getThematiques().containsKey("fr")) {
+                item.getThematiques().put("fr", new ArrayList<>());
+            }
+
+            item.getThematiques().get("fr").addAll(these.getSujets_rameau().stream()
+                    .map(e -> e.getLibelle())
+                    .collect(Collectors.toList()));
+        }
+
+        // Resumes
+        if (these.getResumes() != null) {
+            for (String lang : these.getResumes().keySet()) {
+                if (item.getThematiques().containsKey(lang)) {
+                    item.getThematiques().get(lang).add(these.getResumes().get(lang));
+                } else {
+                    item.getThematiques().put(lang, new ArrayList<>());
+                    item.getThematiques().get(lang).add(these.getResumes().get(lang));
+                }
+            }
+        }
+
+        // Disciplines
+        if (these.getDiscipline() != null) {
+            if (!item.getThematiques().containsKey("fr")) {
+                item.getThematiques().put("fr", new ArrayList<>());
+            }
+
+            item.getThematiques().get("fr").add(these.getDiscipline());
+        }
 
         // Facettes
         item.getFacette_roles().add(role.substring(0, 1).toUpperCase() + role.substring(1));
@@ -519,6 +563,7 @@ public class RecherchePersonneMappe {
             traiterThese(personne, Roles.MEMBRE_DU_JURY);
         }
     }
+
     /**
      * Recherche une personne identifiée dans la liste des personnes de la thèse
      *
