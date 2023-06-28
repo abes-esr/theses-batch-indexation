@@ -73,7 +73,6 @@ public class TheseMappee {
 
                 // nnt
                 techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
-                log.info("traitement de " + nnt);
 
                 Iterator<Identifier> iteIdentifiers = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
                 while (iteIdentifiers.hasNext()) {
@@ -81,10 +80,10 @@ public class TheseMappee {
                     if (isNnt(i.getValue()))
                         nnt = i.getValue();
                 }
+                log.info("traitement de " + nnt);
             } catch (NullPointerException e) {
                 log.error("PB pour nnt " + e);
             }
-
 
             // id
             //id = dmdSec.getID();
@@ -224,11 +223,10 @@ public class TheseMappee {
                 dateFiltre = dateSoutenance;
 
 
-
             // source
             log.info("traitement de source");
             source = "sudoc";
-            if (status.equals("enCours"))
+            if (status.equals("enCours") || (status.equals("soutenue") && nnt.equals("")))
                 source = "step";
             try {
                 if (status.equals("soutenue") &&
