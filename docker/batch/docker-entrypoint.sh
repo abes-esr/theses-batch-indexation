@@ -2,7 +2,7 @@
 
 # Paramètres par défaut du conteneur
 export THESES_BATCH_INDEXATION_CRON=${THESES_BATCH_INDEXATION_CRON:='0 * * * *'}
-export $THESES_BATCH_INDEXATION_AT_STARTUP=${$THESES_BATCH_INDEXATION_AT_STARTUP:='1'}
+export THESES_BATCH_INDEXATION_AT_STARTUP=${THESES_BATCH_INDEXATION_AT_STARTUP:='1'}
 
 # Réglage de /etc/environment pour que les crontab s'exécutent avec les bonnes variables d'env
 echo "$(env)
