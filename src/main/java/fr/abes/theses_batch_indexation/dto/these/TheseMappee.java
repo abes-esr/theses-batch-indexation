@@ -258,8 +258,12 @@ public class TheseMappee {
                     if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne()))
                         ctdto.setPpn(OutilsTef.getPPN(a.getAutoriteExterne()));
                     ctdto.setNom(a.getNom());
-                    etabsCotutelle.add(ctdto);
-                    etabsCotutelleN.add(a.getNom());
+                    if ("".equals(a.getNom())) {
+                        log.warn("Pas de nom de cotutelle");
+                    } else {
+                        etabsCotutelle.add(ctdto);
+                        etabsCotutelleN.add(a.getNom());
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour etablissements de " + nnt + "," + e.getMessage());
