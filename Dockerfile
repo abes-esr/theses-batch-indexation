@@ -31,7 +31,7 @@ WORKDIR /scripts/
 # cronie: remplacant de crond qui support le CTRL+C dans docker (sans ce système c'est compliqué de stopper le conteneur)
 # gettext: pour avoir envsubst qui permet de gérer le template tasks.tmpl
 RUN dnf install -y cronie gettext && \
-    crond -V && rm -rf /etc/cron.*/* \
+    crond -V && rm -rf /etc/cron.*/*
 COPY ./docker/batch/tasks.tmpl /etc/cron.d/tasks.tmpl
 # Le JAR et le script pour le batch d'insertion des thèses et personnes dans ES
 RUN dnf install -y java-11-openjdk

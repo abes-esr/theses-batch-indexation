@@ -51,6 +51,8 @@ job.where-limite=2000
 index.pathTheses=src/main/resources/indexs/theses.json
 index.pathPersonnes=src/main/resources/indexs/personnes.json
 index.pathThematiques=src/main/resources/indexs/thematiques.json
+index.pathRecherchePersonnes=src/main/resources/indexs/recherche_personnes.json
+
 index.name=
 indexType=
 

@@ -1,41 +1,25 @@
 package fr.abes.theses_batch_indexation.writer;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.Refresh;
-import co.elastic.clients.elasticsearch._types.Result;
-import co.elastic.clients.elasticsearch.core.*;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.json.JsonData;
-import co.elastic.clients.json.JsonpMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.google.gson.Gson;
-import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
-import fr.abes.theses_batch_indexation.dto.personne.TheseModelES;
-import jakarta.json.spi.JsonProvider;
+import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
+public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel> {
 
     /*
     todo: OK-Ajouter l'index dans la table
@@ -58,7 +42,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public PersonnesBDDWriter(JdbcTemplate jdbcTemplate) {
+    public RecherchePersonnesBDDWriter(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -70,7 +54,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         for (TheseModel theseModel : items) {
             nombreDeTheses.incrementAndGet();
             logSiPasAssezDePersonnesDansLaThese(theseModel);
-            for (PersonneModelES personneModelES : theseModel.getPersonnes()) {
+            for (RecherchePersonneModelES personneModelES : theseModel.getRecherchePersonnes()) {
                 nombreDePersonnes.incrementAndGet();
                 log.info("ppn : " + personneModelES.getPpn());
                 log.info("nom : " + personneModelES.getNom());
@@ -93,12 +77,12 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
     }
 
     private void logSiPasAssezDePersonnesDansLaThese(TheseModel theseModel) {
-        if (theseModel.getPersonnes().size() < 2) {
+        if (theseModel.getRecherchePersonnes().size() < 2) {
             log.warn("Moins de personnes que prévu dans cette theses");
         }
     }
 
-    private void ajoutPersonneDansBDD(PersonneModelES personneModelES) {
+    private void ajoutPersonneDansBDD(RecherchePersonneModelES personneModelES) {
 
         try {
 
@@ -113,7 +97,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         }
     }
 
-    private PersonneModelES getPersonneModelBDD(String ppn) throws IOException {
+    private RecherchePersonneModelES getPersonneModelBDD(String ppn) throws IOException {
         try {
 
             List<Map<String, Object>> r = jdbcTemplate.queryForList("select * from " + tablePersonneName + " where ppn = ? and nom_index = ?", ppn, nomIndex);
@@ -135,12 +119,22 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
 
     }
 
-    public void updatePersonneDansBDD(PersonneModelES personneCourante) throws IOException, InterruptedException {
+    public void updatePersonneDansBDD(RecherchePersonneModelES personneCourante) throws IOException, InterruptedException {
 
         try {
-            PersonneModelES personnePresentDansES = getPersonneModelBDD(personneCourante.getPpn());
-            personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
-            personnePresentDansES.getRoles().addAll(personneCourante.getRoles());
+            RecherchePersonneModelES personnePresentDansES = getPersonneModelBDD(personneCourante.getPpn());
+            personnePresentDansES.getTheses_id().addAll(personneCourante.getTheses_id());
+            personnePresentDansES.getTheses_date().addAll(personneCourante.getTheses_date());
+            personnePresentDansES.setNb_theses(personnePresentDansES.getTheses_id().size());
+
+            personnePresentDansES.getRoles().addAll((personneCourante.getRoles()));
+            personnePresentDansES.getEtablissements().addAll(personneCourante.getEtablissements());
+            personnePresentDansES.getDisciplines().addAll(personneCourante.getDisciplines());
+
+            // Facettes
+            personnePresentDansES.getFacette_roles().addAll(personneCourante.getFacette_roles());
+            personnePresentDansES.getFacette_etablissements().addAll(personneCourante.getFacette_etablissements());
+            personnePresentDansES.getFacette_domaines().addAll(personneCourante.getFacette_domaines());
 
             jdbcTemplate.update("update " + tablePersonneName + " set personne = ?" +
                             " where ppn = ? and nom_index = ?",
@@ -168,12 +162,12 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         }
     }
 
-    public static PersonneModelES mapperJson(String json) throws IOException {
+    public static RecherchePersonneModelES mapperJson(String json) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, PersonneModelES.class);
+        return mapper.readValue(json, RecherchePersonneModelES.class);
     }
 
-    public static String readJson(PersonneModelES personneModelES) throws JsonProcessingException {
+    public static String readJson(RecherchePersonneModelES personneModelES) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(personneModelES);
     }

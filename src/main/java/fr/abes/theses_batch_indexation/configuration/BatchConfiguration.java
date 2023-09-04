@@ -100,6 +100,23 @@ public class BatchConfiguration {
     }
 
     @Bean
+    public Job jobIndexationRecherchePersonnesDansES(Step stepIndexRecherchePersonnesDansBDD,
+                                            Tasklet initialiserIndexESTasklet,
+                                            Tasklet initiliserIndexBDDTasklet,
+                                            Tasklet indexerPersonnesDansESTasklet,
+                                            Tasklet chargerOaiSetsTasklet,
+                                            JobTheseCompletionNotificationListener listener) {
+        return jobs.get("indexationRecherchePersonnesDansES").incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
+                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .next(stepIndexRecherchePersonnesDansBDD)
+                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .build();
+    }
+
+    @Bean
     public Job jobIndexationThematiquesDansES(Step stepIndexThematiquesDansES,
                                          JobRepository jobRepository,
                                          Tasklet initialiserIndexESTasklet,
@@ -131,7 +148,16 @@ public class BatchConfiguration {
     @Bean
     public Step stepIndexPersonnesDansBDD(@Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
                                           @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexPersonnesDansES").chunk(config.getChunk())
+        return stepBuilderFactory.get("stepIndexPersonnesDansBDD").chunk(config.getChunk())
+                .reader(theseItemReader.read())
+                .processor(itemProcessor)
+                .writer(itemWriter)
+                .build();
+    }
+    @Bean
+    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("recherchePersonneItemProcessor") ItemProcessor itemProcessor,
+                                                   @Qualifier("recherchePersonnesBDDWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexPersonnesDansBDD").chunk(config.getChunk())
                 .reader(theseItemReader.read())
                 .processor(itemProcessor)
                 .writer(itemWriter)

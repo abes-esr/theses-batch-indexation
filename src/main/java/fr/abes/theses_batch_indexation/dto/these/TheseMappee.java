@@ -274,12 +274,14 @@ public class TheseMappee {
                 Iterator<PartenaireRecherche> partenairesIterator = partenairesDepuisTef.iterator();
                 while (partenairesIterator.hasNext()) {
                     PartenaireRecherche p = partenairesIterator.next();
-                    if (!p.getNom().equals("")) {
-                        OrganismeDTO pdto = new OrganismeDTO();
-                        if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne()))
-                            pdto.setPpn(OutilsTef.getPPN(p.getAutoriteExterne()));
-                        pdto.setNom(p.getNom());
-                        pdto.setType(p.getType());
+                    OrganismeDTO pdto = new OrganismeDTO();
+                    if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne()))
+                        pdto.setPpn(OutilsTef.getPPN(p.getAutoriteExterne()));
+                    pdto.setNom(p.getNom());
+                    pdto.setType(p.getType());
+                    if ("".equals(p.getNom()) || "NON RENSEIGNE".equals(p.getNom())) {
+                        log.warn("Pas de partenaires");
+                    } else {
                         partenairesRecherche.add(pdto);
                         partenairesRechercheN.add(p.getNom());
                     }
