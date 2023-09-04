@@ -279,8 +279,12 @@ public class TheseMappee {
                         pdto.setPpn(OutilsTef.getPPN(p.getAutoriteExterne()));
                     pdto.setNom(p.getNom());
                     pdto.setType(p.getType());
-                    partenairesRecherche.add(pdto);
-                    partenairesRechercheN.add(p.getNom());
+                    if ("".equals(p.getNom()) || "NON RENSEIGNE".equals(p.getNom())) {
+                        log.warn("Pas de partenaires");
+                    } else {
+                        partenairesRecherche.add(pdto);
+                        partenairesRechercheN.add(p.getNom());
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour partenaire  " + nnt + "," + e.getMessage());
