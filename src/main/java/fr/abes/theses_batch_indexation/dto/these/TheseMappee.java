@@ -226,7 +226,7 @@ public class TheseMappee {
             // source
             log.info("traitement de source");
             source = "sudoc";
-            if (status.equals("enCours") || (status.equals("soutenue") && nnt.equals("")))
+            if (status.equals("enCours") || (status.equals("soutenue") && (nnt == null || nnt.equals(""))))
                 source = "step";
             try {
                 if (status.equals("soutenue") &&
@@ -274,13 +274,15 @@ public class TheseMappee {
                 Iterator<PartenaireRecherche> partenairesIterator = partenairesDepuisTef.iterator();
                 while (partenairesIterator.hasNext()) {
                     PartenaireRecherche p = partenairesIterator.next();
-                    OrganismeDTO pdto = new OrganismeDTO();
-                    if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne()))
-                        pdto.setPpn(OutilsTef.getPPN(p.getAutoriteExterne()));
-                    pdto.setNom(p.getNom());
-                    pdto.setType(p.getType());
-                    partenairesRecherche.add(pdto);
-                    partenairesRechercheN.add(p.getNom());
+                    if (!p.getNom().equals("")) {
+                        OrganismeDTO pdto = new OrganismeDTO();
+                        if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne()))
+                            pdto.setPpn(OutilsTef.getPPN(p.getAutoriteExterne()));
+                        pdto.setNom(p.getNom());
+                        pdto.setType(p.getType());
+                        partenairesRecherche.add(pdto);
+                        partenairesRechercheN.add(p.getNom());
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour partenaire  " + nnt + "," + e.getMessage());
@@ -296,12 +298,14 @@ public class TheseMappee {
                 Iterator<EcoleDoctorale> ecoleDoctoraleIterator = ecolesDoctoralesDepuisTef.iterator();
                 while (ecoleDoctoraleIterator.hasNext()) {
                     EcoleDoctorale ecole = ecoleDoctoraleIterator.next();
-                    OrganismeDTO edto = new OrganismeDTO();
-                    if (ecole.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ecole.getAutoriteExterne()))
-                        edto.setPpn(OutilsTef.getPPN(ecole.getAutoriteExterne()));
-                    edto.setNom(ecole.getNom());
-                    ecolesDoctorales.add(edto);
-                    ecolesDoctoralesN.add(ecole.getNom());
+                    if (!ecole.getNom().equals("")) {
+                        OrganismeDTO edto = new OrganismeDTO();
+                        if (ecole.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ecole.getAutoriteExterne()))
+                            edto.setPpn(OutilsTef.getPPN(ecole.getAutoriteExterne()));
+                        edto.setNom(ecole.getNom());
+                        ecolesDoctorales.add(edto);
+                        ecolesDoctoralesN.add(ecole.getNom());
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour ecolesDoctorales de " + nnt + "," + e.getMessage());
