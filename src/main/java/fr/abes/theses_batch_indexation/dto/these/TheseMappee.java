@@ -309,8 +309,12 @@ public class TheseMappee {
                         if (ecole.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ecole.getAutoriteExterne()))
                             edto.setPpn(OutilsTef.getPPN(ecole.getAutoriteExterne()));
                         edto.setNom(ecole.getNom());
-                        ecolesDoctorales.add(edto);
-                        ecolesDoctoralesN.add(ecole.getNom());
+                        if ("".equals(ecole.getNom())) {
+                            log.warn("Pas d'école doctorale");
+                        } else {
+                            ecolesDoctorales.add(edto);
+                            ecolesDoctoralesN.add(ecole.getNom());
+                        }
                     }
                 }
             } catch (NullPointerException e) {
