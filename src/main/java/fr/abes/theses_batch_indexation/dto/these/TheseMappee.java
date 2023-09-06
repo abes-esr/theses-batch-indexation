@@ -196,46 +196,39 @@ public class TheseMappee {
                 log.error("PB pour accessible de " + nnt);
             }
 
-            // status
+            // source
+            log.info("traitement de source");
 
-            log.info("traitement de status");
-
-            status = "soutenue";
             try {
-                Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+                if (!nnt.equals("") &&
+                        mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
+                                .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
+                    source = "star";
+            } catch (NullPointerException ex) {
+                log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
+            }
+            if (nnt.equals("")) {
+                source = "step";
+            } else {
+                source = "sudoc";
+            }
 
-                if (dmdSecPourStepGestion.isPresent())
-                    status = dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
-                    || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
-                            ?"soutenue":"enCours";
-
-            } catch (NullPointerException e) {
-                log.error("PB pour status de " + nnt + e.getMessage());
+            // status
+            log.info("traitement de status");
+            if (source.equals("star") ||  source.equals("sudoc")) {
+                status = "soutenue";
+            } else {
+                // source == "step"
+                status = "enCours";
             }
 
             // date filtre
-
             log.info("traitement de datefiltre ");
 
             if (status.equals("enCours"))
                 dateFiltre = datePremiereInscriptionDoctorat;
             else
                 dateFiltre = dateSoutenance;
-
-
-            // source
-            log.info("traitement de source");
-            source = "sudoc";
-            if (status.equals("enCours") || (status.equals("soutenue") && (nnt == null || nnt.equals(""))))
-                source = "step";
-            try {
-                if (status.equals("soutenue") &&
-                        mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                        .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
-                    source = "star";
-            } catch (NullPointerException ex) {
-                log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
-            }
 
             // etablissements
 
