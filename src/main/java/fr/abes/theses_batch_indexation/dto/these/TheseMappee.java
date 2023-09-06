@@ -17,6 +17,7 @@ public class TheseMappee {
     String accessible;
     String source;
     String status;
+    Boolean isSoutenue;
     String codeEtab;
     String nnt;
     String dateSoutenance;
@@ -199,19 +200,25 @@ public class TheseMappee {
             // source
             log.info("traitement de source");
 
+            boolean sourceIsSet = false;
             try {
                 if (!nnt.equals("") &&
                         mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                                .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
+                                .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
                     source = "star";
+                    sourceIsSet = true;
+                }
             } catch (NullPointerException ex) {
                 log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
-            if (nnt.equals("")) {
-                source = "step";
-            } else {
-                source = "sudoc";
+            if (!sourceIsSet) {
+                if (nnt.equals("")) {
+                    source = "step";
+                } else {
+                    source = "sudoc";
+                }
             }
+
 
             // status
             log.info("traitement de status");
@@ -220,6 +227,21 @@ public class TheseMappee {
             } else {
                 // source == "step"
                 status = "enCours";
+            }
+
+            // isSoutenue
+            log.info("traitement de isSoutenue");
+
+            isSoutenue = true;
+            try {
+                Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+
+                if (dmdSecPourStepGestion.isPresent())
+                    isSoutenue = dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
+                            || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu");
+
+            } catch (NullPointerException e) {
+                log.error("PB pour isSoutenue de " + nnt + e.getMessage());
             }
 
             // date filtre
