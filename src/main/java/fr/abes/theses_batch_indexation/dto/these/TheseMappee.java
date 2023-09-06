@@ -202,32 +202,38 @@ public class TheseMappee {
 
             boolean sourceIsSet = false;
             try {
-                if (!nnt.equals("") &&
+                source = "step";
+                if (!"".equals(nnt) &&
                         mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                                 .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
                     source = "star";
                     sourceIsSet = true;
                 }
+                if (!sourceIsSet) {
+                    if ("".equals(nnt)) {
+                        source = "step";
+                    } else {
+                        source = "sudoc";
+                    }
+                }
             } catch (NullPointerException ex) {
                 log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
-            }
-            if (!sourceIsSet) {
-                if (nnt.equals("")) {
-                    source = "step";
-                } else {
-                    source = "sudoc";
-                }
             }
 
 
             // status
-            log.info("traitement de status");
-            if (source.equals("star") ||  source.equals("sudoc")) {
-                status = "soutenue";
-            } else {
-                // source == "step"
-                status = "enCours";
+            try {
+                log.info("traitement de status");
+                if (source.equals("star") ||  source.equals("sudoc")) {
+                    status = "soutenue";
+                } else {
+                    // source == "step"
+                    status = "enCours";
+                }
+            } catch (NullPointerException e) {
+                log.error("PB pour status de " + nnt + "," + e.getMessage());
             }
+
 
             // isSoutenue
             log.info("traitement de isSoutenue");
