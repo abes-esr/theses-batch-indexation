@@ -223,7 +223,7 @@ public class TheseMappee {
             // status
             log.info("traitement de status");
             if (source.equals("star") ||  source.equals("sudoc")) {
-                status = "soutenu";
+                status = "soutenue";
             } else {
                 // source == "step"
                 status = "enCours";
