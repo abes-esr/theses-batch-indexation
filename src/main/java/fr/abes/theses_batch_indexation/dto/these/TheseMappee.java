@@ -202,20 +202,18 @@ public class TheseMappee {
 
             boolean sourceIsSet = false;
             try {
-                source = "step";
+                source = "sudoc";
+
+                if ("".equals(nnt)) {
+                    source = "step";
+                }
+
                 if (!"".equals(nnt) &&
                         mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                                 .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
                     source = "star";
-                    sourceIsSet = true;
                 }
-                if (!sourceIsSet) {
-                    if ("".equals(nnt)) {
-                        source = "step";
-                    } else {
-                        source = "sudoc";
-                    }
-                }
+
             } catch (NullPointerException ex) {
                 log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
@@ -224,7 +222,7 @@ public class TheseMappee {
             // status
             try {
                 log.info("traitement de status");
-                if (source.equals("star") ||  source.equals("sudoc")) {
+                if (source.equals("star") || source.equals("sudoc")) {
                     status = "soutenue";
                 } else {
                     // source == "step"
@@ -524,7 +522,7 @@ public class TheseMappee {
                 }
                 List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
                         .getThesisRecord().getSujetRameau().getVedetteRameauFamille();
-                Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator= sujetsRameauFamilleDepuisTef.iterator();
+                Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator = sujetsRameauFamilleDepuisTef.iterator();
                 while (vedetteRameauFamilleIterator.hasNext()) {
                     VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
@@ -589,7 +587,7 @@ public class TheseMappee {
                 Iterator<String> oaiSetSpecIterator = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getOaiSetSpec().iterator();
                 while (oaiSetSpecIterator.hasNext()) {
-                    String oaiSetSpec  = oaiSetSpecIterator.next();
+                    String oaiSetSpec = oaiSetSpecIterator.next();
                     Optional<Set> leSet = oaiSets.stream().filter(d -> d.getSetSpec().equals(oaiSetSpec)).findFirst();
                     oaiSetNames.add(leSet.get().getSetName());
                 }
@@ -644,42 +642,55 @@ public class TheseMappee {
     public void setPartenairesRecherche(List<OrganismeDTO> partenairesRecherche) {
         this.partenairesRecherche = partenairesRecherche;
     }
+
     public List<PersonneDTO> getRapporteurs() {
         return rapporteurs;
     }
+
     public void setRapporteurs(List<PersonneDTO> rapporteurs) {
         this.rapporteurs = rapporteurs;
     }
+
     public List<PersonneDTO> getMembresJury() {
         return membresJury;
     }
+
     public void setMembresJury(List<PersonneDTO> membresJury) {
         this.membresJury = membresJury;
     }
+
     public List<PersonneDTO> getAuteurs() {
         return auteurs;
     }
+
     public void setAuteurs(List<PersonneDTO> auteurs) {
         this.auteurs = auteurs;
     }
+
     public List<PersonneDTO> getDirecteurs() {
         return directeurs;
     }
+
     public void setDirecteurs(List<PersonneDTO> directeurs) {
         this.directeurs = directeurs;
     }
+
     public Map<String, String> getResumes() {
         return resumes;
     }
+
     public void setResumes(Map<String, String> resumes) {
         this.resumes = resumes;
     }
+
     public String getDateSoutenance() {
         return dateSoutenance;
     }
+
     public void setDateSoutenance(String dateSoutenance) {
         this.dateSoutenance = dateSoutenance;
     }
+
     public String getDatePremiereInscriptionDoctorat() {
         return datePremiereInscriptionDoctorat;
     }
@@ -687,81 +698,107 @@ public class TheseMappee {
     public void setDatePremiereInscriptionDoctorat(String datePremiereInscriptionDoctorat) {
         this.datePremiereInscriptionDoctorat = datePremiereInscriptionDoctorat;
     }
+
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
+
     public List<String> getPpn() {
         return ppn;
     }
+
     public void setPpn(List<String> ppn) {
         this.ppn = ppn;
     }
+
     public String getSource() {
         return source;
     }
+
     public void setSource(String source) {
         this.source = source;
     }
+
     public String getAccessible() {
         return accessible;
     }
+
     public void setAccessible(String accessible) {
         this.accessible = accessible;
     }
+
     public Map<String, String> getTitres() {
         return titres;
     }
+
     public void setTitres(Map<String, String> titres) {
         this.titres = titres;
     }
+
     public List<OrganismeDTO> getEtabsCotutelle() {
         return etabsCotutelle;
     }
+
     public void setEtabsCotutelle(List<OrganismeDTO> etabsCotutelle) {
         this.etabsCotutelle = etabsCotutelle;
     }
+
     public String getDiscipline() {
         return discipline;
     }
+
     public void setDiscipline(String discipline) {
         this.discipline = discipline;
     }
+
     public List<OrganismeDTO> getEcolesDoctorales() {
         return ecolesDoctorales;
     }
+
     public void setEcolesDoctorales(List<OrganismeDTO> ecolesDoctorales) {
         this.ecolesDoctorales = ecolesDoctorales;
     }
+
     public String getCodeEtab() {
         return codeEtab;
     }
+
     public void setCodeEtab(String codeEtab) {
         this.codeEtab = codeEtab;
     }
+
     public String getDateFinEmbargo() {
         return dateFinEmbargo;
     }
+
     public void setDateFinEmbargo(String dateFinEmbargo) {
         this.dateFinEmbargo = dateFinEmbargo;
     }
+
     public List<String> getLangues() {
         return langues;
     }
+
     public void setLangues(List<String> langues) {
         this.langues = langues;
     }
+
     public List<String> getOaiSetNames() {
         return oaiSetNames;
     }
+
     public void setOaiSetNames(List<String> oaiSetNames) {
         this.oaiSetNames = oaiSetNames;
     }
+
     public List<SujetDTO> getSujets() {
         return sujets;
     }
+
     public void setSujets(List<SujetDTO> sujets) {
         this.sujets = sujets;
     }
