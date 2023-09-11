@@ -204,11 +204,11 @@ public class TheseMappee {
             try {
                 source = "sudoc";
 
-                if ("".equals(nnt)) {
+                if (nnt == null || "".equals(nnt)) {
                     source = "step";
                 }
 
-                if (!"".equals(nnt) &&
+                if (!(nnt == null || "".equals(nnt)) &&
                         mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                                 .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
                     source = "star";
