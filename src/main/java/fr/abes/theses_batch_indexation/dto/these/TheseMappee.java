@@ -31,12 +31,16 @@ public class TheseMappee {
     Map<String, String> resumes = new HashMap<>();
     List<String> langues = new ArrayList<>();
     OrganismeDTO etabSoutenance = new OrganismeDTO();
+    String etabSoutenancePpn;
     String etabSoutenanceN;
     List<OrganismeDTO> etabsCotutelle = new ArrayList<>();
+    List<String> etabsCotutellePpn = new ArrayList<>();
     List<String> etabsCotutelleN = new ArrayList<>();
     List<OrganismeDTO> ecolesDoctorales = new ArrayList<>();
+    List<String> ecolesDoctoralesPpn = new ArrayList<>();
     List<String> ecolesDoctoralesN = new ArrayList<>();
     List<OrganismeDTO> partenairesRecherche = new ArrayList<>();
+    List<String> partenairesRecherchePpn = new ArrayList<>();
     List<String> partenairesRechercheN = new ArrayList<>();
 
 
@@ -266,16 +270,21 @@ public class TheseMappee {
                 Iterator<ThesisDegreeGrantor> iteGrantor = grantors.iterator();
                 // l'étab de soutenance est le premier de la liste
                 ThesisDegreeGrantor premier = iteGrantor.next();
-                if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne()))
+                if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne())) {
                     etabSoutenance.setPpn(OutilsTef.getPPN(premier.getAutoriteExterne()));
+                    etabSoutenancePpn = OutilsTef.getPPN(premier.getAutoriteExterne());
+                }
                 etabSoutenance.setNom(premier.getNom());
                 etabSoutenanceN = premier.getNom();
+
                 // les potentiels suivants sont les cotutelles
                 while (iteGrantor.hasNext()) {
                     ThesisDegreeGrantor a = iteGrantor.next();
                     OrganismeDTO ctdto = new OrganismeDTO();
-                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne()))
+                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne())) {
                         ctdto.setPpn(OutilsTef.getPPN(a.getAutoriteExterne()));
+                        etabsCotutellePpn.add(OutilsTef.getPPN(a.getAutoriteExterne()));
+                    }
                     ctdto.setNom(a.getNom());
                     if ("".equals(a.getNom())) {
                         log.warn("Pas de nom de cotutelle");
@@ -298,8 +307,10 @@ public class TheseMappee {
                 while (partenairesIterator.hasNext()) {
                     PartenaireRecherche p = partenairesIterator.next();
                     OrganismeDTO pdto = new OrganismeDTO();
-                    if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne()))
+                    if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne())) {
                         pdto.setPpn(OutilsTef.getPPN(p.getAutoriteExterne()));
+                        partenairesRecherchePpn.add(OutilsTef.getPPN(p.getAutoriteExterne()));
+                    }
                     pdto.setNom(p.getNom());
                     pdto.setType(p.getType());
                     if ("".equals(p.getNom()) || "NON RENSEIGNE".equals(p.getNom())) {
@@ -325,8 +336,10 @@ public class TheseMappee {
                     EcoleDoctorale ecole = ecoleDoctoraleIterator.next();
                     if (!ecole.getNom().equals("")) {
                         OrganismeDTO edto = new OrganismeDTO();
-                        if (ecole.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ecole.getAutoriteExterne()))
+                        if (ecole.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ecole.getAutoriteExterne())) {
                             edto.setPpn(OutilsTef.getPPN(ecole.getAutoriteExterne()));
+                            ecolesDoctoralesPpn.add(OutilsTef.getPPN(ecole.getAutoriteExterne()));
+                        }
                         edto.setNom(ecole.getNom());
                         if ("".equals(ecole.getNom())) {
                             log.warn("Pas d'école doctorale");

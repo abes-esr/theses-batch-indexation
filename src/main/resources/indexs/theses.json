@@ -308,6 +308,9 @@
           }
         }
       },
+      "etabSoutenancePpn": {
+        "type": "text"
+      },
       "etabSoutenanceN": {
         "type": "text",
         "fields": {
@@ -327,6 +330,9 @@
           }
         }
       },
+      "etabsCotutellePpn": {
+        "type": "text"
+      },
       "etabsCotutelleN": {
         "type": "text"
       },
@@ -340,6 +346,9 @@
             "type": "text"
           }
         }
+      },
+      "ecolesDoctoralesPpn": {
+        "type": "text"
       },
       "ecolesDoctoralesN": {
         "type": "text",
@@ -362,6 +371,9 @@
             "type": "text"
           }
         }
+      },
+      "partenairesRecherchePpn": {
+        "type": "text"
       },
       "partenairesRechercheN": {
         "type": "text"
