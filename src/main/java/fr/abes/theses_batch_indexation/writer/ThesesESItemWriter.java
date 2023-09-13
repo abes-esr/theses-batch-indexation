@@ -13,10 +13,12 @@ import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -29,6 +31,8 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
     @Autowired
     ProxyRetry proxyRetry;
 
+    @Autowired
+    private Environment env;
 
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
@@ -36,6 +40,10 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
         BulkRequest.Builder br = new BulkRequest.Builder();
 
         for (TheseModel theseModel : items) {
+            if ((theseModel.getCodeEtab().equals("FOR1") || theseModel.getCodeEtab().equals("FOR2"))
+                    && Arrays.asList(env.getActiveProfiles()).contains("prod"))
+                continue;
+
             JsonData json = readJson(new ByteArrayInputStream(theseModel.getJsonThese().getBytes()), ElasticClient.getElasticsearchClient());
 
             br.operations(op -> op
