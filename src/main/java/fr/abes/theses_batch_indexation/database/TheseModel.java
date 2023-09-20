@@ -2,6 +2,8 @@ package fr.abes.theses_batch_indexation.database;
 
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -9,6 +11,8 @@ import java.util.List;
  * jsonThese : vide au départ ; après le processor : json à indexer dans ES
  * personnes : Liste de personnes à indexer dans ES
  */
+@Getter
+@Setter
 public class TheseModel {
     private int idDoc;
     private String nnt;
@@ -19,70 +23,7 @@ public class TheseModel {
     private List<RecherchePersonneModelES> recherchePersonnes;
     private String jsonThematiques;
     private String idSujet;
-
-
-    public List<PersonneModelES> getPersonnes() {
-        return personnes;
-    }
-
-    public void setPersonnes(List<PersonneModelES> personnes) {
-        this.personnes = personnes;
-    }
-
-    public List<RecherchePersonneModelES> getRecherchePersonnes() {
-        return recherchePersonnes;
-    }
-
-    public void setRecherchePersonnes(List<RecherchePersonneModelES> personnes) {
-        this.recherchePersonnes = personnes;
-    }
-
-    public int getIdDoc() {
-        return idDoc;
-    }
-
-    public void setIdDoc(int idDoc) {
-        this.idDoc = idDoc;
-    }
-
-    public String getNnt() {
-        return nnt;
-    }
-
-    public void setNnt(String nnt) {
-        this.nnt = nnt;
-    }
-
-    public String getDoc() {
-        return doc;
-    }
-
-    public void setDoc(String doc) {
-        this.doc = doc;
-    }
-
-    public String getJsonThese() {
-        return jsonThese;
-    }
-
-    public void setJsonThese(String jsonThese) {
-        this.jsonThese = jsonThese;
-    }
-
-    public String getJsonThematiques() {
-        return jsonThematiques;
-    }
-    public void setJsonThematiques(String thematiques) {
-        this.jsonThematiques = thematiques;
-    }
-
-    public String getIdSujet() {
-        return idSujet;
-    }
-
-    public void setIdSujet(String idSujet) {
-        this.idSujet = idSujet;
-    }
+    private String codeEtab;
 
     /**
      * Retourne l'identifiant de la thèse
