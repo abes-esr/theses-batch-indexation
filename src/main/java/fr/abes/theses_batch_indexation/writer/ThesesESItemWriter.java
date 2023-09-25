@@ -40,8 +40,11 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
         BulkRequest.Builder br = new BulkRequest.Builder();
 
         for (TheseModel theseModel : items) {
-            if ((theseModel.getCodeEtab().equals("FOR1") || theseModel.getCodeEtab().equals("FOR2"))
-                    && Arrays.asList(env.getActiveProfiles()).contains("prod"))
+            if (
+                    theseModel.getCodeEtab() != null &&
+                    (theseModel.getCodeEtab().equals("FOR1") || theseModel.getCodeEtab().equals("FOR2"))
+                    && Arrays.asList(env.getActiveProfiles()).contains("prod")
+            )
                 continue;
 
             JsonData json = readJson(new ByteArrayInputStream(theseModel.getJsonThese().getBytes()), ElasticClient.getElasticsearchClient());
