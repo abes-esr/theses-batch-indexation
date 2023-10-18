@@ -39,9 +39,19 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Value("${index.pathRecherchePersonnes}")
     private String pathRecherchePersonnes;
 
+    @Value("${iddocToRestart}")
+    private Integer iddocToRestart;
+
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+
+        if (iddocToRestart > 0) {
+            log.warn("Index " + nomIndex.toLowerCase() + " non réinitialisé," +
+                    " car reprise de l'indexation à partir de l'iddoc : " + iddocToRestart);
+            return RepeatStatus.FINISHED;
+        }
+
         File f = selectIndex();
 
         if (f != null) {
