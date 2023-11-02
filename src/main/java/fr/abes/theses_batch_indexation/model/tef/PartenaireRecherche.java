@@ -2,7 +2,7 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.05.31 à 04:22:21 PM CEST 
+// Généré le : 2023.11.02 à 05:24:00 PM CET 
 //
 
 
@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}autoriteInterne"/>
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}autoriteExterne" maxOccurs="unbounded"/>
  *       &lt;/sequence>
+ *       &lt;attribute name="autreType" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -60,6 +61,10 @@ public class PartenaireRecherche {
     protected String autoriteInterne;
     @XmlElement(required = true)
     protected List<AutoriteExterne> autoriteExterne;
+    @XmlAttribute(name = "autreType")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String autreType;
     @XmlAttribute(name = "type", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
@@ -140,6 +145,30 @@ public class PartenaireRecherche {
             autoriteExterne = new ArrayList<AutoriteExterne>();
         }
         return this.autoriteExterne;
+    }
+
+    /**
+     * Obtient la valeur de la propriété autreType.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAutreType() {
+        return autreType;
+    }
+
+    /**
+     * Définit la valeur de la propriété autreType.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAutreType(String value) {
+        this.autreType = value;
     }
 
     /**
