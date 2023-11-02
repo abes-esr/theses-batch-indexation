@@ -5,8 +5,11 @@ import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class TheseMappee {
@@ -226,11 +229,17 @@ public class TheseMappee {
             // status
             try {
                 log.info("traitement de status");
-                if (source.equals("star") || source.equals("sudoc")) {
+
+                status = "enCours";
+
+                final String regex = ".*\\/([0-9,A-Z]*)";
+                final String urlperene = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
+                        .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getUrlPerenne();
+                final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+                final Matcher matcher = pattern.matcher(urlperene);
+
+                if (isNnt(matcher.group(1))) {
                     status = "soutenue";
-                } else {
-                    // source == "step"
-                    status = "enCours";
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour status de " + nnt + "," + e.getMessage());
@@ -240,13 +249,12 @@ public class TheseMappee {
             // isSoutenue
             log.info("traitement de isSoutenue");
 
-            isSoutenue = true;
+            isSoutenue = false;
             try {
-                Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+                XMLGregorianCalendar dateAccepted = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue();
 
-                if (dmdSecPourStepGestion.isPresent())
-                    isSoutenue = dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
-                            || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu");
+                if (dateAccepted.isValid())
+                    isSoutenue = true;
 
             } catch (NullPointerException e) {
                 log.error("PB pour isSoutenue de " + nnt + e.getMessage());
