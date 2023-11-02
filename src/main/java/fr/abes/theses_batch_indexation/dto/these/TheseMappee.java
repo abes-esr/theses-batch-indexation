@@ -313,6 +313,13 @@ public class TheseMappee {
             // partenaires
 
             log.info("traitement de partenaires");
+
+            HashMap<String, String> type_partenaire_recherche = new HashMap<String, String>();
+            type_partenaire_recherche.put("laboratoire", "Laboratoire");
+            type_partenaire_recherche.put("equipeRecherche", "Equipe de recherche");
+            type_partenaire_recherche.put("entreprise", "Entreprise");
+            type_partenaire_recherche.put("fondation", "Fondation");
+
             try {
                 List<PartenaireRecherche> partenairesDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getPartenaireRecherche();
@@ -325,7 +332,18 @@ public class TheseMappee {
                         partenairesRecherchePpn.add(OutilsTef.getPPN(p.getAutoriteExterne()));
                     }
                     pdto.setNom(p.getNom());
-                    pdto.setType(p.getType());
+                    try {
+                        if (type_partenaire_recherche.get(p.getType()) != null) {
+                            pdto.setType(type_partenaire_recherche.get(p.getType()));
+                        } else if (p.getType().equals("autreType")) {
+                            pdto.setType(p.getAutreType());
+                        }
+                    }
+                    catch (Exception eTypePartenaireRecherche) {
+                        log.error("pb lors de la récupération du type du partenaire de recherche pour nnt = " + nnt);
+                    }
+
+
                     if ("".equals(p.getNom()) || "NON RENSEIGNE".equals(p.getNom())) {
                         log.warn("Pas de partenaires");
                     } else {
@@ -651,9 +669,10 @@ public class TheseMappee {
     }
 
     private boolean isNnt(String identifier) {
-        if (identifier.length() == 12)
-            return true;
-        return false;
+        String regex = "\\d{4}[A-Z]{2}[0-9A-Z]{2}[0-9A-Z]{4}";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(identifier);
+        return m.matches();
     }
 
 
