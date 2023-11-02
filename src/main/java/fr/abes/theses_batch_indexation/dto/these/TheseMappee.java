@@ -47,14 +47,19 @@ public class TheseMappee {
     String discipline;
     List<PersonneDTO> auteurs = new ArrayList<>();
     List<String> auteursNP = new ArrayList<>();
+    List<String> auteursPpn = new ArrayList<>();
     List<PersonneDTO> directeurs = new ArrayList<>();
     List<String> directeursNP = new ArrayList<>();
+    List<String> directeursPpn = new ArrayList<>();
     PersonneDTO presidentJury = new PersonneDTO();
     String presidentJuryNP;
+    String presidentJuryPpn;
     List<PersonneDTO> membresJury = new ArrayList<>();
     List<String> membresJuryNP = new ArrayList<>();
+    List<String> membresJuryPpn = new ArrayList<>();
     List<PersonneDTO> rapporteurs = new ArrayList<>();
     List<String> rapporteursNP = new ArrayList<>();
+    List<String> rapporteursPpn = new ArrayList<>();
     List<SujetRameauDTO> sujetsRameau = new ArrayList<>();
     List<String> sujetsRameauPpn = new ArrayList<>();
     List<String> sujetsRameauLibelle = new ArrayList<>();
@@ -376,8 +381,11 @@ public class TheseMappee {
                 while (auteurIterator.hasNext()) {
                     Auteur a = auteurIterator.next();
                     PersonneDTO adto = new PersonneDTO();
-                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne()))
+                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne())) {
                         adto.setPpn(OutilsTef.getPPN(a.getAutoriteExterne()));
+                        auteursPpn.add(OutilsTef.getPPN(a.getAutoriteExterne()));
+                    }
+
                     adto.setNom(a.getNom());
                     adto.setPrenom(a.getPrenom());
                     auteurs.add(adto);
@@ -396,8 +404,10 @@ public class TheseMappee {
                 while (directeurTheseIterator.hasNext()) {
                     DirecteurThese dt = directeurTheseIterator.next();
                     PersonneDTO dtdto = new PersonneDTO();
-                    if (dt.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(dt.getAutoriteExterne()))
+                    if (dt.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(dt.getAutoriteExterne())) {
                         dtdto.setPpn(OutilsTef.getPPN(dt.getAutoriteExterne()));
+                        directeursPpn.add(OutilsTef.getPPN(dt.getAutoriteExterne()));
+                    }
                     dtdto.setNom(dt.getNom());
                     dtdto.setPrenom(dt.getPrenom());
                     directeurs.add(dtdto);
@@ -413,8 +423,11 @@ public class TheseMappee {
             try {
                 if (techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury() != null) {
                     PresidentJury presidentDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury();
-                    if (presidentDepuisTef.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(presidentDepuisTef.getAutoriteExterne()))
+                    if (presidentDepuisTef.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(presidentDepuisTef.getAutoriteExterne())) {
                         presidentJury.setPpn(OutilsTef.getPPN(presidentDepuisTef.getAutoriteExterne()));
+                        presidentJuryPpn = OutilsTef.getPPN(presidentDepuisTef.getAutoriteExterne());
+                    }
+
                     presidentJury.setNom(presidentDepuisTef.getNom());
                     presidentJury.setPrenom(presidentDepuisTef.getPrenom());
                     presidentJuryNP = presidentDepuisTef.getNom() + " " + presidentDepuisTef.getPrenom();
@@ -433,8 +446,10 @@ public class TheseMappee {
                 while (membresIterator.hasNext()) {
                     MembreJury m = membresIterator.next();
                     PersonneDTO mdto = new PersonneDTO();
-                    if (m.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(m.getAutoriteExterne()))
+                    if (m.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(m.getAutoriteExterne())) {
                         mdto.setPpn(OutilsTef.getPPN(m.getAutoriteExterne()));
+                        membresJuryPpn.add(OutilsTef.getPPN(m.getAutoriteExterne()));
+                    }
                     mdto.setNom(m.getNom());
                     mdto.setPrenom(m.getPrenom());
                     membresJury.add(mdto);
@@ -454,8 +469,10 @@ public class TheseMappee {
                 while (rapporteurIterator.hasNext()) {
                     Rapporteur r = rapporteurIterator.next();
                     PersonneDTO rdto = new PersonneDTO();
-                    if (r.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(r.getAutoriteExterne()))
+                    if (r.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(r.getAutoriteExterne())) {
                         rdto.setPpn(OutilsTef.getPPN(r.getAutoriteExterne()));
+                        rapporteursPpn.add(OutilsTef.getPPN(r.getAutoriteExterne()));
+                    }
                     rdto.setNom(r.getNom());
                     rdto.setPrenom(r.getPrenom());
                     rapporteurs.add(rdto);
