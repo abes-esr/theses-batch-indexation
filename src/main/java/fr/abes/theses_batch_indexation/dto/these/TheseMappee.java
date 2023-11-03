@@ -230,27 +230,6 @@ public class TheseMappee {
                 log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
 
-
-            // status
-            try {
-                log.info("traitement de status");
-
-                status = "enCours";
-
-                final String regex = ".*\\/([0-9,A-Z]*)";
-                final String urlperene = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                        .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getUrlPerenne();
-                final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-                final Matcher matcher = pattern.matcher(urlperene);
-
-                if (isNnt(matcher.group(1))) {
-                    status = "soutenue";
-                }
-            } catch (NullPointerException e) {
-                log.error("PB pour status de " + nnt + "," + e.getMessage());
-            }
-
-
             // isSoutenue
             log.info("traitement de isSoutenue");
 
@@ -263,6 +242,37 @@ public class TheseMappee {
 
             } catch (NullPointerException e) {
                 log.error("PB pour isSoutenue de " + nnt + e.getMessage());
+            }
+
+            // status
+            try {
+                log.info("traitement de status");
+
+                status = "soutenue";
+
+                Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
+                Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+
+                if (starGestion.isPresent()) {
+                    final String regex = ".*\\/([0-9,A-Z]*)";
+                    final String urlperene = starGestion.get().getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getUrlPerenne();
+                    if (urlperene != null) {
+                        final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+                        final Matcher matcher = pattern.matcher(urlperene);
+
+                        if (matcher.matches() && isNnt(matcher.group(1))) {
+                            status = "soutenue";
+                        } else {
+                            status = "enCours";
+                        }
+                    }
+                }
+                if (stepGestion.isPresent()) {
+                    status = "enCours";
+                }
+
+            } catch (NullPointerException e) {
+                log.error("PB pour status de " + nnt + "," + e.getMessage());
             }
 
             // date filtre
@@ -338,8 +348,7 @@ public class TheseMappee {
                         } else if (p.getType().equals("autreType")) {
                             pdto.setType(p.getAutreType());
                         }
-                    }
-                    catch (Exception eTypePartenaireRecherche) {
+                    } catch (Exception eTypePartenaireRecherche) {
                         log.error("pb lors de la récupération du type du partenaire de recherche pour nnt = " + nnt);
                     }
 
