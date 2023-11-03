@@ -240,11 +240,13 @@ public class TheseMappee {
                 final String regex = ".*\\/([0-9,A-Z]*)";
                 final String urlperene = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                         .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getUrlPerenne();
-                final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-                final Matcher matcher = pattern.matcher(urlperene);
+                if (urlperene != null) {
+                    final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+                    final Matcher matcher = pattern.matcher(urlperene);
 
-                if (isNnt(matcher.group(1))) {
-                    status = "soutenue";
+                    if (matcher.matches() && isNnt(matcher.group(1))) {
+                        status = "soutenue";
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour status de " + nnt + "," + e.getMessage());
