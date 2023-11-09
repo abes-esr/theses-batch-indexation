@@ -72,8 +72,8 @@ initialiseIndex=false
 Dans la base de données, les lignes à indexer sont gérées via : 
 
 ~~~~
-create table indexation_es (iddoc number not null primary key, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
-create table suppression_es (iddoc number not null primary key, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
 ~~~~
 
 Les tables précédentes sont remplies via les déclencheurs suivants : 
