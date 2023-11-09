@@ -72,8 +72,14 @@ initialiseIndex=false
 Dans la base de données, les lignes à indexer sont gérées via : 
 
 ~~~~
-create table indexation_es (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
-create table suppression_es (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es_these (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_these (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es_recherche_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_recherche_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es_thematique (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_thematique (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
 ~~~~
 
 Les tables précédentes sont remplies via les déclencheurs suivants : 
@@ -85,7 +91,10 @@ AFTER DELETE
    FOR EACH ROW
 
 BEGIN
-    INSERT INTO suppression_es (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO suppression_es_these (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO suppression_es_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO suppression_es_recherche_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO suppression_es_thematique (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
 END;
 
 /
@@ -96,6 +105,9 @@ AFTER INSERT OR UPDATE
    FOR EACH ROW
 
 BEGIN
-    INSERT INTO indexation_es (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO indexation_es_these (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO indexation_es_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO indexation_es_recherche_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO indexation_es_thematique (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
 END;
 ~~~~
