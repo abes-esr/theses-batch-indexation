@@ -79,3 +79,21 @@ BEGIN
    update document set envoielasticthese = 0, envoielasticpersonne = 0, envoielasticthematique = 0, envoielasticrecherchepersonne = 0 where iddoc = :new.iddoc;
 END;
 ~~~~
+
+Pour la désindexation, il faut une table avec les identifiants à supprimer :
+~~~~
+create table suppression_es (iddoc number not null primary key, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+~~~~
+
+et un déclencheur sur la table DOCUMENT pour remplir cette table : 
+
+~~~~
+CREATE OR REPLACE TRIGGER SUPPRESSION_ES
+AFTER DELETE
+   ON document
+   FOR EACH ROW
+
+BEGIN
+    INSERT INTO SUPPRESSION_ES (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+END;
+~~~~
