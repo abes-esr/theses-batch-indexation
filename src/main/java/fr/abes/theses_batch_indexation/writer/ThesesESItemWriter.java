@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.utils.ProxyRetry;
 import jakarta.json.spi.JsonProvider;
@@ -30,6 +31,9 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
 
     @Autowired
     ProxyRetry proxyRetry;
+
+    @Autowired
+    DbService dbService;
 
     @Autowired
     private Environment env;
@@ -60,12 +64,14 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
 
         BulkResponse result = proxyRetry.indexerDansES(br);
 
-        if (result.errors()) {
-            log.error("Erreurs dans le bulk : ");
-            for (BulkResponseItem item: result.items()) {
-                if (item.error() != null) {
-                    log.error(item.error().reason().concat(" pour ").concat(item.id()));
-                }
+        for (BulkResponseItem item: result.items()) {
+
+            if (item.error() != null) {
+                log.error(item.error().reason().concat(" pour ").concat(item.id()));
+                dbService.marqueTheseCommeNonIndexee(item.id());
+            }
+            else {
+                dbService.marqueTheseCommeIndexee(item.id());
             }
         }
     }

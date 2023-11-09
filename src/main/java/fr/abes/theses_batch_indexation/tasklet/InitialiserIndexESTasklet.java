@@ -39,30 +39,25 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Value("${index.pathRecherchePersonnes}")
     private String pathRecherchePersonnes;
 
-    @Value("${iddocToRestart}")
-    private Integer iddocToRestart;
-
+    @Value("${initialiseIndex}")
+    private Boolean initialiseIndex;
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
-        if (iddocToRestart > 0) {
-            log.warn("Index " + nomIndex.toLowerCase() + " non réinitialisé," +
-                    " car reprise de l'indexation à partir de l'iddoc : " + iddocToRestart);
-            return RepeatStatus.FINISHED;
+        if (initialiseIndex) {
+            log.warn("Réinitialisation de l'index " + nomIndex.toLowerCase());
+            File f = selectIndex();
+
+            if (f != null) {
+                //delete
+                deleteIndexES();
+                log.info("Index " + nomIndex.toLowerCase() + " supprimé");
+                //create
+                createIndexES(f);
+                log.info("Index " + nomIndex.toLowerCase() + " créé avec le schéma présent dans " + f.getPath());
+            }
         }
-
-        File f = selectIndex();
-
-        if (f != null) {
-            //delete
-            deleteIndexES();
-            log.info("Index " + nomIndex.toLowerCase() + " supprimé");
-            //create
-            createIndexES(f);
-            log.info("Index " + nomIndex.toLowerCase() + " créé avec le schéma présent dans " + f.getPath());
-        }
-
         return RepeatStatus.FINISHED;
     }
 

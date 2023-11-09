@@ -27,9 +27,6 @@ public class TheseItemReader {
     @Value("${index.name}")
     private String nomIndex;
 
-    @Value("${iddocToRestart}")
-    private Integer iddocToRestart;
-
     @Value("${table.name}")
     private String nomTable;
 
@@ -71,7 +68,7 @@ public class TheseItemReader {
             queryProvider.setWhereClause("where nom_index = '" + nomIndex + "'");
         } else {
             if (config.getWhereLimite() > 0)
-                queryProvider.setWhereClause("where rownum < " + config.getWhereLimite() + " AND iddoc >= " + iddocToRestart.toString());
+                queryProvider.setWhereClause("where rownum < " + config.getWhereLimite() + " AND envoielasticthese = 0");
         }
     }
 
