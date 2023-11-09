@@ -1,17 +1,20 @@
 # theses-batch-indexation
 
-Programme qui permet l'indexation en masse des thèses et de leurs métadonnées.
+Programme qui permet l'indexation en masse et à l'unité des thèses et de leurs métadonnées.
 
 Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override configuration properties):
-(indexationPersonnesDansES ou indexationThesesDansES ou indexationThematiquesDansES)
+(indexationPersonnesDansES, indexationRecherchePersonnesDansES, indexationThesesDansES ou indexationThematiquesDansES)
  ~~~
  spring.batch.job.names=nom_du_job
  ~~~
 
-Le batch va supprimer l'index et le recréer avec le fichier qui est dans resources/indexs :
-- si indexType=theses  => on utilise le fichier theses.json
-- si indexType=personnes  => on utilise le fichier personnes.json
-- si indexType=thematiques  => on utilise le fichier thematiques.json
+Le batch supprime l'index et le recrée si initialiseIndex=true avec le fichier qui est dans resources/indexs :
+- si typeIndex=theses  => on utilise le fichier theses.json
+- si typeIndex=personnes  => on utilise le fichier personnes.json
+- si typêIndex=thematiques  => on utilise le fichier thematiques.json
+- si typêIndex=recherche_personnes  => on utilise le fichier recherche_personnes.json
+
+Sinon, il est lancé via un crontab toutes les minutes et traite les lignes marquées à 0 dans la base de données dans la table DOCUMENT dans les colonnes booléennes : "envoielasticthese", "envoielasticpersonne", "envoielasticrecherchepersonne", "envoielasticthematique".
 
 Pour le faire fonctionner :
 
@@ -53,12 +56,15 @@ index.pathPersonnes=src/main/resources/indexs/personnes.json
 index.pathThematiques=src/main/resources/indexs/thematiques.json
 index.pathRecherchePersonnes=src/main/resources/indexs/recherche_personnes.json
 
-index.name=
-indexType=
-
 table.name=DOCUMENT_TEST
 table.personne.name=personne_cache
 
+# Utilisés pour les lots de test
+table.name=document
+index.name=theses
+
 oaiSets.path=src/main/resources/listeOaiSets.xml
 
+# Crée ou recrée l'index si true
+initialiseIndex=false
 
