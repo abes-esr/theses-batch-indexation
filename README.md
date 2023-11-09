@@ -14,7 +14,7 @@ Le batch supprime l'index et le recrée si initialiseIndex=true avec le fichier 
 - si typeIndex=thematiques  => on utilise le fichier thematiques.json
 - si typeIndex=recherche_personnes  => on utilise le fichier recherche_personnes.json
 
-Sinon, il est lancé via un crontab toutes les minutes et traite les lignes marquées à 0 dans la base de données dans la table DOCUMENT dans les colonnes booléennes : "envoielasticthese", "envoielasticpersonne", "envoielasticrecherchepersonne", "envoielasticthematique".
+Puis il est lancé via un crontab toutes les minutes et traite les lignes des tables indexation_es et suppression_es.
 
 Pour le faire fonctionner :
 
