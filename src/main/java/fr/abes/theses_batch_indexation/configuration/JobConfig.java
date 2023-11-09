@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,6 +20,12 @@ public class JobConfig {
     private int throttle;
 
     private int whereLimite;
+
+    @Value("${index.name}")
+    private String nomIndex;
+
+    @Value("${table.name}")
+    private String nomTable;
 
 
 }

@@ -57,8 +57,15 @@ public class JdbcPagingCustomReader
             OraclePagingQueryProvider queryProvider,
             String nomColonne) {
 
-        queryProvider.setWhereClause("where rownum < "+ config.getWhereLimite() +" AND "
-                + nomColonne +" = 0");
+        if (config.getNomTable().toLowerCase().contains("document_test")) {
+            queryProvider.setWhereClause("where nom_index = '" + config.getNomIndex() + "'");
+        }
+        else if (config.getWhereLimite() > 0) {
+            queryProvider.setWhereClause("where rownum < " + config.getWhereLimite() + " AND "+ nomColonne+" = 0");
+        }
+        else {
+            queryProvider.setWhereClause("where " + nomColonne +" = 0");
+        }
     }
 
     private Map<String, Order> sortByIdAsc() {

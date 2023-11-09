@@ -13,7 +13,4 @@ public class DbService {
     public void marqueTheseCommeIndexee (String id) {
         jdbcTemplate.update("UPDATE DOCUMENT SET ENVOIELASTICTHESE = 1 WHERE NNT = ? OR NUMSUJET = ?", id, id);
     }
-    public void marqueTheseCommeNonIndexee (String id) {
-        jdbcTemplate.update("UPDATE DOCUMENT SET ENVOIELASTICTHESE = 1 WHERE NNT = ? OR NUMSUJET = ?", id, id);
-    }
 }

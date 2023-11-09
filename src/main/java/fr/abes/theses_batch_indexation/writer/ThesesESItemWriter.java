@@ -68,7 +68,6 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
 
             if (item.error() != null) {
                 log.error(item.error().reason().concat(" pour ").concat(item.id()));
-                dbService.marqueTheseCommeNonIndexee(item.id());
             }
             else {
                 dbService.marqueTheseCommeIndexee(item.id());
