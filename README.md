@@ -69,31 +69,33 @@ oaiSets.path=src/main/resources/listeOaiSets.xml
 initialiseIndex=false
 ~~~~
 
-Un déclencheur sur la base de données indique les lignes à indexer : 
-~~~~
-CREATE OR REPLACE TRIGGER INDEXATION_ES
-AFTER INSERT OR UPDATE
-   ON document
-   FOR EACH ROW
-BEGIN
-   update document set envoielasticthese = 0, envoielasticpersonne = 0, envoielasticthematique = 0, envoielasticrecherchepersonne = 0 where iddoc = :new.iddoc;
-END;
-~~~~
+Dans la base de données, les lignes à indexer sont gérées via : 
 
-Pour la désindexation, il faut une table avec les identifiants à supprimer :
 ~~~~
+create table indexation_es (iddoc number not null primary key, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
 create table suppression_es (iddoc number not null primary key, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
 ~~~~
 
-et un déclencheur sur la table DOCUMENT pour remplir cette table : 
+Les tables précédentes sont remplies via les déclencheurs suivants : 
 
 ~~~~
-CREATE OR REPLACE TRIGGER SUPPRESSION_ES
+CREATE OR REPLACE TRIGGER SUPPRESSION_ES_TRIGGER
 AFTER DELETE
    ON document
    FOR EACH ROW
 
 BEGIN
-    INSERT INTO SUPPRESSION_ES (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO suppression_es (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+END;
+
+/
+
+CREATE OR REPLACE TRIGGER INDEXATION_ES_TRIGGER
+AFTER INSERT OR UPDATE
+   ON document
+   FOR EACH ROW
+
+BEGIN
+    INSERT INTO indexation_es (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
 END;
 ~~~~
