@@ -11,8 +11,8 @@ Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override 
 Le batch supprime l'index et le recrée si initialiseIndex=true avec le fichier qui est dans resources/indexs :
 - si typeIndex=theses  => on utilise le fichier theses.json
 - si typeIndex=personnes  => on utilise le fichier personnes.json
-- si typêIndex=thematiques  => on utilise le fichier thematiques.json
-- si typêIndex=recherche_personnes  => on utilise le fichier recherche_personnes.json
+- si typeIndex=thematiques  => on utilise le fichier thematiques.json
+- si typeIndex=recherche_personnes  => on utilise le fichier recherche_personnes.json
 
 Sinon, il est lancé via un crontab toutes les minutes et traite les lignes marquées à 0 dans la base de données dans la table DOCUMENT dans les colonnes booléennes : "envoielasticthese", "envoielasticpersonne", "envoielasticrecherchepersonne", "envoielasticthematique".
 
