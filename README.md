@@ -67,4 +67,15 @@ oaiSets.path=src/main/resources/listeOaiSets.xml
 
 # Crée ou recrée l'index si true
 initialiseIndex=false
+~~~~
 
+Un déclencheur sur la base de données indique les lignes à indexer : 
+~~~~
+CREATE OR REPLACE TRIGGER INDEXATION_ES
+AFTER INSERT OR UPDATE
+   ON document
+   FOR EACH ROW
+BEGIN
+   update document set envoielasticthese = 0, envoielasticpersonne = 0, envoielasticthematique = 0, envoielasticrecherchepersonne = 0 where iddoc = :new.iddoc;
+END;
+~~~~
