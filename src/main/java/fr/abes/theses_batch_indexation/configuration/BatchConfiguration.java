@@ -2,6 +2,7 @@ package fr.abes.theses_batch_indexation.configuration;
 
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
+import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
 import fr.abes.theses_batch_indexation.reader.TheseItemReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -132,11 +134,12 @@ public class BatchConfiguration {
 
     // ---------- STEP --------------------------------------------
     @Bean
-    public Step stepIndexThesesDansES(@Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
+    public Step stepIndexThesesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                      @Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
                                       @Qualifier("thesesESItemWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationThese").<TheseModel, TheseModel>chunk(config.getChunk())
                 .listener(theseWriteListener)
-                .reader(theseItemReader.read())
+                .reader(itemReader)
                 .processor(itemProcessor)
                 .listener(theseProcessListener)
                 .writer(itemWriter)
@@ -146,19 +149,31 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexPersonnesDansBDD(@Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
-                                          @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexPersonnesDansBDD").chunk(config.getChunk())
-                .reader(theseItemReader.read())
+    public Step stepIndexThematiquesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                           @Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
+                                           @Qualifier("thematiquesESItemWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
+                .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
                 .build();
     }
     @Bean
-    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("recherchePersonneItemProcessor") ItemProcessor itemProcessor,
+    public Step stepIndexPersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                          @Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
+                                          @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexationPersonne").chunk(config.getChunk())
+                .reader(itemReader)
+                .processor(itemProcessor)
+                .writer(itemWriter)
+                .build();
+    }
+    @Bean
+    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                                   @Qualifier("recherchePersonneItemProcessor") ItemProcessor itemProcessor,
                                                    @Qualifier("recherchePersonnesBDDWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexPersonnesDansBDD").chunk(config.getChunk())
-                .reader(theseItemReader.read())
+        return stepBuilderFactory.get("stepIndexationRecherchePersonne").chunk(config.getChunk())
+                .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
                 .build();
@@ -191,15 +206,7 @@ public class BatchConfiguration {
                 .tasklet(t).build();
     }
 
-    @Bean
-    public Step stepIndexThematiquesDansES(@Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
-                                      @Qualifier("thematiquesESItemWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
-                .reader(theseItemReader.read())
-                .processor(itemProcessor)
-                .writer(itemWriter)
-                .build();
-    }
+
 
     // ---------------- TASK EXECUTOR ----------------------------
     @Bean
