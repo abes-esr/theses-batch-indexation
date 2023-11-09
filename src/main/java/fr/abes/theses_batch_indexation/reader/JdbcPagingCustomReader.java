@@ -31,15 +31,15 @@ public class JdbcPagingCustomReader
             @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
 
         HashMap<String, String> nomColonneES = new HashMap<String, String>();
-        nomColonneES.put("these", "ENVOIELASTICTHESE");
-        nomColonneES.put("personne", "ENVOIELASTICPERSONNE");
-        nomColonneES.put("recherchepersonne", "ENVOIELASTICRECHERCHEPERSONNE");
-        nomColonneES.put("thematique", "ENVOIELASTICTHEMATIQUE");
+        nomColonneES.put("indexationThesesDansES", "ENVOIELASTICTHESE");
+        nomColonneES.put("indexationPersonnesDansES", "ENVOIELASTICPERSONNE");
+        nomColonneES.put("indexationRecherchePersonnesDansES", "ENVOIELASTICRECHERCHEPERSONNE");
+        nomColonneES.put("indexationThematiquesDansES", "ENVOIELASTICTHEMATIQUE");
 
         this.config = config;
         this.setDataSource(dataSourceLecture);
         this.setName("theseReader");
-        this.setQueryProvider(createQueryProvider(nomColonneES.get(env.getProperty("nomIndex"))));
+        this.setQueryProvider(createQueryProvider(nomColonneES.get(env.getProperty("spring.batch.job.names"))));
         this.setRowMapper(new TheseRowMapper());
         this.setPageSize(config.getChunk());
 
