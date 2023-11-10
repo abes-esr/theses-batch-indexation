@@ -10,7 +10,7 @@ public class DbService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public void marqueTheseCommeIndexee (String id) {
-        jdbcTemplate.update("UPDATE DOCUMENT SET ENVOIELASTICTHESE = 1 WHERE NNT = ? OR NUMSUJET = ?", id, id);
+    public void marqueTheseCommeIndexee (String id, TableIndexationES tableIndexationES) {
+        jdbcTemplate.update("DELETE FROM "+ tableIndexationES.name() +" WHERE NNT = ? OR NUMSUJET = ?", id, id);
     }
 }
