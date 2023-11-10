@@ -10,7 +10,9 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,9 +25,6 @@ public class InitialiserIndexESTasklet implements Tasklet {
 
     @Value("${index.name}")
     private String nomIndex;
-
-    @Value("${typeIndex}")
-    private String typeIndex;
 
     @Value("${index.pathTheses}")
     private String pathTheses;
@@ -41,6 +40,9 @@ public class InitialiserIndexESTasklet implements Tasklet {
 
     @Value("${initialiseIndex}")
     private Boolean initialiseIndex;
+
+    @Autowired
+    Environment env;
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -64,17 +66,19 @@ public class InitialiserIndexESTasklet implements Tasklet {
     private File selectIndex() {
         File f = null;
 
-        if (typeIndex.toLowerCase().equals("theses")) {
-            f = new File(pathTheses);
-        }
-        if (typeIndex.toLowerCase().equals("personnes")) {
-            f = new File(pathPersonnes);
-        }
-        if (typeIndex.toLowerCase().equals("thematiques")) {
-            f = new File(pathThematiques);
-        }
-        if (typeIndex.toLowerCase().equals("recherche_personnes")) {
-            f = new File(pathRecherchePersonnes);
+        switch (env.getProperty("spring.batch.job.names")) {
+            case "indexationThesesDansES" :
+                f = new File(pathTheses);
+                break;
+            case "indexationPersonnesDansES" :
+                f = new File(pathPersonnes);
+                break;
+            case "indexationRecherchePersonnesDansES" :
+                f = new File(pathRecherchePersonnes);
+                break;
+            case "indexationThematiquesDansES" :
+                f = new File(pathThematiques);
+                break;
         }
         return f;
     }

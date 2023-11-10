@@ -9,10 +9,11 @@ Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override 
  ~~~
 
 Le batch supprime l'index et le recrée si initialiseIndex=true avec le fichier qui est dans resources/indexs :
-- si typeIndex=theses  => on utilise le fichier theses.json
-- si typeIndex=personnes  => on utilise le fichier personnes.json
-- si typeIndex=thematiques  => on utilise le fichier thematiques.json
-- si typeIndex=recherche_personnes  => on utilise le fichier recherche_personnes.json
+- si spring.batch.job.names=indexationThesesDansES  => on utilise le fichier theses.json
+- si spring.batch.job.names=indexationPersonnesDansES  => on utilise le fichier personnes.json
+- si spring.batch.job.names=indexationRecherchePersonnesDansES  => on utilise le fichier recherche_personnes.json
+- si spring.batch.job.names=indexationThematiquesDansES  => on utilise le fichier thematiques.json
+
 
 Puis il est lancé via un crontab toutes les minutes et traite les lignes des tables indexation_es et suppression_es.
 
