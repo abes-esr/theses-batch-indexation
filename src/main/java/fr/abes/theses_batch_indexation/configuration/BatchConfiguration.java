@@ -3,7 +3,7 @@ package fr.abes.theses_batch_indexation.configuration;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
-import fr.abes.theses_batch_indexation.reader.TheseItemReader;
+import fr.abes.theses_batch_indexation.reader.JdbcPagingDeleteReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
@@ -17,7 +17,6 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -43,16 +42,13 @@ public class BatchConfiguration {
     private final ItemWriteListener<TheseModel> theseWriteListener;
     private final ItemProcessListener<TheseModel, TheseModel> theseProcessListener;
 
-    private final TheseItemReader theseItemReader;
-
-    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener, TheseItemReader theseItemReader) {
+    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener) {
         this.jobs = jobs;
         this.stepBuilderFactory = stepBuilderFactory;
         this.dataSourceLecture = dataSourceLecture;
         this.config = config;
         this.theseWriteListener = theseWriteListener;
         this.theseProcessListener = theseProcessListener;
-        this.theseItemReader = theseItemReader;
     }
 
     // ---------- JOB ---------------------------------------------
@@ -132,6 +128,22 @@ public class BatchConfiguration {
                 .build();
     }
 
+    // ---------- JOB SUPPRESSION ---------------------------------
+
+    @Bean
+    public Job jobSuppressionThesesDansES(Step stepSupprimeThesesDansES,
+                                         JobRepository jobRepository,
+                                         JobTheseCompletionNotificationListener listener) {
+        log.info("debut du job de suppression des theses dans ES...");
+
+        return jobs.get("suppressionThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepSupprimeThesesDansES)
+                .build();
+    }
+
+
+
     // ---------- STEP --------------------------------------------
     @Bean
     public Step stepIndexThesesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
@@ -206,7 +218,17 @@ public class BatchConfiguration {
                 .tasklet(t).build();
     }
 
-
+    @Bean
+    public Step stepSupprimeThesesDansES(@Qualifier("jdbcPagingDeleteReader") JdbcPagingDeleteReader itemReader,
+                                      @Qualifier("thesesESDeleteWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepSuppressionThese").<TheseModel, TheseModel>chunk(config.getChunk())
+                .listener(theseWriteListener)
+                .reader(itemReader)
+                .writer(itemWriter)
+                .taskExecutor(taskExecutor())
+                .throttleLimit(config.getThrottle())
+                .build();
+    }
 
     // ---------------- TASK EXECUTOR ----------------------------
     @Bean

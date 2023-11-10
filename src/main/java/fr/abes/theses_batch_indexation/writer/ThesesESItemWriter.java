@@ -63,7 +63,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
             );
         }
 
-        BulkResponse result = proxyRetry.indexerDansES(br);
+        BulkResponse result = proxyRetry.executerDansES(br);
 
         for (BulkResponseItem item: result.items()) {
 
@@ -71,7 +71,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
                 log.error(item.error().reason().concat(" pour ").concat(item.id()));
             }
             else {
-                dbService.marqueTheseCommeIndexee(item.id(), TableIndexationES.indexation_es_these);
+                dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_these);
             }
         }
     }
@@ -81,30 +81,5 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
         JsonProvider jsonProvider = jsonpMapper.jsonProvider();
 
         return JsonData.from(jsonProvider.createParser(input), jsonpMapper);
-    }
-
-    private void ecrireDansFichier (String notice, String nnt) {
-        try {
-
-            File file = new File("C:\\projets\\refonteThesesFr\\tefs_2022-05-23_11-40-23\\toutes.txt");
-
-            // créer le fichier s'il n'existe pas
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("{ \"index\": { \"_id\":\""+ nnt + "\" } },");
-            bw.newLine();
-            bw.write(notice);
-            bw.newLine();
-            bw.write(",");
-            bw.newLine();
-            bw.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

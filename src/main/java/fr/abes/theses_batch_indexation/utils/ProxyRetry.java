@@ -15,7 +15,7 @@ import java.io.IOException;
 public class ProxyRetry {
 
     @Retryable(maxAttempts = 4, backoff = @Backoff(delay = 300000, multiplier = 2) )
-    public BulkResponse indexerDansES(BulkRequest.Builder br) throws IOException {
+    public BulkResponse executerDansES(BulkRequest.Builder br) throws IOException {
         return ElasticClient.getElasticsearchClient().bulk(br.build());
     }
 }

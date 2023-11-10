@@ -86,16 +86,16 @@ create table suppression_es_thematique (iddoc number not null, nnt nvarchar2(20)
 Les tables précédentes sont remplies via les déclencheurs suivants : 
 
 ~~~~
-CREATE OR REPLACE TRIGGER SUPPRESSION_ES_TRIGGER
+create or replace TRIGGER SUPPRESSION_ES_TRIGGER
 AFTER DELETE
    ON document
    FOR EACH ROW
 
 BEGIN
-    INSERT INTO suppression_es_these (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
-    INSERT INTO suppression_es_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
-    INSERT INTO suppression_es_recherche_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
-    INSERT INTO suppression_es_thematique (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO suppression_es_these (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
+    INSERT INTO suppression_es_personne (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
+    INSERT INTO suppression_es_recherche_personne (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
+    INSERT INTO suppression_es_thematique (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
 END;
 
 /
