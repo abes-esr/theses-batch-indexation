@@ -1,6 +1,7 @@
 package fr.abes.theses_batch_indexation.reader;
 
 import fr.abes.theses_batch_indexation.configuration.JobConfig;
+import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
@@ -30,41 +31,46 @@ public class JdbcPagingCustomReader
             @Qualifier("jobConfig") JobConfig config,
             @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
 
-        HashMap<String, String> nomColonneES = new HashMap<String, String>();
-        nomColonneES.put("indexationThesesDansES", "ENVOIELASTICTHESE");
-        nomColonneES.put("indexationPersonnesDansES", "ENVOIELASTICPERSONNE");
-        nomColonneES.put("indexationRecherchePersonnesDansES", "ENVOIELASTICRECHERCHEPERSONNE");
-        nomColonneES.put("indexationThematiquesDansES", "ENVOIELASTICTHEMATIQUE");
+        HashMap<String, TableIndexationES> nomTableES = new HashMap<String, TableIndexationES>();
+        // correspondance nom du job / nom de la table dans la BD
+        nomTableES.put("indexationThesesDansES", TableIndexationES.indexation_es_these);
+        nomTableES.put("indexationPersonnesDansES", TableIndexationES.indexation_es_personne);
+        nomTableES.put("indexationRecherchePersonnesDansES", TableIndexationES.indexation_es_recherche_personne);
+        nomTableES.put("indexationThematiquesDansES", TableIndexationES.indexation_es_thematique);
 
         this.config = config;
         this.setDataSource(dataSourceLecture);
         this.setName("theseReader");
-        this.setQueryProvider(createQueryProvider(nomColonneES.get(env.getProperty("spring.batch.job.names"))));
+        this.setQueryProvider(createQueryProvider(nomTableES.get(env.getProperty("spring.batch.job.names"))));
         this.setRowMapper(new TheseRowMapper());
         this.setPageSize(config.getChunk());
 
     }
 
-    private PagingQueryProvider createQueryProvider(String nomColonne) {
+    private PagingQueryProvider createQueryProvider(TableIndexationES nomTableIndexationES) {
         OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
-        queryProvider.setSelectClause("SELECT iddoc, nnt, doc, numsujet");
-        queryProvider.setFromClause("from DOCUMENT");
-        setWhereClause(queryProvider, nomColonne);
+        queryProvider.setSelectClause("SELECT DOCUMENT.iddoc, DOCUMENT.nnt, doc, DOCUMENT.numsujet");
+
+        if (config.getNomTable().toLowerCase().contains("document_test")) {
+            queryProvider.setFromClause("from "+ config.getNomTable());
+            queryProvider.setWhereClause("where nom_index = '" + config.getNomIndex() + "'");
+            queryProvider.setSortKeys(sortByIdAsc());
+            return queryProvider;
+        }
+
+        queryProvider.setFromClause("from DOCUMENT, " + nomTableIndexationES.name());
+        setWhereClause(queryProvider, nomTableIndexationES);
         queryProvider.setSortKeys(sortByIdAsc());
         return queryProvider;
     }
     private void setWhereClause(
-            OraclePagingQueryProvider queryProvider,
-            String nomColonne) {
+            OraclePagingQueryProvider queryProvider, TableIndexationES nomTableIndexationES) {
 
-        if (config.getNomTable().toLowerCase().contains("document_test")) {
-            queryProvider.setWhereClause("where nom_index = '" + config.getNomIndex() + "'");
-        }
-        else if (config.getWhereLimite() > 0) {
-            queryProvider.setWhereClause("where rownum < " + config.getWhereLimite() + " AND "+ nomColonne+" = 0");
+        if (config.getWhereLimite() > 0) {
+            queryProvider.setWhereClause("where DOCUMENT.iddoc = "+ nomTableIndexationES.name() + ".iddoc and rownum < " + config.getWhereLimite());
         }
         else {
-            queryProvider.setWhereClause("where " + nomColonne +" = 0");
+            queryProvider.setWhereClause("where DOCUMENT.iddoc = "+ nomTableIndexationES.name() +".iddoc");
         }
     }
 

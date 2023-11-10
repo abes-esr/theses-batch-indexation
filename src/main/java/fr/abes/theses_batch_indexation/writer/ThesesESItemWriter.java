@@ -8,6 +8,7 @@ import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.database.DbService;
+import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.utils.ProxyRetry;
 import jakarta.json.spi.JsonProvider;
@@ -70,7 +71,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
                 log.error(item.error().reason().concat(" pour ").concat(item.id()));
             }
             else {
-                dbService.marqueTheseCommeIndexee(item.id());
+                dbService.marqueTheseCommeIndexee(item.id(), TableIndexationES.indexation_es_these);
             }
         }
     }
