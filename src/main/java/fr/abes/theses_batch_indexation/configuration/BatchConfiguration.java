@@ -3,7 +3,6 @@ package fr.abes.theses_batch_indexation.configuration;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
-import fr.abes.theses_batch_indexation.reader.TheseItemReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
@@ -17,7 +16,6 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -43,16 +41,13 @@ public class BatchConfiguration {
     private final ItemWriteListener<TheseModel> theseWriteListener;
     private final ItemProcessListener<TheseModel, TheseModel> theseProcessListener;
 
-    private final TheseItemReader theseItemReader;
-
-    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener, TheseItemReader theseItemReader) {
+    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener) {
         this.jobs = jobs;
         this.stepBuilderFactory = stepBuilderFactory;
         this.dataSourceLecture = dataSourceLecture;
         this.config = config;
         this.theseWriteListener = theseWriteListener;
         this.theseProcessListener = theseProcessListener;
-        this.theseItemReader = theseItemReader;
     }
 
     // ---------- JOB ---------------------------------------------
