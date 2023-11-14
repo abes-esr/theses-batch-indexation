@@ -63,7 +63,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
             );
         }
 
-        BulkResponse result = proxyRetry.indexerDansES(br);
+        BulkResponse result = proxyRetry.executerDansES(br);
 
         for (BulkResponseItem item: result.items()) {
 
@@ -71,7 +71,7 @@ public class ThesesESItemWriter implements ItemWriter<TheseModel> {
                 log.error(item.error().reason().concat(" pour ").concat(item.id()));
             }
             else {
-                dbService.marqueTheseCommeIndexee(item.id(), TableIndexationES.indexation_es_these);
+                dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_these);
             }
         }
     }
