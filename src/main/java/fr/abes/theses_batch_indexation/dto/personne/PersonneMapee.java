@@ -25,17 +25,7 @@ public class PersonneMapee {
      */
     private List<PersonneModelES> personnes = new ArrayList<>();
 
-
     private TheseModelES theseModelES = new TheseModelES();
-
-    /**
-     * Libellé à indexer pour les rôles
-     */
-    private final String AUTEUR = "auteur";
-    private final String DIRECTEUR = "directeur de thèse";
-    private final String RAPPORTEUR = "rapporteur";
-    private final String PRESIDENT = "président du jury";
-    private final String MEMBRE_DU_JURY = "membre du jury";
 
     /**
      * CTOR
@@ -431,9 +421,9 @@ public class PersonneMapee {
                     .getAuteur());
 
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + AUTEUR));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.AUTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + AUTEUR, e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.AUTEUR, e.getMessage()));
         }
 
         /************************************
@@ -444,9 +434,9 @@ public class PersonneMapee {
             traiterDirecteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getDirecteurThese());
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + DIRECTEUR));
+            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.DIRECTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + DIRECTEUR, e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.DIRECTEUR, e.getMessage()));
         }
 
         /************************************
@@ -459,9 +449,9 @@ public class PersonneMapee {
 
         } catch (NullPointerException e) {
             // Ce champs est optionnel
-            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+RAPPORTEUR));
+            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.RAPPORTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + RAPPORTEUR, e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.RAPPORTEUR, e.getMessage()));
         }
 
         /************************************
@@ -474,9 +464,9 @@ public class PersonneMapee {
 
         } catch (NullPointerException e) {
             // Ce champs est optionnel
-            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+PRESIDENT));
+            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.PRESIDENT));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + PRESIDENT, e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.PRESIDENT, e.getMessage()));
         }
 
         /************************************
@@ -489,34 +479,26 @@ public class PersonneMapee {
 
         } catch (NullPointerException e) {
             // Ce champs est optionnel
-            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+MEMBRE_DU_JURY));
+            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.MEMBRE_DU_JURY));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + MEMBRE_DU_JURY, e.getMessage()));
+            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.MEMBRE_DU_JURY, e.getMessage()));
         }
     }
 
     /**
      * Instancie un objet Thèse à partir des informations de la thèse
      * Assigne le rôle à la personne
-     * Renseigne les champs d'autocomplétion sur la thématique
      *
      * @param item La personne
      * @param role Rôle de la personne
      */
     private void traiterThese(PersonneModelES item, String role) {
         TheseModelES these = new TheseModelES(theseModelES, role);
+        // On ajoute le rôle
+        item.getRoles().add(role);
+
+        // On ajoute les thèses
         item.getTheses().add(these);
-        item.getRoles().add(role.substring(0, 1).toUpperCase() + role.substring(1));
-        item.getTheses_id().add(these.getId());
-        if (these.getDate_soutenance() != null) {
-            item.getTheses_date().add(these.getDate_soutenance());
-        }
-
-        // On ajoute l'établissement de soutenance
-        item.getEtablissements().add(these.getEtablissement_soutenance().getNom());
-
-        // On ajoute les domaines
-        item.getDomaines().addAll(these.getOaiSetNames());
     }
 
     /**
@@ -546,7 +528,7 @@ public class PersonneMapee {
                 personnes.add(personne);
             }
 
-            traiterThese(personne, AUTEUR);
+            traiterThese(personne, Roles.AUTEUR);
         }
     }
 
@@ -577,7 +559,7 @@ public class PersonneMapee {
                 personnes.add(personne);
             }
 
-            traiterThese(personne, DIRECTEUR);
+            traiterThese(personne, Roles.DIRECTEUR);
         }
     }
 
@@ -607,7 +589,7 @@ public class PersonneMapee {
                 );
                 personnes.add(personne);
             }
-            traiterThese(personne, RAPPORTEUR);
+            traiterThese(personne, Roles.RAPPORTEUR);
         }
     }
 
@@ -633,7 +615,7 @@ public class PersonneMapee {
             personnes.add(personne);
         }
 
-        traiterThese(personne, PRESIDENT);
+        traiterThese(personne, Roles.PRESIDENT);
     }
 
     /**
@@ -662,7 +644,7 @@ public class PersonneMapee {
                 personnes.add(personne);
             }
 
-            traiterThese(personne, MEMBRE_DU_JURY);
+            traiterThese(personne, Roles.MEMBRE_DU_JURY);
         }
     }
 

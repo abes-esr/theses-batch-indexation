@@ -229,6 +229,9 @@
           }
         }
       },
+      "auteursPpn": {
+        "type": "text"
+      },
       "directeurs" : {
         "type": "nested",
         "properties": {
@@ -244,6 +247,9 @@
         }
       },
       "directeursNP": {
+        "type": "text"
+      },
+      "directeursPpn": {
         "type": "text"
       },
       "presidentJury" : {
@@ -263,6 +269,9 @@
       "presidentJuryNP": {
         "type": "text"
       },
+      "presidentJuryPpn": {
+        "type": "text"
+      },
       "membresJury" : {
         "type": "nested",
         "properties": {
@@ -278,6 +287,9 @@
         }
       },
       "membresJuryNP": {
+        "type": "text"
+      },
+      "membresJuryPpn": {
         "type": "text"
       },
       "rapporteurs" : {
@@ -297,6 +309,9 @@
       "rapporteursNP": {
         "type": "text"
       },
+      "rapporteursPpn": {
+        "type": "text"
+      },
       "etabSoutenance": {
         "type": "nested",
         "properties": {
@@ -307,6 +322,9 @@
             "type": "text"
           }
         }
+      },
+      "etabSoutenancePpn": {
+        "type": "text"
       },
       "etabSoutenanceN": {
         "type": "text",
@@ -327,6 +345,9 @@
           }
         }
       },
+      "etabsCotutellePpn": {
+        "type": "text"
+      },
       "etabsCotutelleN": {
         "type": "text"
       },
@@ -340,6 +361,9 @@
             "type": "text"
           }
         }
+      },
+      "ecolesDoctoralesPpn": {
+        "type": "text"
       },
       "ecolesDoctoralesN": {
         "type": "text",
@@ -362,6 +386,9 @@
             "type": "text"
           }
         }
+      },
+      "partenairesRecherchePpn": {
+        "type": "text"
       },
       "partenairesRechercheN": {
         "type": "text"

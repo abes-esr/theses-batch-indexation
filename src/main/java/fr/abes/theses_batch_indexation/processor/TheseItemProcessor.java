@@ -2,8 +2,10 @@ package fr.abes.theses_batch_indexation.processor;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Optional;
 
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
+import fr.abes.theses_batch_indexation.model.tef.DmdSec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
@@ -37,6 +39,11 @@ public class TheseItemProcessor implements ItemProcessor<TheseModel, TheseModel>
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(item.getDoc().getBytes()));
         String json = new Gson().toJson(new TheseMappee(mets, oaiSets));
         item.setJsonThese(json);
+        Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
+        if (starGestion.isPresent()) {
+            item.setCodeEtab(starGestion.get().getMdWrap().getXmlData().getStarGestion().getCodeEtab());
+        }
+
         return item;
     }
 

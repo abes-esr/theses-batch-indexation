@@ -2,7 +2,8 @@ package fr.abes.theses_batch_indexation.configuration;
 
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
-import fr.abes.theses_batch_indexation.reader.TheseItemReader;
+import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
+import fr.abes.theses_batch_indexation.reader.JdbcPagingDeleteReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
@@ -41,16 +42,13 @@ public class BatchConfiguration {
     private final ItemWriteListener<TheseModel> theseWriteListener;
     private final ItemProcessListener<TheseModel, TheseModel> theseProcessListener;
 
-    private final TheseItemReader theseItemReader;
-
-    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener, TheseItemReader theseItemReader) {
+    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener) {
         this.jobs = jobs;
         this.stepBuilderFactory = stepBuilderFactory;
         this.dataSourceLecture = dataSourceLecture;
         this.config = config;
         this.theseWriteListener = theseWriteListener;
         this.theseProcessListener = theseProcessListener;
-        this.theseItemReader = theseItemReader;
     }
 
     // ---------- JOB ---------------------------------------------
@@ -100,6 +98,23 @@ public class BatchConfiguration {
     }
 
     @Bean
+    public Job jobIndexationRecherchePersonnesDansES(Step stepIndexRecherchePersonnesDansBDD,
+                                            Tasklet initialiserIndexESTasklet,
+                                            Tasklet initiliserIndexBDDTasklet,
+                                            Tasklet indexerPersonnesDansESTasklet,
+                                            Tasklet chargerOaiSetsTasklet,
+                                            JobTheseCompletionNotificationListener listener) {
+        return jobs.get("indexationRecherchePersonnesDansES").incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
+                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .next(stepIndexRecherchePersonnesDansBDD)
+                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .build();
+    }
+
+    @Bean
     public Job jobIndexationThematiquesDansES(Step stepIndexThematiquesDansES,
                                          JobRepository jobRepository,
                                          Tasklet initialiserIndexESTasklet,
@@ -113,13 +128,30 @@ public class BatchConfiguration {
                 .build();
     }
 
+    // ---------- JOB SUPPRESSION ---------------------------------
+
+    @Bean
+    public Job jobSuppressionThesesDansES(Step stepSupprimeThesesDansES,
+                                         JobRepository jobRepository,
+                                         JobTheseCompletionNotificationListener listener) {
+        log.info("debut du job de suppression des theses dans ES...");
+
+        return jobs.get("suppressionThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepSupprimeThesesDansES)
+                .build();
+    }
+
+
+
     // ---------- STEP --------------------------------------------
     @Bean
-    public Step stepIndexThesesDansES(@Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
+    public Step stepIndexThesesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                      @Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
                                       @Qualifier("thesesESItemWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationThese").<TheseModel, TheseModel>chunk(config.getChunk())
                 .listener(theseWriteListener)
-                .reader(theseItemReader.read())
+                .reader(itemReader)
                 .processor(itemProcessor)
                 .listener(theseProcessListener)
                 .writer(itemWriter)
@@ -129,10 +161,31 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexPersonnesDansBDD(@Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
+    public Step stepIndexThematiquesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                           @Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
+                                           @Qualifier("thematiquesESItemWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
+                .reader(itemReader)
+                .processor(itemProcessor)
+                .writer(itemWriter)
+                .build();
+    }
+    @Bean
+    public Step stepIndexPersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                          @Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
                                           @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexPersonnesDansES").chunk(config.getChunk())
-                .reader(theseItemReader.read())
+        return stepBuilderFactory.get("stepIndexationPersonne").chunk(config.getChunk())
+                .reader(itemReader)
+                .processor(itemProcessor)
+                .writer(itemWriter)
+                .build();
+    }
+    @Bean
+    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+                                                   @Qualifier("recherchePersonneItemProcessor") ItemProcessor itemProcessor,
+                                                   @Qualifier("recherchePersonnesBDDWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepIndexationRecherchePersonne").chunk(config.getChunk())
+                .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
                 .build();
@@ -166,12 +219,14 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexThematiquesDansES(@Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
-                                      @Qualifier("thematiquesESItemWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
-                .reader(theseItemReader.read())
-                .processor(itemProcessor)
+    public Step stepSupprimeThesesDansES(@Qualifier("jdbcPagingDeleteReader") JdbcPagingDeleteReader itemReader,
+                                      @Qualifier("thesesESDeleteWriter") ItemWriter itemWriter) {
+        return stepBuilderFactory.get("stepSuppressionThese").<TheseModel, TheseModel>chunk(config.getChunk())
+                .listener(theseWriteListener)
+                .reader(itemReader)
                 .writer(itemWriter)
+                .taskExecutor(taskExecutor())
+                .throttleLimit(config.getThrottle())
                 .build();
     }
 

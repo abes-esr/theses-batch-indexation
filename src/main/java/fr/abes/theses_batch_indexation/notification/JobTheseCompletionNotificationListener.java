@@ -7,6 +7,7 @@ import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,9 @@ public class JobTheseCompletionNotificationListener extends JobExecutionListener
     private long start;
 
     private final ElasticConfig elasticConfig;
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     public JobTheseCompletionNotificationListener(ElasticConfig elasticConfig) {
@@ -34,7 +38,7 @@ public class JobTheseCompletionNotificationListener extends JobExecutionListener
             log.error("pb lors du chargement du client ES : " + e.toString());
             throw new RuntimeException(e);
         }
-        log.info("Debut du job d'indexation des theses");
+        log.info("Debut du job "+ env.getProperty("spring.batch.job.names") +" des theses");
         start = System.currentTimeMillis();
     }
 

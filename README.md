@@ -1,17 +1,21 @@
 # theses-batch-indexation
 
-Programme qui permet l'indexation en masse des thèses et de leurs métadonnées.
+Programme qui permet l'indexation en masse et à l'unité des thèses et de leurs métadonnées.
 
 Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override configuration properties):
-(indexationPersonnesDansES ou indexationThesesDansES ou indexationThematiquesDansES)
+(indexationPersonnesDansES, indexationRecherchePersonnesDansES, indexationThesesDansES ou indexationThematiquesDansES)
  ~~~
  spring.batch.job.names=nom_du_job
  ~~~
 
-Le batch va supprimer l'index et le recréer avec le fichier qui est dans resources/indexs :
-- si indexType=theses  => on utilise le fichier theses.json
-- si indexType=personnes  => on utilise le fichier personnes.json
-- si indexType=thematiques  => on utilise le fichier thematiques.json
+Le batch supprime l'index et le recrée si initialiseIndex=true avec le fichier qui est dans resources/indexs :
+- si spring.batch.job.names=indexationThesesDansES  => on utilise le fichier theses.json
+- si spring.batch.job.names=indexationPersonnesDansES  => on utilise le fichier personnes.json
+- si spring.batch.job.names=indexationRecherchePersonnesDansES  => on utilise le fichier recherche_personnes.json
+- si spring.batch.job.names=indexationThematiquesDansES  => on utilise le fichier thematiques.json
+
+
+Puis il est lancé via un crontab toutes les minutes et traite les lignes des tables indexation_es et suppression_es.
 
 Pour le faire fonctionner :
 
@@ -51,12 +55,60 @@ job.where-limite=2000
 index.pathTheses=src/main/resources/indexs/theses.json
 index.pathPersonnes=src/main/resources/indexs/personnes.json
 index.pathThematiques=src/main/resources/indexs/thematiques.json
-index.name=
-indexType=
+index.pathRecherchePersonnes=src/main/resources/indexs/recherche_personnes.json
 
 table.name=DOCUMENT_TEST
 table.personne.name=personne_cache
 
+# Utilisés pour les lots de test
+table.name=document
+index.name=theses
+
 oaiSets.path=src/main/resources/listeOaiSets.xml
 
+# Crée ou recrée l'index si true
+initialiseIndex=false
+~~~~
 
+Dans la base de données, les lignes à indexer sont gérées via : 
+
+~~~~
+create table indexation_es_these (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_these (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es_recherche_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_recherche_personne (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table indexation_es_thematique (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+create table suppression_es_thematique (iddoc number not null, nnt nvarchar2(20) null, numsujet nvarchar2(20) null);
+~~~~
+
+Les tables précédentes sont remplies via les déclencheurs suivants : 
+
+~~~~
+create or replace TRIGGER SUPPRESSION_ES_TRIGGER
+AFTER DELETE
+   ON document
+   FOR EACH ROW
+
+BEGIN
+    INSERT INTO suppression_es_these (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
+    INSERT INTO suppression_es_personne (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
+    INSERT INTO suppression_es_recherche_personne (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
+    INSERT INTO suppression_es_thematique (iddoc, nnt, numsujet) VALUES (:old.iddoc, :old.nnt, :old.numsujet);
+END;
+
+/
+
+CREATE OR REPLACE TRIGGER INDEXATION_ES_TRIGGER
+AFTER INSERT OR UPDATE
+   ON document
+   FOR EACH ROW
+
+BEGIN
+    INSERT INTO indexation_es_these (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO indexation_es_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO indexation_es_recherche_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+    INSERT INTO indexation_es_thematique (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
+END;
+~~~~

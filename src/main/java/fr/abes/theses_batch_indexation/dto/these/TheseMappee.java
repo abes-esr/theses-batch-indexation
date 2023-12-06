@@ -5,8 +5,11 @@ import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class TheseMappee {
@@ -17,6 +20,7 @@ public class TheseMappee {
     String accessible;
     String source;
     String status;
+    Boolean isSoutenue;
     String codeEtab;
     String nnt;
     String dateSoutenance;
@@ -30,26 +34,35 @@ public class TheseMappee {
     Map<String, String> resumes = new HashMap<>();
     List<String> langues = new ArrayList<>();
     OrganismeDTO etabSoutenance = new OrganismeDTO();
+    String etabSoutenancePpn;
     String etabSoutenanceN;
     List<OrganismeDTO> etabsCotutelle = new ArrayList<>();
+    List<String> etabsCotutellePpn = new ArrayList<>();
     List<String> etabsCotutelleN = new ArrayList<>();
     List<OrganismeDTO> ecolesDoctorales = new ArrayList<>();
+    List<String> ecolesDoctoralesPpn = new ArrayList<>();
     List<String> ecolesDoctoralesN = new ArrayList<>();
     List<OrganismeDTO> partenairesRecherche = new ArrayList<>();
+    List<String> partenairesRecherchePpn = new ArrayList<>();
     List<String> partenairesRechercheN = new ArrayList<>();
 
 
     String discipline;
     List<PersonneDTO> auteurs = new ArrayList<>();
     List<String> auteursNP = new ArrayList<>();
+    List<String> auteursPpn = new ArrayList<>();
     List<PersonneDTO> directeurs = new ArrayList<>();
     List<String> directeursNP = new ArrayList<>();
+    List<String> directeursPpn = new ArrayList<>();
     PersonneDTO presidentJury = new PersonneDTO();
     String presidentJuryNP;
+    String presidentJuryPpn;
     List<PersonneDTO> membresJury = new ArrayList<>();
     List<String> membresJuryNP = new ArrayList<>();
+    List<String> membresJuryPpn = new ArrayList<>();
     List<PersonneDTO> rapporteurs = new ArrayList<>();
     List<String> rapporteursNP = new ArrayList<>();
+    List<String> rapporteursPpn = new ArrayList<>();
     List<SujetRameauDTO> sujetsRameau = new ArrayList<>();
     List<String> sujetsRameauPpn = new ArrayList<>();
     List<String> sujetsRameauLibelle = new ArrayList<>();
@@ -73,7 +86,6 @@ public class TheseMappee {
 
                 // nnt
                 techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
-                log.info("traitement de " + nnt);
 
                 Iterator<Identifier> iteIdentifiers = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
                 while (iteIdentifiers.hasNext()) {
@@ -81,10 +93,10 @@ public class TheseMappee {
                     if (isNnt(i.getValue()))
                         nnt = i.getValue();
                 }
+                log.info("traitement de " + nnt);
             } catch (NullPointerException e) {
                 log.error("PB pour nnt " + e);
             }
-
 
             // id
             //id = dmdSec.getID();
@@ -197,47 +209,73 @@ public class TheseMappee {
                 log.error("PB pour accessible de " + nnt);
             }
 
-            // status
+            // source
+            log.info("traitement de source");
 
-            log.info("traitement de status");
-
-            status = "soutenue";
+            boolean sourceIsSet = false;
             try {
-                Optional<DmdSec> dmdSecPourStepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+                source = "sudoc";
 
-                if (dmdSecPourStepGestion.isPresent())
-                    status = dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("these")
-                    || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
-                            ?"soutenue":"enCours";
+                if (nnt == null || "".equals(nnt)) {
+                    source = "step";
+                }
+
+                if (!(nnt == null || "".equals(nnt)) &&
+                        mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
+                                .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
+                    source = "star";
+                }
+
+            } catch (NullPointerException ex) {
+                log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
+            }
+
+            // isSoutenue
+            log.info("traitement de isSoutenue");
+
+            isSoutenue = false;
+            try {
+                XMLGregorianCalendar dateAccepted = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue();
+
+                if (dateAccepted.isValid())
+                    isSoutenue = true;
 
             } catch (NullPointerException e) {
-                log.error("PB pour status de " + nnt + e.getMessage());
+                log.error("PB pour isSoutenue de " + nnt + e.getMessage());
+            }
+
+            // status
+            try {
+                log.info("traitement de status");
+
+                status = "enCours";
+
+                if (isSoutenue) {
+                    status = "soutenue";
+                } else {
+                    final String regex = ".*\\/([0-9,A-Z]*)";
+                    final String urlperene = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
+                            .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getUrlPerenne();
+                    if (urlperene != null) {
+                        final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
+                        final Matcher matcher = pattern.matcher(urlperene);
+
+                        if (matcher.matches() && isNnt(matcher.group(1))) {
+                            status = "soutenue";
+                        }
+                    }
+                }
+            } catch (NullPointerException e) {
+                log.error("PB pour status de " + nnt + "," + e.getMessage());
             }
 
             // date filtre
-
             log.info("traitement de datefiltre ");
 
             if (status.equals("enCours"))
                 dateFiltre = datePremiereInscriptionDoctorat;
             else
                 dateFiltre = dateSoutenance;
-
-
-
-            // source
-            log.info("traitement de source");
-            source = "sudoc";
-            if (status.equals("enCours"))
-                source = "step";
-            try {
-                if (status.equals("soutenue") &&
-                        mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                        .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))
-                    source = "star";
-            } catch (NullPointerException ex) {
-                log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
-            }
 
             // etablissements
 
@@ -249,19 +287,28 @@ public class TheseMappee {
                 Iterator<ThesisDegreeGrantor> iteGrantor = grantors.iterator();
                 // l'étab de soutenance est le premier de la liste
                 ThesisDegreeGrantor premier = iteGrantor.next();
-                if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne()))
+                if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne())) {
                     etabSoutenance.setPpn(OutilsTef.getPPN(premier.getAutoriteExterne()));
+                    etabSoutenancePpn = OutilsTef.getPPN(premier.getAutoriteExterne());
+                }
                 etabSoutenance.setNom(premier.getNom());
                 etabSoutenanceN = premier.getNom();
+
                 // les potentiels suivants sont les cotutelles
                 while (iteGrantor.hasNext()) {
                     ThesisDegreeGrantor a = iteGrantor.next();
                     OrganismeDTO ctdto = new OrganismeDTO();
-                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne()))
+                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne())) {
                         ctdto.setPpn(OutilsTef.getPPN(a.getAutoriteExterne()));
+                        etabsCotutellePpn.add(OutilsTef.getPPN(a.getAutoriteExterne()));
+                    }
                     ctdto.setNom(a.getNom());
-                    etabsCotutelle.add(ctdto);
-                    etabsCotutelleN.add(a.getNom());
+                    if ("".equals(a.getNom())) {
+                        log.warn("Pas de nom de cotutelle");
+                    } else {
+                        etabsCotutelle.add(ctdto);
+                        etabsCotutelleN.add(a.getNom());
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour etablissements de " + nnt + "," + e.getMessage());
@@ -270,6 +317,13 @@ public class TheseMappee {
             // partenaires
 
             log.info("traitement de partenaires");
+
+            HashMap<String, String> type_partenaire_recherche = new HashMap<String, String>();
+            type_partenaire_recherche.put("laboratoire", "Laboratoire");
+            type_partenaire_recherche.put("equipeRecherche", "Equipe de recherche");
+            type_partenaire_recherche.put("entreprise", "Entreprise");
+            type_partenaire_recherche.put("fondation", "Fondation");
+
             try {
                 List<PartenaireRecherche> partenairesDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getPartenaireRecherche();
@@ -277,12 +331,29 @@ public class TheseMappee {
                 while (partenairesIterator.hasNext()) {
                     PartenaireRecherche p = partenairesIterator.next();
                     OrganismeDTO pdto = new OrganismeDTO();
-                    if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne()))
+                    if (p.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(p.getAutoriteExterne())) {
                         pdto.setPpn(OutilsTef.getPPN(p.getAutoriteExterne()));
+                        partenairesRecherchePpn.add(OutilsTef.getPPN(p.getAutoriteExterne()));
+                    }
                     pdto.setNom(p.getNom());
-                    pdto.setType(p.getType());
-                    partenairesRecherche.add(pdto);
-                    partenairesRechercheN.add(p.getNom());
+                    try {
+                        if (type_partenaire_recherche.get(p.getType()) != null) {
+                            pdto.setType(type_partenaire_recherche.get(p.getType()));
+                        } else if (p.getType().equals("autreType")) {
+                            pdto.setType(p.getAutreType());
+                        }
+                    }
+                    catch (Exception eTypePartenaireRecherche) {
+                        log.error("pb lors de la récupération du type du partenaire de recherche pour nnt = " + nnt);
+                    }
+
+
+                    if ("".equals(p.getNom()) || "NON RENSEIGNE".equals(p.getNom())) {
+                        log.warn("Pas de partenaires");
+                    } else {
+                        partenairesRecherche.add(pdto);
+                        partenairesRechercheN.add(p.getNom());
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour partenaire  " + nnt + "," + e.getMessage());
@@ -298,12 +369,20 @@ public class TheseMappee {
                 Iterator<EcoleDoctorale> ecoleDoctoraleIterator = ecolesDoctoralesDepuisTef.iterator();
                 while (ecoleDoctoraleIterator.hasNext()) {
                     EcoleDoctorale ecole = ecoleDoctoraleIterator.next();
-                    OrganismeDTO edto = new OrganismeDTO();
-                    if (ecole.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ecole.getAutoriteExterne()))
-                        edto.setPpn(OutilsTef.getPPN(ecole.getAutoriteExterne()));
-                    edto.setNom(ecole.getNom());
-                    ecolesDoctorales.add(edto);
-                    ecolesDoctoralesN.add(ecole.getNom());
+                    if (!ecole.getNom().equals("")) {
+                        OrganismeDTO edto = new OrganismeDTO();
+                        if (ecole.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ecole.getAutoriteExterne())) {
+                            edto.setPpn(OutilsTef.getPPN(ecole.getAutoriteExterne()));
+                            ecolesDoctoralesPpn.add(OutilsTef.getPPN(ecole.getAutoriteExterne()));
+                        }
+                        edto.setNom(ecole.getNom());
+                        if ("".equals(ecole.getNom())) {
+                            log.warn("Pas d'école doctorale");
+                        } else {
+                            ecolesDoctorales.add(edto);
+                            ecolesDoctoralesN.add(ecole.getNom());
+                        }
+                    }
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour ecolesDoctorales de " + nnt + "," + e.getMessage());
@@ -332,8 +411,11 @@ public class TheseMappee {
                 while (auteurIterator.hasNext()) {
                     Auteur a = auteurIterator.next();
                     PersonneDTO adto = new PersonneDTO();
-                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne()))
+                    if (a.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(a.getAutoriteExterne())) {
                         adto.setPpn(OutilsTef.getPPN(a.getAutoriteExterne()));
+                        auteursPpn.add(OutilsTef.getPPN(a.getAutoriteExterne()));
+                    }
+
                     adto.setNom(a.getNom());
                     adto.setPrenom(a.getPrenom());
                     auteurs.add(adto);
@@ -352,8 +434,10 @@ public class TheseMappee {
                 while (directeurTheseIterator.hasNext()) {
                     DirecteurThese dt = directeurTheseIterator.next();
                     PersonneDTO dtdto = new PersonneDTO();
-                    if (dt.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(dt.getAutoriteExterne()))
+                    if (dt.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(dt.getAutoriteExterne())) {
                         dtdto.setPpn(OutilsTef.getPPN(dt.getAutoriteExterne()));
+                        directeursPpn.add(OutilsTef.getPPN(dt.getAutoriteExterne()));
+                    }
                     dtdto.setNom(dt.getNom());
                     dtdto.setPrenom(dt.getPrenom());
                     directeurs.add(dtdto);
@@ -369,8 +453,11 @@ public class TheseMappee {
             try {
                 if (techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury() != null) {
                     PresidentJury presidentDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury();
-                    if (presidentDepuisTef.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(presidentDepuisTef.getAutoriteExterne()))
+                    if (presidentDepuisTef.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(presidentDepuisTef.getAutoriteExterne())) {
                         presidentJury.setPpn(OutilsTef.getPPN(presidentDepuisTef.getAutoriteExterne()));
+                        presidentJuryPpn = OutilsTef.getPPN(presidentDepuisTef.getAutoriteExterne());
+                    }
+
                     presidentJury.setNom(presidentDepuisTef.getNom());
                     presidentJury.setPrenom(presidentDepuisTef.getPrenom());
                     presidentJuryNP = presidentDepuisTef.getNom() + " " + presidentDepuisTef.getPrenom();
@@ -389,8 +476,10 @@ public class TheseMappee {
                 while (membresIterator.hasNext()) {
                     MembreJury m = membresIterator.next();
                     PersonneDTO mdto = new PersonneDTO();
-                    if (m.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(m.getAutoriteExterne()))
+                    if (m.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(m.getAutoriteExterne())) {
                         mdto.setPpn(OutilsTef.getPPN(m.getAutoriteExterne()));
+                        membresJuryPpn.add(OutilsTef.getPPN(m.getAutoriteExterne()));
+                    }
                     mdto.setNom(m.getNom());
                     mdto.setPrenom(m.getPrenom());
                     membresJury.add(mdto);
@@ -410,8 +499,10 @@ public class TheseMappee {
                 while (rapporteurIterator.hasNext()) {
                     Rapporteur r = rapporteurIterator.next();
                     PersonneDTO rdto = new PersonneDTO();
-                    if (r.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(r.getAutoriteExterne()))
+                    if (r.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(r.getAutoriteExterne())) {
                         rdto.setPpn(OutilsTef.getPPN(r.getAutoriteExterne()));
+                        rapporteursPpn.add(OutilsTef.getPPN(r.getAutoriteExterne()));
+                    }
                     rdto.setNom(r.getNom());
                     rdto.setPrenom(r.getPrenom());
                     rapporteurs.add(rdto);
@@ -491,7 +582,7 @@ public class TheseMappee {
                 }
                 List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
                         .getThesisRecord().getSujetRameau().getVedetteRameauFamille();
-                Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator= sujetsRameauFamilleDepuisTef.iterator();
+                Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator = sujetsRameauFamilleDepuisTef.iterator();
                 while (vedetteRameauFamilleIterator.hasNext()) {
                     VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
@@ -556,7 +647,7 @@ public class TheseMappee {
                 Iterator<String> oaiSetSpecIterator = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getOaiSetSpec().iterator();
                 while (oaiSetSpecIterator.hasNext()) {
-                    String oaiSetSpec  = oaiSetSpecIterator.next();
+                    String oaiSetSpec = oaiSetSpecIterator.next();
                     Optional<Set> leSet = oaiSets.stream().filter(d -> d.getSetSpec().equals(oaiSetSpec)).findFirst();
                     oaiSetNames.add(leSet.get().getSetName());
                 }
@@ -582,9 +673,10 @@ public class TheseMappee {
     }
 
     private boolean isNnt(String identifier) {
-        if (identifier.length() == 12)
-            return true;
-        return false;
+        String regex = "\\d{4}[A-Z]{2}[0-9A-Z]{2}[0-9A-Z]{4}";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(identifier);
+        return m.matches();
     }
 
 
@@ -611,42 +703,55 @@ public class TheseMappee {
     public void setPartenairesRecherche(List<OrganismeDTO> partenairesRecherche) {
         this.partenairesRecherche = partenairesRecherche;
     }
+
     public List<PersonneDTO> getRapporteurs() {
         return rapporteurs;
     }
+
     public void setRapporteurs(List<PersonneDTO> rapporteurs) {
         this.rapporteurs = rapporteurs;
     }
+
     public List<PersonneDTO> getMembresJury() {
         return membresJury;
     }
+
     public void setMembresJury(List<PersonneDTO> membresJury) {
         this.membresJury = membresJury;
     }
+
     public List<PersonneDTO> getAuteurs() {
         return auteurs;
     }
+
     public void setAuteurs(List<PersonneDTO> auteurs) {
         this.auteurs = auteurs;
     }
+
     public List<PersonneDTO> getDirecteurs() {
         return directeurs;
     }
+
     public void setDirecteurs(List<PersonneDTO> directeurs) {
         this.directeurs = directeurs;
     }
+
     public Map<String, String> getResumes() {
         return resumes;
     }
+
     public void setResumes(Map<String, String> resumes) {
         this.resumes = resumes;
     }
+
     public String getDateSoutenance() {
         return dateSoutenance;
     }
+
     public void setDateSoutenance(String dateSoutenance) {
         this.dateSoutenance = dateSoutenance;
     }
+
     public String getDatePremiereInscriptionDoctorat() {
         return datePremiereInscriptionDoctorat;
     }
@@ -654,81 +759,107 @@ public class TheseMappee {
     public void setDatePremiereInscriptionDoctorat(String datePremiereInscriptionDoctorat) {
         this.datePremiereInscriptionDoctorat = datePremiereInscriptionDoctorat;
     }
+
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
+
     public List<String> getPpn() {
         return ppn;
     }
+
     public void setPpn(List<String> ppn) {
         this.ppn = ppn;
     }
+
     public String getSource() {
         return source;
     }
+
     public void setSource(String source) {
         this.source = source;
     }
+
     public String getAccessible() {
         return accessible;
     }
+
     public void setAccessible(String accessible) {
         this.accessible = accessible;
     }
+
     public Map<String, String> getTitres() {
         return titres;
     }
+
     public void setTitres(Map<String, String> titres) {
         this.titres = titres;
     }
+
     public List<OrganismeDTO> getEtabsCotutelle() {
         return etabsCotutelle;
     }
+
     public void setEtabsCotutelle(List<OrganismeDTO> etabsCotutelle) {
         this.etabsCotutelle = etabsCotutelle;
     }
+
     public String getDiscipline() {
         return discipline;
     }
+
     public void setDiscipline(String discipline) {
         this.discipline = discipline;
     }
+
     public List<OrganismeDTO> getEcolesDoctorales() {
         return ecolesDoctorales;
     }
+
     public void setEcolesDoctorales(List<OrganismeDTO> ecolesDoctorales) {
         this.ecolesDoctorales = ecolesDoctorales;
     }
+
     public String getCodeEtab() {
         return codeEtab;
     }
+
     public void setCodeEtab(String codeEtab) {
         this.codeEtab = codeEtab;
     }
+
     public String getDateFinEmbargo() {
         return dateFinEmbargo;
     }
+
     public void setDateFinEmbargo(String dateFinEmbargo) {
         this.dateFinEmbargo = dateFinEmbargo;
     }
+
     public List<String> getLangues() {
         return langues;
     }
+
     public void setLangues(List<String> langues) {
         this.langues = langues;
     }
+
     public List<String> getOaiSetNames() {
         return oaiSetNames;
     }
+
     public void setOaiSetNames(List<String> oaiSetNames) {
         this.oaiSetNames = oaiSetNames;
     }
+
     public List<SujetDTO> getSujets() {
         return sujets;
     }
+
     public void setSujets(List<SujetDTO> sujets) {
         this.sujets = sujets;
     }
