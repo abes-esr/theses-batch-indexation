@@ -22,5 +22,6 @@ public class MappingTableJob {
         nomTableES.put("suppressionPersonnesDansES", TableIndexationES.suppression_es_personne);
         nomTableES.put("suppressionRecherchePersonnesDansES", TableIndexationES.suppression_es_recherche_personne);
         nomTableES.put("suppressionThematiquesDansES", TableIndexationES.suppression_es_thematique);
+        nomTableES.put("jobIndexer", TableIndexationES.indexation_es);
     }
 }

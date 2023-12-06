@@ -4,15 +4,14 @@ import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingDeleteReader;
+import fr.abes.theses_batch_indexation.tasklet.Indexer;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ItemProcessListener;
-import org.springframework.batch.core.ItemWriteListener;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -53,6 +52,17 @@ public class BatchConfiguration {
 
     // ---------- JOB ---------------------------------------------
 
+
+    @Bean
+    public Job jobIndexer (JobRepository jobRepository,
+                    Tasklet indexer) {
+
+
+
+        return jobs.get("jobIndexer").repository(jobRepository).incrementer(new RunIdIncrementer())
+                .start(stepIndexer(indexer))
+                .build();
+    }
     @Bean
     public Job jobIndexationThesesDansES(Step stepIndexThesesDansES,
                                          JobRepository jobRepository,
@@ -145,6 +155,13 @@ public class BatchConfiguration {
 
 
     // ---------- STEP --------------------------------------------
+
+    @Bean
+    public Step stepIndexer(Tasklet indexer){
+        return stepBuilderFactory.get("stepIndexer")
+                .tasklet(indexer)
+                .build();
+    }
     @Bean
     public Step stepIndexThesesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
                                       @Qualifier("theseItemProcessor") ItemProcessor itemProcessor,

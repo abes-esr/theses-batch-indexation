@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -49,7 +50,7 @@ public class InitialiserIndexESTasklet implements Tasklet {
 
         if (initialiseIndex) {
             log.warn("Réinitialisation de l'index " + nomIndex.toLowerCase());
-            File f = selectIndex();
+            File f = selectIndex(chunkContext);
 
             if (f != null) {
                 //delete
@@ -63,10 +64,10 @@ public class InitialiserIndexESTasklet implements Tasklet {
         return RepeatStatus.FINISHED;
     }
 
-    private File selectIndex() {
+    private File selectIndex(ChunkContext chunkContext) {
         File f = null;
 
-        switch (env.getProperty("spring.batch.job.names")) {
+        switch (chunkContext.getStepContext().getJobName()) {
             case "indexationThesesDansES" :
                 f = new File(pathTheses);
                 break;
