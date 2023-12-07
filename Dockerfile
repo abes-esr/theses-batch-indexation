@@ -44,6 +44,7 @@ COPY /build/src/main/resources/indexs/personnes.json   /scripts/src/main/resourc
 COPY /build/src/main/resources/indexs/recherche_personnes.json   /scripts/src/main/resources/indexs/recherche_personnes.json
 COPY /build/src/main/resources/indexs/thematiques.json   /scripts/src/main/resources/indexs/thematiques.json
 COPY /build/src/main/resources/indexs/theses.json   /scripts/src/main/resources/indexs/theses.json
+RUN ls /src/main/resources
 COPY /build/src/main/resources/oaisets/listeOaiSets.xml   /scripts/src/main/resources/oaisets/listeOaiSets.xml
 # Les locales fr_FR
 RUN dnf install langpacks-fr glibc-all-langpacks -y
