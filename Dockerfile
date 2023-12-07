@@ -14,6 +14,7 @@ ENV LC_ALL fr_FR.UTF-8
 # éviter à maven de retélécharger toutes les dépendances
 #COPY ./.m2/    /root/.m2/
 COPY ./pom.xml /build/pom.xml
+COPY ./src/   /build/src/
 
 RUN mvn --batch-mode \
         -Dmaven.test.skip=false \
@@ -30,7 +31,7 @@ WORKDIR /scripts/
 # systeme pour les crontab
 # cronie: remplacant de crond qui support le CTRL+C dans docker (sans ce système c'est compliqué de stopper le conteneur)
 # gettext: pour avoir envsubst qui permet de gérer le template tasks.tmpl
-RUN dnf install -y cronie gettext && \
+RUN dnf install -y cronie gettext && \java --ver
     crond -V && rm -rf /etc/cron.*/*
 COPY ./docker/batch/tasks.tmpl /etc/cron.d/tasks.tmpl
 # Le JAR et le script pour le batch d'insertion des thèses et personnes dans ES
