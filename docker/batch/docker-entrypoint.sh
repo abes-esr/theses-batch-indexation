@@ -17,7 +17,7 @@ crontab /etc/cron.d/tasks
 # Force le démarrage du batch au démarrage du conteneur
 if [ "$THESES_BATCH_INDEXATION_AT_STARTUP" = "1" ]; then
   echo "-> Lancement de theses-indexation.sh au démarrage du conteneur"
-  /scripts/theses-indexation.sh
+  /scripts/theses-batch-indexation.sh
 fi
 
 # execute CMD (crond)
