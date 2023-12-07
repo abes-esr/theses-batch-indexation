@@ -39,6 +39,9 @@ RUN dnf install -y java-11-openjdk
 COPY docker/batch/theses-batch-indexation.sh /scripts/theses-batch-indexation.sh
 RUN chmod +x /scripts/theses-batch-indexation.sh
 COPY --from=build-image /build/target/*.jar /scripts/theses-batch-indexation.jar
+# Les fichiers de définition d'index :
+COPY /build/src/main/resources/indexs/*   /scripts/src/main/resources/indexs/
+COPY /build/src/main/resources/listeOaiSets.xml   /scripts/src/main/resources/listeOaiSets.xml
 # Les locales fr_FR
 RUN dnf install langpacks-fr glibc-all-langpacks -y
 ENV LANG fr_FR.UTF-8
