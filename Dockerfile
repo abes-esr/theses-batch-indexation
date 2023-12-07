@@ -35,9 +35,9 @@ RUN dnf install -y cronie gettext && \
 COPY ./docker/batch/tasks.tmpl /etc/cron.d/tasks.tmpl
 # Le JAR et le script pour le batch d'insertion des thèses et personnes dans ES
 RUN dnf install -y java-11-openjdk
-COPY docker/batch/theses-batch-indexation.sh /scripts/theses-indexation.sh
+COPY docker/batch/theses-batch-indexation.sh /scripts/theses-batch-indexation.sh
 RUN chmod +x /scripts/theses-batch-indexation.sh
-COPY --from=build-image /build/target/*.jar /scripts/theses-indexation.jar
+COPY --from=build-image /build/target/*.jar /scripts/theses-batch-indexation.jar
 # Les locales fr_FR
 RUN dnf install langpacks-fr glibc-all-langpacks -y
 ENV LANG fr_FR.UTF-8
