@@ -1,6 +1,6 @@
 ###
 # Image pour la compilation de theses batch indexation
-FROM maven:3-jdk-11 as build-image
+FROM maven:3-eclipse-temurin-11 as build-image
 WORKDIR /build/
 # Installation et configuration de la locale FR
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install locales
@@ -14,6 +14,7 @@ ENV LC_ALL fr_FR.UTF-8
 # éviter à maven de retélécharger toutes les dépendances
 #COPY ./.m2/    /root/.m2/
 COPY ./pom.xml /build/pom.xml
+COPY ./src/   /build/src/
 
 RUN mvn --batch-mode \
         -Dmaven.test.skip=false \
@@ -35,9 +36,15 @@ RUN dnf install -y cronie gettext && \
 COPY ./docker/batch/tasks.tmpl /etc/cron.d/tasks.tmpl
 # Le JAR et le script pour le batch d'insertion des thèses et personnes dans ES
 RUN dnf install -y java-11-openjdk
-COPY ./docker/batch/theses-indexation.sh /scripts/theses-indexation.sh
-RUN chmod +x /scripts/theses-indexation.sh
-COPY --from=build-image /build/target/*.jar /scripts/theses-indexation.jar
+COPY docker/batch/theses-batch-indexation.sh /scripts/theses-batch-indexation.sh
+RUN chmod +x /scripts/theses-batch-indexation.sh
+COPY --from=build-image /build/target/*.jar /scripts/theses-batch-indexation.jar
+# Les fichiers de définition d'index et oaisets :
+COPY ./src/main/resources/indexs/personnes.json   /scripts/src/main/resources/indexs/personnes.json
+COPY ./src/main/resources/indexs/recherche_personnes.json   /scripts/src/main/resources/indexs/recherche_personnes.json
+COPY ./src/main/resources/indexs/thematiques.json   /scripts/src/main/resources/indexs/thematiques.json
+COPY ./src/main/resources/indexs/theses.json   /scripts/src/main/resources/indexs/theses.json
+COPY ./src/main/resources/oaisets/listeOaiSets.xml   /scripts/src/main/resources/oaisets/listeOaiSets.xml
 # Les locales fr_FR
 RUN dnf install langpacks-fr glibc-all-langpacks -y
 ENV LANG fr_FR.UTF-8

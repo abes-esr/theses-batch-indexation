@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.database.DbService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -44,6 +45,9 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Autowired
     Environment env;
 
+    @Autowired
+    DbService dbService;
+
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
@@ -58,6 +62,8 @@ public class InitialiserIndexESTasklet implements Tasklet {
                 //create
                 createIndexES(f);
                 log.info("Index " + nomIndex.toLowerCase() + " créé avec le schéma présent dans " + f.getPath());
+                dbService.mettreToutesLesThesesAIndexer();
+                log.info("table d'indexation remplie dans la base.");
             }
         }
         return RepeatStatus.FINISHED;
