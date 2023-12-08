@@ -131,14 +131,26 @@ public class BatchConfiguration {
     // ---------- JOB SUPPRESSION ---------------------------------
 
     @Bean
-    public Job jobSuppressionThesesDansES(Step stepSupprimeThesesDansES,
+    public Job jobSuppressionThesesDansES(Step stepSupprimeThesesOuThematiquesDansES,
                                          JobRepository jobRepository,
                                          JobTheseCompletionNotificationListener listener) {
         log.info("debut du job de suppression des theses dans ES...");
 
         return jobs.get("suppressionThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepSupprimeThesesDansES)
+                .start(stepSupprimeThesesOuThematiquesDansES)
+                .build();
+    }
+
+    @Bean
+    public Job jobSuppressionThematiquesDansES(Step stepSupprimeThesesOuThematiquesDansES,
+                                          JobRepository jobRepository,
+                                          JobTheseCompletionNotificationListener listener) {
+        log.info("debut du job de suppression des thématiques dans ES...");
+
+        return jobs.get("suppressionThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepSupprimeThesesOuThematiquesDansES)
                 .build();
     }
 
@@ -148,7 +160,7 @@ public class BatchConfiguration {
     @Bean
     public Step stepIndexThesesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
                                       @Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
-                                      @Qualifier("thesesESItemWriter") ItemWriter itemWriter) {
+                                      @Qualifier("ESItemWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationThese").<TheseModel, TheseModel>chunk(config.getChunk())
                 .listener(theseWriteListener)
                 .reader(itemReader)
@@ -163,11 +175,13 @@ public class BatchConfiguration {
     @Bean
     public Step stepIndexThematiquesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
                                            @Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
-                                           @Qualifier("thematiquesESItemWriter") ItemWriter itemWriter) {
+                                           @Qualifier("ESItemWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
                 .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
+                .taskExecutor(taskExecutor())
+                .throttleLimit(config.getThrottle())
                 .build();
     }
     @Bean
@@ -219,8 +233,8 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepSupprimeThesesDansES(@Qualifier("jdbcPagingDeleteReader") JdbcPagingDeleteReader itemReader,
-                                      @Qualifier("thesesESDeleteWriter") ItemWriter itemWriter) {
+    public Step stepSupprimeThesesOuThematiquesDansES(@Qualifier("jdbcPagingDeleteReader") JdbcPagingDeleteReader itemReader,
+                                      @Qualifier("ESDeleteWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepSuppressionThese").<TheseModel, TheseModel>chunk(config.getChunk())
                 .listener(theseWriteListener)
                 .reader(itemReader)
@@ -229,6 +243,7 @@ public class BatchConfiguration {
                 .throttleLimit(config.getThrottle())
                 .build();
     }
+
 
     // ---------------- TASK EXECUTOR ----------------------------
     @Bean

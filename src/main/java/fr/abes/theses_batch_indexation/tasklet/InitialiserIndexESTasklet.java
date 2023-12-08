@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.database.DbService;
+import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -23,9 +24,6 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class InitialiserIndexESTasklet implements Tasklet {
-
-    @Value("${index.name}")
-    private String nomIndex;
 
     @Value("${index.pathTheses}")
     private String pathTheses;
@@ -48,22 +46,24 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Autowired
     DbService dbService;
 
+    @Autowired
+    MappingJobName mappingJobName;
+
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
         if (initialiseIndex) {
-            log.warn("Réinitialisation de l'index " + nomIndex.toLowerCase());
+            String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
+            log.warn("Réinitialisation de l'index " + nomIndex);
             File f = selectIndex();
 
             if (f != null) {
-                //delete
-                deleteIndexES();
-                log.info("Index " + nomIndex.toLowerCase() + " supprimé");
-                //create
-                createIndexES(f);
-                log.info("Index " + nomIndex.toLowerCase() + " créé avec le schéma présent dans " + f.getPath());
-                dbService.mettreToutesLesThesesAIndexer();
-                log.info("table d'indexation remplie dans la base.");
+                deleteIndexES(nomIndex);
+                log.info("Index " + nomIndex + " supprimé");
+                createIndexES(f, nomIndex);
+                log.info("Index " + nomIndex + " créé avec le schéma présent dans " + f.getPath());
+                dbService.mettreToutesLesThesesAIndexer(mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names")));
+                log.info("table d'indexation "+ mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names"))+" remplie dans la base.");
             }
         }
         return RepeatStatus.FINISHED;
@@ -89,7 +89,7 @@ public class InitialiserIndexESTasklet implements Tasklet {
         return f;
     }
 
-    private void createIndexES(File f) throws IOException {
+    private void createIndexES(File f, String nomIndex) throws IOException {
         CreateIndexRequest.Builder builder = new CreateIndexRequest.Builder();
         builder.index(nomIndex.toLowerCase());
         builder.withJson(new FileInputStream(f));
@@ -101,7 +101,7 @@ public class InitialiserIndexESTasklet implements Tasklet {
         }
     }
 
-    private void deleteIndexES() throws IOException {
+    private void deleteIndexES(String nomIndex) throws IOException {
         DeleteIndexRequest.Builder builder = new DeleteIndexRequest.Builder();
         builder.index(nomIndex.toLowerCase());
         builder.ignoreUnavailable(true);
