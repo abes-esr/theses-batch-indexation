@@ -1,1 +1,5 @@
-${THESES_BATCH_INDEXATION_CRON} /scripts/theses-indexation.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
+${THESES_BATCH_INDEXATION_CRON} /scripts/theses-batch-indexation.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
+${THESES_BATCH_INDEXATION_CRON} /scripts/theses-batch-suppression.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
+${THESES_BATCH_INDEXATION_CRON} /scripts/thematiques-batch-indexation.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
+${THESES_BATCH_INDEXATION_CRON} /scripts/thematiques-batch-suppression.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
+

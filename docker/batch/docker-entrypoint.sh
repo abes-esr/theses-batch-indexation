@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Paramètres par défaut du conteneur
-export THESES_BATCH_INDEXATION_CRON=${THESES_BATCH_INDEXATION_CRON:='0 * * * *'}
-export THESES_BATCH_INDEXATION_AT_STARTUP=${THESES_BATCH_INDEXATION_AT_STARTUP:='0'}
+export THESES_BATCH_INDEXATION_CRON=${THESES_BATCH_INDEXATION_CRON:='* * * * *'}
+export THESES_BATCH_INDEXATION_AT_STARTUP=${THESES_BATCH_INDEXATION_AT_STARTUP:='1'}
 
 # Réglage de /etc/environment pour que les crontab s'exécutent avec les bonnes variables d'env
 echo "$(env)
@@ -16,8 +16,14 @@ crontab /etc/cron.d/tasks
 
 # Force le démarrage du batch au démarrage du conteneur
 if [ "$THESES_BATCH_INDEXATION_AT_STARTUP" = "1" ]; then
-  echo "-> Lancement de theses-indexation.sh au démarrage du conteneur"
-  /scripts/theses-indexation.sh
+  echo "-> Lancement de theses-batch-indexation.sh au démarrage du conteneur"
+  /scripts/theses-batch-indexation.sh
+  echo "-> Lancement de theses-batch-suppression.sh au démarrage du conteneur"
+  /scripts/theses-batch-suppression.sh
+  echo "-> Lancement de thematiques-batch-indexation.sh au démarrage du conteneur"
+  /scripts/thematiques-batch-indexation.sh
+  echo "-> Lancement de thematiques-batch-suppression.sh au démarrage du conteneur"
+  /scripts/thematiques-batch-suppression.sh
 fi
 
 # execute CMD (crond)
