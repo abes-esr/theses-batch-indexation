@@ -13,4 +13,7 @@ public class DbService {
     public void supprimerTheseATraiter(String id, TableIndexationES tableIndexationES) {
         jdbcTemplate.update("DELETE FROM "+ tableIndexationES.name() +" WHERE NNT = ? OR NUMSUJET = ?", id, id);
     }
+    public void mettreToutesLesThesesAIndexer() {
+        jdbcTemplate.update("insert into indexation_es_these (iddoc, nnt, numsujet) select iddoc, nnt, numsujet from document");
+    }
 }
