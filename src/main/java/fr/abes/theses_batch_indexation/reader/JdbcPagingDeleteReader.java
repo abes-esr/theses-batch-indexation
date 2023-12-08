@@ -3,8 +3,7 @@ package fr.abes.theses_batch_indexation.reader;
 import fr.abes.theses_batch_indexation.configuration.JobConfig;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseDeleteRowMapper;
-import fr.abes.theses_batch_indexation.database.TheseRowMapper;
-import fr.abes.theses_batch_indexation.utils.MappingTableJob;
+import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
@@ -28,7 +27,7 @@ public class JdbcPagingDeleteReader extends JdbcPagingItemReader
 
     public JdbcPagingDeleteReader(
             @Autowired Environment env,
-            @Autowired MappingTableJob mappingTableJob,
+            @Autowired MappingJobName mappingJobName,
             @Qualifier("jobConfig") JobConfig config,
             @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
 
@@ -36,7 +35,7 @@ public class JdbcPagingDeleteReader extends JdbcPagingItemReader
         this.config = config;
         this.setDataSource(dataSourceLecture);
         this.setName("theseDeleteReader");
-        this.setQueryProvider(createQueryProvider(mappingTableJob.getNomTableES().get(env.getProperty("spring.batch.job.names"))));
+        this.setQueryProvider(createQueryProvider(mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names"))));
         this.setRowMapper(new TheseDeleteRowMapper());
         this.setPageSize(config.getChunk());
 
