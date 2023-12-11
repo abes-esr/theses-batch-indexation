@@ -147,7 +147,8 @@ public class TheseMappee {
                 Iterator<Abstract> abstractIterator = abstracts.iterator();
                 while (abstractIterator.hasNext()) {
                     Abstract a = abstractIterator.next();
-                    resumes.put(a.getLang(), a.getContent());
+                    if (!a.getLang().isEmpty())
+                        resumes.put(a.getLang(), a.getContent());
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour resumes de " + nnt + e.getMessage());
