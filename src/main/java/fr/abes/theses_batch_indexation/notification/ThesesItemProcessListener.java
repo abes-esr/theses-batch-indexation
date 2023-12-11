@@ -13,12 +13,12 @@ public class ThesesItemProcessListener implements ItemProcessListener<TheseModel
 
     @Override
     public void beforeProcess(TheseModel o) {
-        log.info("begin process of " + o.getIdDoc() + "...");
+        log.debug("begin process of " + o.getIdDoc() + "...");
     }
 
     @Override
     public void afterProcess(TheseModel o, TheseModel o2) {
-        log.info("... end process of " + o.getIdDoc());
+        log.debug("... end process of " + o.getIdDoc());
 
     }
 

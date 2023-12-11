@@ -58,15 +58,15 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
-        log.info("IndexerDansESTasklet");
-        log.info("Table personne name : " + tablePersonneName);
-        log.info("Index nom : " + nomIndex);
+        log.debug("IndexerDansESTasklet");
+        log.debug("Table personne name : " + tablePersonneName);
+        log.debug("Index nom : " + nomIndex);
         while (true) {
             BulkRequest.Builder br = new BulkRequest.Builder();
 
             int pageCourante = page.getAndIncrement();
 
-            log.info("Indexation de la page " + pageCourante);
+            log.debug("Indexation de la page " + pageCourante);
 
             List<Map<String, Object>> r = jdbcTemplate.queryForList(
                     "select * from " + tablePersonneName + " where nom_index = ? " +
@@ -75,7 +75,7 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
                     nomIndex);
 
             if (r.size() == 0) {
-                log.info("Fin de ce thread");
+                log.debug("Fin de ce thread");
                 break;
             }
 

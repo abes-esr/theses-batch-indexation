@@ -20,7 +20,7 @@ public class TheseRowMapper implements RowMapper<TheseModel> {
             OracleResultSet rsOra = (OracleResultSet) rs;
 
             these.setIdDoc(rsOra.getInt("iddoc"));
-            log.info("dans TheseRowMapper, l'iddoc est : " + these.getIdDoc());
+            log.debug("dans TheseRowMapper, l'iddoc est : " + these.getIdDoc());
             these.setNnt(rsOra.getString("nnt"));
             these.setIdSujet(rsOra.getString("numsujet"));
             these.setDoc(XMLType.createXML(rsOra.getOPAQUE("doc")).getStringVal());

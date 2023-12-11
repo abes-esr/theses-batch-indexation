@@ -11,6 +11,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -31,15 +33,17 @@ public class JobTheseCompletionNotificationListener extends JobExecutionListener
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        log.info("Load elastic client");
+        log.debug("Load elastic client");
         try {
             ElasticClient.chargeClient(elasticConfig.getHostname(), elasticConfig.getPort(), elasticConfig.getScheme(), elasticConfig.getUserName(), elasticConfig.getPassword(), elasticConfig.getProtocol());
         } catch (Exception e) {
             log.error("pb lors du chargement du client ES : " + e.toString());
             throw new RuntimeException(e);
         }
-        log.info("Debut du job "+ env.getProperty("spring.batch.job.names") +" des theses");
         start = System.currentTimeMillis();
+        Date date = new Date(start);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        log.info("Debut du job "+ env.getProperty("spring.batch.job.names") +" des theses à " + sdf.format(date));
     }
 
     @Override
@@ -50,7 +54,7 @@ public class JobTheseCompletionNotificationListener extends JobExecutionListener
             log.info("job indexation des theses termine");
         }
 
-        log.info(millisecondsToReadeable(duration));
+        log.info("duree du job = " + millisecondsToReadeable(duration));
     }
 
     private String millisecondsToReadeable(long millis) {
