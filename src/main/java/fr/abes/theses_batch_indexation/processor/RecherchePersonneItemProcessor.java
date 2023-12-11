@@ -31,7 +31,7 @@ public class RecherchePersonneItemProcessor implements ItemProcessor<TheseModel,
 
     @Override
     public TheseModel process(TheseModel theseModel) throws Exception {
-        log.info("debut de traitement de " + theseModel.getId());
+        log.debug("debut de traitement de " + theseModel.getId());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
         RecherchePersonneMappe recherchePersonneMappe = new RecherchePersonneMappe(mets,theseModel.getId(), oaiSets);
         theseModel.setRecherchePersonnes(recherchePersonneMappe.getPersonnes());

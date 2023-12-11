@@ -35,7 +35,7 @@ public class TheseItemProcessor implements ItemProcessor<TheseModel, TheseModel>
     @Override
     public TheseModel process(TheseModel item) throws Exception {
 
-        log.info("debut de traitement de " + item.getNnt());
+        log.debug("debut de traitement de " + item.getNnt());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(item.getDoc().getBytes()));
         String json = new Gson().toJson(new TheseMappee(mets, oaiSets));
         item.setJsonThese(json);

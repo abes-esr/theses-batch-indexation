@@ -42,14 +42,14 @@ public class TheseThematiquesMappee {
                 if (isNnt(i.getValue()))
                     nnt = i.getValue();
 
-                log.info("traitement de " + nnt);
+                log.debug("traitement de " + nnt);
             }
         } catch (NullPointerException e) {
             log.error("PB pour nnt " + e);
         }
 
 
-        log.info("traitement de sujets");
+        log.debug("traitement de sujets");
         try {
             List<Subject> subjects = dmdSec.getMdWrap().getXmlData().getThesisRecord().getSubject();
             Iterator<Subject> subjectIterator = subjects.iterator();
@@ -64,7 +64,7 @@ public class TheseThematiquesMappee {
             log.error("PB pour sujets de " + nnt + "," + e.getMessage());
         }
 
-        log.info("traitement de discipline");
+        log.debug("traitement de discipline");
         try {
             ThesisDegreeDiscipline tddisc = techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getThesisDegree().getThesisDegreeDiscipline();
@@ -74,7 +74,7 @@ public class TheseThematiquesMappee {
 
         }
 
-        log.info("traitement de sujetsRameau");
+        log.debug("traitement de sujetsRameau");
 
         try {
             List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()

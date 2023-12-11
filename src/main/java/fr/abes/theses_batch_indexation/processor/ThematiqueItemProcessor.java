@@ -34,7 +34,7 @@ public class ThematiqueItemProcessor implements ItemProcessor<TheseModel, TheseM
     @Override
     public TheseModel process(TheseModel item) throws Exception {
 
-        log.info("debut de traitement de " + item.getNnt());
+        log.debug("debut de traitement de " + item.getNnt());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(item.getDoc().getBytes()));
         String json = new Gson().toJson(new TheseThematiquesMappee(mets));
         item.setJsonThematiques(json);

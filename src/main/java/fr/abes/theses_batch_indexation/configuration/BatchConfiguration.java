@@ -32,13 +32,9 @@ import javax.sql.DataSource;
 public class BatchConfiguration {
 
     protected final JobBuilderFactory jobs;
-
     protected final StepBuilderFactory stepBuilderFactory;
-
     protected final DataSource dataSourceLecture;
-
     private final JobConfig config;
-
     private final ItemWriteListener<TheseModel> theseWriteListener;
     private final ItemProcessListener<TheseModel, TheseModel> theseProcessListener;
 
@@ -59,7 +55,7 @@ public class BatchConfiguration {
                                          Tasklet initialiserIndexESTasklet,
                                          Tasklet chargerOaiSetsTasklet,
                                          JobTheseCompletionNotificationListener listener) {
-        log.info("debut du job indexation des theses dans ES...");
+        log.debug("debut du job indexation des theses dans ES...");
 
         return jobs.get("indexationThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -119,7 +115,7 @@ public class BatchConfiguration {
                                          JobRepository jobRepository,
                                          Tasklet initialiserIndexESTasklet,
                                          JobTheseCompletionNotificationListener listener) {
-        log.info("debut du job indexation des thematiques dans ES...");
+        log.debug("debut du job indexation des thematiques dans ES...");
 
         return jobs.get("indexationThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -134,7 +130,7 @@ public class BatchConfiguration {
     public Job jobSuppressionThesesDansES(Step stepSupprimeThesesOuThematiquesDansES,
                                          JobRepository jobRepository,
                                          JobTheseCompletionNotificationListener listener) {
-        log.info("debut du job de suppression des theses dans ES...");
+        log.debug("debut du job de suppression des theses dans ES...");
 
         return jobs.get("suppressionThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -146,7 +142,7 @@ public class BatchConfiguration {
     public Job jobSuppressionThematiquesDansES(Step stepSupprimeThesesOuThematiquesDansES,
                                           JobRepository jobRepository,
                                           JobTheseCompletionNotificationListener listener) {
-        log.info("debut du job de suppression des thématiques dans ES...");
+        log.debug("debut du job de suppression des thématiques dans ES...");
 
         return jobs.get("suppressionThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
