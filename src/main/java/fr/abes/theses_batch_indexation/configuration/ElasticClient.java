@@ -21,10 +21,8 @@ import javax.net.ssl.SSLContext;
 public class ElasticClient {
 
     private static ElasticsearchClient client;
-
     private ElasticClient() {
     }
-
     public static ElasticsearchClient getElasticsearchClient() {
         return client;
     }

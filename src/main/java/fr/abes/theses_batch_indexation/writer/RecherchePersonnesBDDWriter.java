@@ -56,8 +56,8 @@ public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel> {
             logSiPasAssezDePersonnesDansLaThese(theseModel);
             for (RecherchePersonneModelES personneModelES : theseModel.getRecherchePersonnes()) {
                 nombreDePersonnes.incrementAndGet();
-                log.info("ppn : " + personneModelES.getPpn());
-                log.info("nom : " + personneModelES.getNom());
+                log.debug("ppn : " + personneModelES.getPpn());
+                log.debug("nom : " + personneModelES.getNom());
                 if (estPresentDansBDD(personneModelES.getPpn())) {
                     updatePersonneDansBDD(personneModelES);
                     nombreDePersonnesUpdated.incrementAndGet();

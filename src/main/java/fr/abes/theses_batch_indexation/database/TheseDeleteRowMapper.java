@@ -19,7 +19,7 @@ public class TheseDeleteRowMapper implements RowMapper<TheseModel> {
         OracleResultSet rsOra = (OracleResultSet) rs;
 
         these.setIdDoc(rsOra.getInt("iddoc"));
-        log.info("dans TheseDeleteRowMapper, l'iddoc est : " + these.getIdDoc());
+        log.debug("dans TheseDeleteRowMapper, l'iddoc est : " + these.getIdDoc());
         these.setNnt(rsOra.getString("nnt"));
         these.setIdSujet(rsOra.getString("numsujet"));
 

@@ -23,7 +23,7 @@ public class ThesesItemWriteListener implements ItemWriteListener<TheseModel> {
     public void afterWrite(List<? extends TheseModel> items) {
         if (!items.isEmpty()) {
             for (TheseModel theseModel : items) {
-                log.info("Writer OK pour " + theseModel.getIdDoc());
+                log.debug("Writer OK pour " + theseModel.getIdDoc());
             }
         }
     }

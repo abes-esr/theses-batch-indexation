@@ -102,7 +102,7 @@ public class TheseMappee {
             //id = dmdSec.getID();
 
             // cas et codeEtab
-            log.info("traitement de cas et codeEtab");
+            log.debug("traitement de cas et codeEtab");
             try {
                 Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
                 if (starGestion.isPresent()) {
@@ -115,14 +115,14 @@ public class TheseMappee {
 
             // titrePrincipal
 
-            log.info("traitement de titrePrincipal");
+            log.debug("traitement de titrePrincipal");
             try {
                 titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent();
             } catch (NullPointerException e) {
                 log.error("PB pour titrePrincipal de " + nnt + e.getMessage());
             }
             // titres
-            log.info("traitement de titres");
+            log.debug("traitement de titres");
             try {
                 titres.put(
                         dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
@@ -141,7 +141,7 @@ public class TheseMappee {
 
             // resumes
 
-            log.info("traitement de resumes");
+            log.debug("traitement de resumes");
             try {
                 List<Abstract> abstracts = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAbstract();
                 Iterator<Abstract> abstractIterator = abstracts.iterator();
@@ -155,7 +155,7 @@ public class TheseMappee {
 
             // langues
 
-            log.info("traitement de langues");
+            log.debug("traitement de langues");
             try {
                 List<Language> languages = dmdSec.getMdWrap().getXmlData().getThesisRecord().getLanguage();
                 Iterator<Language> languageIterator = languages.iterator();
@@ -169,7 +169,7 @@ public class TheseMappee {
 
             // date de soutenance
 
-            log.info("traitement de dateSoutenance");
+            log.debug("traitement de dateSoutenance");
             try {
                 dateSoutenance = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString();
             } catch (NullPointerException e) {
@@ -185,7 +185,7 @@ public class TheseMappee {
 
             // date de fin d'embargo
 
-            log.info("traitement de datefinembargo ");
+            log.debug("traitement de datefinembargo ");
             try {
                 if (!mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                         .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getRestrictionTemporelleFin().isEmpty())
@@ -197,7 +197,7 @@ public class TheseMappee {
 
             // accessible
 
-            log.info("traitement de accessible");
+            log.debug("traitement de accessible");
             accessible = "non";
 
             try {
@@ -210,7 +210,7 @@ public class TheseMappee {
             }
 
             // source
-            log.info("traitement de source");
+            log.debug("traitement de source");
 
             boolean sourceIsSet = false;
             try {
@@ -231,7 +231,7 @@ public class TheseMappee {
             }
 
             // isSoutenue
-            log.info("traitement de isSoutenue");
+            log.debug("traitement de isSoutenue");
 
             isSoutenue = false;
             try {
@@ -246,7 +246,7 @@ public class TheseMappee {
 
             // status
             try {
-                log.info("traitement de status");
+                log.debug("traitement de status");
 
                 status = "enCours";
 
@@ -270,7 +270,7 @@ public class TheseMappee {
             }
 
             // date filtre
-            log.info("traitement de datefiltre ");
+            log.debug("traitement de datefiltre ");
 
             if (status.equals("enCours"))
                 dateFiltre = datePremiereInscriptionDoctorat;
@@ -279,7 +279,7 @@ public class TheseMappee {
 
             // etablissements
 
-            log.info("traitement de etablissements");
+            log.debug("traitement de etablissements");
 
             try {
                 List<ThesisDegreeGrantor> grantors = techMD.getMdWrap().getXmlData().getThesisAdmin()
@@ -316,7 +316,7 @@ public class TheseMappee {
 
             // partenaires
 
-            log.info("traitement de partenaires");
+            log.debug("traitement de partenaires");
 
             HashMap<String, String> type_partenaire_recherche = new HashMap<String, String>();
             type_partenaire_recherche.put("laboratoire", "Laboratoire");
@@ -362,7 +362,7 @@ public class TheseMappee {
 
             // ecoles doctorales
 
-            log.info("traitement de ecolesDoctorales");
+            log.debug("traitement de ecolesDoctorales");
             try {
                 List<EcoleDoctorale> ecolesDoctoralesDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getEcoleDoctorale();
@@ -391,7 +391,7 @@ public class TheseMappee {
 
             // discipline
 
-            log.info("traitement de discipline");
+            log.debug("traitement de discipline");
             try {
                 ThesisDegreeDiscipline tddisc = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getThesisDegree().getThesisDegreeDiscipline();
@@ -403,7 +403,7 @@ public class TheseMappee {
 
             // auteurs
 
-            log.info("traitement de auteurs");
+            log.debug("traitement de auteurs");
             try {
                 List<Auteur> auteursDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getAuteur();
@@ -426,7 +426,7 @@ public class TheseMappee {
             }
 
             // directeurs
-            log.info("traitement de directeurs");
+            log.debug("traitement de directeurs");
             try {
                 List<DirecteurThese> directeursDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getDirecteurThese();
@@ -449,7 +449,7 @@ public class TheseMappee {
 
             // presidentJury
 
-            log.info("traitement de president jury");
+            log.debug("traitement de president jury");
             try {
                 if (techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury() != null) {
                     PresidentJury presidentDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin().getPresidentJury();
@@ -468,7 +468,7 @@ public class TheseMappee {
 
             // membres Jury
 
-            log.info("traitement de membres jury");
+            log.debug("traitement de membres jury");
             try {
                 List<MembreJury> membresDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getMembreJury();
@@ -491,7 +491,7 @@ public class TheseMappee {
 
             // rapporteurs
 
-            log.info("traitement de rapporteurs");
+            log.debug("traitement de rapporteurs");
             try {
                 List<Rapporteur> rapporteursDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getRapporteur();
@@ -514,7 +514,7 @@ public class TheseMappee {
 
             // sujets
 
-            log.info("traitement de sujets");
+            log.debug("traitement de sujets");
             try {
                 List<Subject> subjects = dmdSec.getMdWrap().getXmlData().getThesisRecord().getSubject();
                 Iterator<Subject> subjectIterator = subjects.iterator();
@@ -535,7 +535,7 @@ public class TheseMappee {
 
             // sujetsRameau
 
-            log.info("traitement de sujetsRameau");
+            log.debug("traitement de sujetsRameau");
 
             try {
                 List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -642,7 +642,7 @@ public class TheseMappee {
 
             // oaiSets
 
-            log.info("traitement de oaiSets");
+            log.debug("traitement de oaiSets");
             try {
                 Iterator<String> oaiSetSpecIterator = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getOaiSetSpec().iterator();
@@ -658,7 +658,7 @@ public class TheseMappee {
 
             // theseTravaux
 
-            log.info("traitement de theseTravaux");
+            log.debug("traitement de theseTravaux");
             try {
                 theseTravaux = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getTheseSurTravaux();

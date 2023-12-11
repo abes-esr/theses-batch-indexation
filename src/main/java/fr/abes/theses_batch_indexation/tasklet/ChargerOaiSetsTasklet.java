@@ -47,7 +47,7 @@ public class ChargerOaiSetsTasklet implements Tasklet, StepExecutionListener {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
-        log.info("chargement du fichier de mapping OAI...");
+        log.debug("chargement du fichier de mapping OAI...");
 
         File f = new File(oaiSetsFilePath);
         final JAXBContext jc2 = JAXBContext.newInstance("fr.abes.theses_batch_indexation.model.oaisets");

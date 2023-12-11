@@ -46,7 +46,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des sujets
          * ***********************************/
-        log.info("traitement de sujets");
+        log.debug("traitement de sujets");
         try {
             List<Subject> subjects = dmdSec.getMdWrap().getXmlData().getThesisRecord().getSubject();
             Iterator<Subject> subjectIterator = subjects.iterator();
@@ -72,7 +72,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des sujets Rameau
          * ***********************************/
-        log.info("traitement de sujetsRameau");
+        log.debug("traitement de sujetsRameau");
 
         try {
             List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -151,7 +151,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing du résumé
          * ***********************************/
-        log.info("traitement de resumes");
+        log.debug("traitement de resumes");
         try {
             List<Abstract> abstracts = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAbstract();
             Iterator<Abstract> abstractIterator = abstracts.iterator();
@@ -172,7 +172,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing de la discipline
          * ***********************************/
-        log.info("traitement de discipline");
+        log.debug("traitement de discipline");
         try {
             ThesisDegreeDiscipline tddisc = techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getThesisDegree().getThesisDegreeDiscipline();
@@ -186,7 +186,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing de la date de soutenance
          * ***********************************/
-        log.info("traitement de dateSoutenance");
+        log.debug("traitement de dateSoutenance");
         try {
             theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
         } catch (NullPointerException e) {
@@ -201,7 +201,7 @@ public class RecherchePersonneMappe {
             /************************************
              * Parsing de la date d'inscription
              * ***********************************/
-            log.info("traitement de datePremiereInscriptionDoctorat");
+            log.debug("traitement de datePremiereInscriptionDoctorat");
             try {
                 theseModelES.setDate_inscription(techMD.getMdWrap().getXmlData().getThesisAdmin().getThesisDegree().getDatePremiereInscriptionDoctorat().toString());
             } catch (NullPointerException e) {
@@ -214,7 +214,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des etablissements
          * ***********************************/
-        log.info("traitement de etablissements");
+        log.debug("traitement de etablissements");
 
         try {
             List<ThesisDegreeGrantor> grantors = techMD.getMdWrap().getXmlData().getThesisAdmin()
@@ -244,7 +244,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des Domaines
          * ***********************************/
-        log.info("traitement de oaiSets");
+        log.debug("traitement de oaiSets");
         try {
             Iterator<String> oaiSetSpecIterator = techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getOaiSetSpec().iterator();
@@ -267,7 +267,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des auteurs de la thèse
          * ***********************************/
-        log.info("traitement des auteurs");
+        log.debug("traitement des auteurs");
         try {
             traiterAuteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getAuteur());
@@ -281,7 +281,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des directeurs de la thèse
          * ***********************************/
-        log.info("traitement de directeurs");
+        log.debug("traitement de directeurs");
         try {
             traiterDirecteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getDirecteurThese());
@@ -294,7 +294,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des rapporteurs de la thèse
          * ***********************************/
-        log.info("traitement des rapporteurs");
+        log.debug("traitement des rapporteurs");
         try {
             traiterRapporteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getRapporteur());
@@ -309,7 +309,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing du président du jury de la thèse
          * ***********************************/
-        log.info("traitement du président du jury de la thèse");
+        log.debug("traitement du président du jury de la thèse");
         try {
             traiterPresident(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getPresidentJury());
@@ -324,7 +324,7 @@ public class RecherchePersonneMappe {
         /************************************
          * Parsing des membres du jury de la thèse
          * ***********************************/
-        log.info("traitement des membres du jury de la thèse");
+        log.debug("traitement des membres du jury de la thèse");
         try {
             traiterMembreJury(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getMembreJury());
