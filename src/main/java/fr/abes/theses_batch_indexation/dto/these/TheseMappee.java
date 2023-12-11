@@ -124,15 +124,18 @@ public class TheseMappee {
             // titres
             log.debug("traitement de titres");
             try {
-                titres.put(
-                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
-                        dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+                if (!dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang().isEmpty()) {
+                    titres.put(
+                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
+                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+                }
 
                 if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
                     Iterator<Alternative> titreAlternativeIterator = dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative().iterator();
                     while (titreAlternativeIterator.hasNext()) {
                         Alternative a = titreAlternativeIterator.next();
-                        titres.put(a.getLang(), a.getContent());
+                        if (!a.getLang().isEmpty())
+                            titres.put(a.getLang(), a.getContent());
                     }
                 }
             } catch (NullPointerException e) {
