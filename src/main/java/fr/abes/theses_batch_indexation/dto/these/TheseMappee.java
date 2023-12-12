@@ -252,23 +252,27 @@ public class TheseMappee {
             try {
                 log.debug("traitement de status");
 
-                status = "enCours";
+                status = "soutenue";
 
-                if (isSoutenue) {
-                    status = "soutenue";
-                } else {
-                    final String regex = ".*\\/([0-9,A-Z]*)";
-                    final String urlperene = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                            .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getUrlPerenne();
+                Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
+                Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+                if (starGestion.isPresent()) {
+                    String urlperene = starGestion.get().getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getUrlPerenne();
                     if (urlperene != null) {
-                        final Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);
-                        final Matcher matcher = pattern.matcher(urlperene);
-
-                        if (matcher.matches() && isNnt(matcher.group(1))) {
-                            status = "soutenue";
+                        Pattern pattern = Pattern.compile(".*\\/([0-9,A-Z]*)", Pattern.MULTILINE);
+                        Matcher matcher = pattern.matcher(urlperene);
+                        if (matcher.matches() && this.isNnt(matcher.group(1))) {
+                            this.status = "soutenue";
+                        } else {
+                            this.status = "enCours";
                         }
                     }
                 }
+
+                if (stepGestion.isPresent()) {
+                    this.status = "enCours";
+                }
+
             } catch (NullPointerException e) {
                 log.error("PB pour status de " + nnt + "," + e.getMessage());
             }
@@ -346,8 +350,7 @@ public class TheseMappee {
                         } else if (p.getType().equals("autreType")) {
                             pdto.setType(p.getAutreType());
                         }
-                    }
-                    catch (Exception eTypePartenaireRecherche) {
+                    } catch (Exception eTypePartenaireRecherche) {
                         log.error("pb lors de la récupération du type du partenaire de recherche pour nnt = " + nnt);
                     }
 
