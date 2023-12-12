@@ -38,6 +38,12 @@ COPY ./docker/batch/tasks.tmpl /etc/cron.d/tasks.tmpl
 RUN dnf install -y java-11-openjdk
 COPY docker/batch/theses-batch-indexation.sh /scripts/theses-batch-indexation.sh
 RUN chmod +x /scripts/theses-batch-indexation.sh
+COPY docker/batch/theses-batch-suppression.sh /scripts/theses-batch-suppression.sh
+RUN chmod +x /scripts/theses-batch-suppression.sh
+COPY docker/batch/thematiques-batch-indexation.sh /scripts/thematiques-batch-indexation.sh
+RUN chmod +x /scripts/thematiques-batch-indexation.sh
+COPY docker/batch/thematiques-batch-suppression.sh /scripts/thematiques-batch-suppression.sh
+RUN chmod +x /scripts/thematiques-batch-suppression.sh
 COPY --from=build-image /build/target/*.jar /scripts/theses-batch-indexation.jar
 # Les fichiers de définition d'index et oaisets :
 COPY ./src/main/resources/indexs/personnes.json   /scripts/src/main/resources/indexs/personnes.json
