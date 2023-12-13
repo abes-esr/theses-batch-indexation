@@ -50,18 +50,23 @@ public class TheseMappee {
     String discipline;
     List<PersonneDTO> auteurs = new ArrayList<>();
     List<String> auteursNP = new ArrayList<>();
+    List<String> auteursPN = new ArrayList<>();
     List<String> auteursPpn = new ArrayList<>();
     List<PersonneDTO> directeurs = new ArrayList<>();
     List<String> directeursNP = new ArrayList<>();
+    List<String> directeursPN = new ArrayList<>();
     List<String> directeursPpn = new ArrayList<>();
     PersonneDTO presidentJury = new PersonneDTO();
     String presidentJuryNP;
+    String presidentJuryPN;
     String presidentJuryPpn;
     List<PersonneDTO> membresJury = new ArrayList<>();
     List<String> membresJuryNP = new ArrayList<>();
+    List<String> membresJuryPN = new ArrayList<>();
     List<String> membresJuryPpn = new ArrayList<>();
     List<PersonneDTO> rapporteurs = new ArrayList<>();
     List<String> rapporteursNP = new ArrayList<>();
+    List<String> rapporteursPN = new ArrayList<>();
     List<String> rapporteursPpn = new ArrayList<>();
     List<SujetRameauDTO> sujetsRameau = new ArrayList<>();
     List<String> sujetsRameauPpn = new ArrayList<>();
@@ -427,6 +432,7 @@ public class TheseMappee {
                     adto.setPrenom(a.getPrenom());
                     auteurs.add(adto);
                     auteursNP.add(a.getNom() + " " + a.getPrenom());
+                    auteursPN.add(a.getPrenom() + " " + a.getNom());
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour auteurs de " + nnt + "," + e.getMessage());
@@ -449,6 +455,7 @@ public class TheseMappee {
                     dtdto.setPrenom(dt.getPrenom());
                     directeurs.add(dtdto);
                     directeursNP.add(dt.getNom() + " " + dt.getPrenom());
+                    directeursPN.add(dt.getPrenom() + " " + dt.getNom());
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour directeurs de " + nnt + "," + e.getMessage());
@@ -468,6 +475,7 @@ public class TheseMappee {
                     presidentJury.setNom(presidentDepuisTef.getNom());
                     presidentJury.setPrenom(presidentDepuisTef.getPrenom());
                     presidentJuryNP = presidentDepuisTef.getNom() + " " + presidentDepuisTef.getPrenom();
+                    presidentJuryPN = presidentDepuisTef.getPrenom() + " " + presidentDepuisTef.getNom();
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour president jury de " + nnt + "," + e.getMessage());
@@ -491,6 +499,7 @@ public class TheseMappee {
                     mdto.setPrenom(m.getPrenom());
                     membresJury.add(mdto);
                     membresJuryNP.add(m.getNom() + " " + m.getPrenom());
+                    membresJuryPN.add(m.getPrenom() + " " + m.getNom());
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour membres jury de " + nnt + "," + e.getMessage());
@@ -514,6 +523,7 @@ public class TheseMappee {
                     rdto.setPrenom(r.getPrenom());
                     rapporteurs.add(rdto);
                     rapporteursNP.add(r.getNom() + " " + r.getPrenom());
+                    rapporteursPN.add(r.getPrenom() + " " + r.getNom());
                 }
             } catch (NullPointerException e) {
                 log.error("PB pour rapporteurs de " + nnt + "," + e.getMessage());
