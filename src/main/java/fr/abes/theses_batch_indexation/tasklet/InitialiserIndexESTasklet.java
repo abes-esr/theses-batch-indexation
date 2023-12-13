@@ -37,9 +37,6 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Value("${index.pathRecherchePersonnes}")
     private String pathRecherchePersonnes;
 
-    @Value("${initialiseIndex}")
-    private Boolean initialiseIndex;
-
     @Autowired
     Environment env;
 
@@ -52,7 +49,8 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
-        if (env.getProperty("initialiseIndex").equals(true)) {
+        if (env.getProperty("initialiseIndex") != null &&
+                env.getProperty("initialiseIndex").equals(true)) {
             String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
             log.warn("Réinitialisation de l'index " + nomIndex);
             File f = selectIndex();
