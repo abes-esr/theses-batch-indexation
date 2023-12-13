@@ -229,6 +229,9 @@
           }
         }
       },
+      "auteursPN": {
+        "type": "text"
+      },
       "auteursPpn": {
         "type": "text"
       },
@@ -247,6 +250,9 @@
         }
       },
       "directeursNP": {
+        "type": "text"
+      },
+      "directeursPN": {
         "type": "text"
       },
       "directeursPpn": {
@@ -269,6 +275,9 @@
       "presidentJuryNP": {
         "type": "text"
       },
+      "presidentJuryPN": {
+        "type": "text"
+      },
       "presidentJuryPpn": {
         "type": "text"
       },
@@ -289,6 +298,9 @@
       "membresJuryNP": {
         "type": "text"
       },
+      "membresJuryPN": {
+        "type": "text"
+      },
       "membresJuryPpn": {
         "type": "text"
       },
@@ -307,6 +319,9 @@
         }
       },
       "rapporteursNP": {
+        "type": "text"
+      },
+      "rapporteursPN": {
         "type": "text"
       },
       "rapporteursPpn": {
