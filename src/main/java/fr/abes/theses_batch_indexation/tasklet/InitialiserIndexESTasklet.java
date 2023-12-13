@@ -50,7 +50,7 @@ public class InitialiserIndexESTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
         if (env.getProperty("initialiseIndex") != null &&
-                env.getProperty("initialiseIndex").equals(true)) {
+                env.getProperty("initialiseIndex").equals("true")) {
             String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
             log.warn("Réinitialisation de l'index " + nomIndex);
             File f = selectIndex();
