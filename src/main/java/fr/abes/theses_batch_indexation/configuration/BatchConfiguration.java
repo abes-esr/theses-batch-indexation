@@ -150,6 +150,24 @@ public class BatchConfiguration {
                 .build();
     }
 
+    @Bean
+    public Job jobSuppressionPersonnesDansES(Step stepSupprimePersonnesDansES,
+                                             JobRepository jobRepository,
+                                             Tasklet initiliserIndexBDDTasklet,
+                                             Tasklet indexerPersonnesDansESTasklet,
+                                             Tasklet chargerOaiSetsTasklet,
+                                             JobTheseCompletionNotificationListener listener) {
+        log.debug("debut du job de suppression des personnes dans ES...");
+
+        return jobs.get("suppressionPersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
+                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .next(stepSupprimePersonnesDansES)
+                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .build();
+    }
+
 
 
     // ---------- STEP --------------------------------------------
@@ -237,6 +255,17 @@ public class BatchConfiguration {
                 .writer(itemWriter)
                 .taskExecutor(taskExecutor())
                 .throttleLimit(config.getThrottle())
+                .build();
+    }
+
+    @Bean
+    public Step stepSupprimePersonnesDansES(@Qualifier("jdbcPagingDeleteReader") JdbcPagingDeleteReader itemReader,
+                                                      @Qualifier("supprimerThesesPersonneProcessor") ItemProcessor itemProcessor) {
+        return stepBuilderFactory.get("stepSupprimePersonnes").<TheseModel, TheseModel>chunk(config.getChunk())
+                .listener(theseWriteListener)
+                .reader(itemReader)
+                .processor(itemProcessor)
+                .taskExecutor(taskExecutor())
                 .build();
     }
 
