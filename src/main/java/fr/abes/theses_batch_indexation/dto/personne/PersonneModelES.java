@@ -1,13 +1,11 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Représente une personne au format de l'index Elastic Search.
@@ -19,14 +17,15 @@ import java.util.Set;
 @NoArgsConstructor
 public class PersonneModelES {
 
-    private String ppn;
-    private boolean has_idref;
-    private String nom;
-    private String prenom;
-    private List<String> nom_complet = new ArrayList<>();
+    protected String ppn;
+    protected boolean has_idref;
+    protected String nom;
+    protected String prenom;
+    protected List<String> nom_complet = new ArrayList<>();
+    protected Set<String> theses_id = new LinkedHashSet<>();
 
-    private List<String> roles = new ArrayList<>();
-    private List<TheseModelES> theses = new ArrayList<>();
+    protected List<String> roles = new ArrayList<>();
+    protected List<TheseModelES> theses = new ArrayList<>();
 
     public PersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
@@ -41,6 +40,7 @@ public class PersonneModelES {
         nom_complet.add(String.format("%1$s %2$s", prenom, nom));
         nom_complet.add(String.format("%1$s %2$s", nom, prenom));
     }
+
 
     /**
      * Recherche une thèse dans la liste des thèses

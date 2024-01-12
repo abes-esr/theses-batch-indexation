@@ -15,6 +15,7 @@ import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.TheseModelES;
+import fr.abes.theses_batch_indexation.utils.PersonneCacheUtils;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemWriter;
@@ -56,6 +57,8 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
     private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdatedDansCeChunk = new AtomicInteger(0);
 
+    private PersonneCacheUtils personneCacheUtils;
+
     private final JdbcTemplate jdbcTemplate;
 
     public PersonnesBDDWriter(JdbcTemplate jdbcTemplate) {
@@ -64,6 +67,12 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
 
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
+
+        this.personneCacheUtils = new PersonneCacheUtils(
+                jdbcTemplate,
+                tablePersonneName,
+                nomIndex
+        );
 
         nombreDePersonnesUpdatedDansCeChunk.set(0);
 
@@ -74,12 +83,12 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
                 nombreDePersonnes.incrementAndGet();
                 log.debug("ppn : " + personneModelES.getPpn());
                 log.debug("nom : " + personneModelES.getNom());
-                if (estPresentDansBDD(personneModelES.getPpn())) {
-                    updatePersonneDansBDD(personneModelES);
+                if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
+                    personneCacheUtils.updatePersonneDansBDD(personneModelES);
                     nombreDePersonnesUpdated.incrementAndGet();
                     nombreDePersonnesUpdatedDansCeChunk.incrementAndGet();
                 } else {
-                    ajoutPersonneDansBDD(personneModelES);
+                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES);
                 }
             }
         }
@@ -96,86 +105,6 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         if (theseModel.getPersonnes().size() < 2) {
             log.warn("Moins de personnes que prévu dans cette theses");
         }
-    }
-
-    private void ajoutPersonneDansBDD(PersonneModelES personneModelES) {
-
-        try {
-
-            jdbcTemplate.update("insert into " + tablePersonneName + "(ppn, personne, nom_index) VALUES (?,?,?)",
-                    personneModelES.getPpn(),
-                    readJson(personneModelES),
-                    nomIndex);
-            //jdbcTemplate.update("commit");
-
-        } catch (Exception e) {
-            log.error("Dans ajoutPersonneDansES : " + e);
-        }
-    }
-
-    private PersonneModelES getPersonneModelBDD(String ppn) throws IOException {
-        try {
-
-            List<Map<String, Object>> r = jdbcTemplate.queryForList("select * from " + tablePersonneName + " where ppn = ? and nom_index = ?", ppn, nomIndex);
-
-            return mapperJson((String) r.get(0).get("PERSONNE"));
-
-        } catch (Exception e) {
-            log.error("Erreur dans getPersonneModelES : " + e);
-            throw e;
-        }
-    }
-
-    public boolean estPresentDansBDD(String ppn) throws IOException {
-        if (ppn != null && !ppn.equals("")) {
-            return jdbcTemplate.queryForList("select * from " + tablePersonneName + " where ppn = ? and nom_index = ?", ppn, nomIndex).size() > 0;
-        } else {
-            return false;
-        }
-
-    }
-
-    public void updatePersonneDansBDD(PersonneModelES personneCourante) throws IOException, InterruptedException {
-
-        try {
-            PersonneModelES personnePresentDansES = getPersonneModelBDD(personneCourante.getPpn());
-            personnePresentDansES.getTheses().addAll(personneCourante.getTheses());
-            personnePresentDansES.getRoles().addAll(personneCourante.getRoles());
-
-            jdbcTemplate.update("update " + tablePersonneName + " set personne = ?" +
-                            " where ppn = ? and nom_index = ?",
-                    readJson(personnePresentDansES),
-                    personnePresentDansES.getPpn(),
-                    nomIndex);
-        } catch (MismatchedInputException ex) {
-            log.error("Le JSON stocké dans la base et le modèle Java ne correspondent pas : " + ex);
-            log.info("On remplace la personne " + personneCourante.getPpn() + " de la base par le modèle Java");
-            deletePersonneBDD(personneCourante.getPpn());
-            ajoutPersonneDansBDD(personneCourante);
-        }
-        //jdbcTemplate.update("commit");
-    }
-
-    private boolean deletePersonneBDD(String ppn) throws IOException {
-        try {
-            Object[] args = new Object[]{ppn};
-            jdbcTemplate.update("delete from " + tablePersonneName + " where ppn = ? and nom_index = ?", args, nomIndex);
-            //jdbcTemplate.update("commit");
-            return true;
-        } catch (Exception e) {
-            log.error("Erreur dans deletePersonneES " + e);
-            throw e;
-        }
-    }
-
-    public static PersonneModelES mapperJson(String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, PersonneModelES.class);
-    }
-
-    public static String readJson(PersonneModelES personneModelES) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(personneModelES);
     }
 
 }
