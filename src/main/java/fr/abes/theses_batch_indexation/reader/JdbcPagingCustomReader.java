@@ -62,7 +62,8 @@ public class JdbcPagingCustomReader
             OraclePagingQueryProvider queryProvider, TableIndexationES nomTableIndexationES) {
 
         if (config.getWhereLimite() > 0) {
-            queryProvider.setWhereClause("where DOCUMENT.iddoc = "+ nomTableIndexationES.name() + ".iddoc and rownum < " + config.getWhereLimite());
+            queryProvider.setWhereClause("where DOCUMENT.iddoc = "+ nomTableIndexationES.name() + ".iddoc and rownum < "
+                    + config.getWhereLimite());
         }
         else {
             queryProvider.setWhereClause("where DOCUMENT.iddoc = "+ nomTableIndexationES.name() +".iddoc");
