@@ -1,7 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;

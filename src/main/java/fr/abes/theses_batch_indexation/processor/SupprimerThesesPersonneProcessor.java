@@ -10,6 +10,7 @@ import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelESAvecId;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.model.tef.Mets;
+import fr.abes.theses_batch_indexation.utils.ElasticSearchUtils;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import fr.abes.theses_batch_indexation.utils.PersonneCacheUtils;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
@@ -46,6 +47,8 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     List<Set> oaiSets;
     PersonneCacheUtils personneCacheUtils = new PersonneCacheUtils();
 
+    ElasticSearchUtils elasticSearchUtils;
+
     private final JdbcTemplate jdbcTemplate;
 
     public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate) {
@@ -64,6 +67,8 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
                 tablePersonneName,
                 nomIndex
         );
+
+        this.elasticSearchUtils = new ElasticSearchUtils(nomIndex);
     }
 
     public ExitStatus afterStep(StepExecution stepExecution) {
@@ -77,12 +82,12 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
         personneCacheUtils.initialisePersonneCacheBDD();
 
         // sortir la liste des personnes de la thèse
-        List<PersonneModelESAvecId> personnes = getPersonnesModelESAvecId(theseModel.getId());
+        List<PersonneModelESAvecId> personnes = elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId());
 
         // supprimer les personnes sans ppn
-        deletePersonnesSansPPN(personnes);
+        elasticSearchUtils.deletePersonnesSansPPN(personnes);
 
-        deletePersonnesAvecUniquementTheseId(personnes, theseModel.getId());
+        elasticSearchUtils.deletePersonnesAvecUniquementTheseId(personnes, theseModel.getId());
 
         // recuperation des ppn
         ppnList = personnes.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
@@ -119,14 +124,11 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
         // Nettoyer la table personne_cache des personnes qui ne sont pas dans ppnList
         List<PersonneModelES> personneModelEsEnBDD = personneCacheUtils.getAllPersonneModelBDD();
+        personneCacheUtils.initialisePersonneCacheBDD();
 
         personneModelEsEnBDD.forEach(p -> {
-            if (p.isHas_idref() && !ppnList.contains(p.getPpn())) {
-                try {
-                    personneCacheUtils.deletePersonneBDD(p.getPpn());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            if (p.isHas_idref() && ppnList.contains(p.getPpn())) {
+                personneCacheUtils.ajoutPersonneDansBDD(p);
             }
         });
 
@@ -135,85 +137,5 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
 
         return theseModel;
-    }
-
-    private void deletePersonnesAvecUniquementTheseId(List<PersonneModelESAvecId> personnes, String theseModelId) {
-        personnes.forEach(p -> {
-            p.getTheses_id().remove(theseModelId);
-            if (p.getTheses_id().isEmpty()) {
-                try {
-                    deletePersonnesES(p.get_id());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-    }
-
-    private void deleteAllPersonneES(List<String> ppns) {
-        ppns.forEach(ppn -> {
-            try {
-                deletePersonnesES(ppn);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-
-
-    private void deletePersonnesSansPPN(List<PersonneModelESAvecId> personnes) {
-        personnes.forEach(p ->
-                {
-                    if ( !p.isHas_idref()) {
-                        try {
-                            deletePersonnesES(p.get_id());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-        );
-    }
-
-    private List<PersonneModelESAvecId> getPersonnesModelESAvecId(String theseId) throws IOException {
-
-        List<FieldValue> thesesIdList = new ArrayList<>();
-        thesesIdList.add(FieldValue.of(theseId));
-
-        try {
-            SearchResponse<PersonneModelES> response = ElasticClient.getElasticsearchClient().search(s -> s
-                            .index(nomIndex.toLowerCase())
-                            .size(100000)
-                            .query(q -> q
-                                    .terms(t -> t.field("theses_id")
-                                            .terms(builder ->
-                                                    builder.value(
-                                                            thesesIdList
-                                                    ))
-                                    )),
-                    PersonneModelES.class
-            );
-
-            return response.hits().hits().stream().map(p ->
-                    new PersonneModelESAvecId(p.id(), p.source())
-            ).collect(Collectors.toList());
-
-        } catch (Exception e) {
-            log.error("Erreur dans getPersonneModelES : " + e);
-            throw e;
-        }
-    }
-
-    private void deletePersonnesES(String personneId) throws IOException {
-        try {
-            ElasticClient.getElasticsearchClient()
-                    .delete(d ->
-                            d.index(nomIndex.toLowerCase())
-                                    .id(personneId));
-        } catch (Exception e) {
-            log.error("Erreur dans deletePersonnesSansPPN : " + e);
-            throw e;
-        }
     }
 }
