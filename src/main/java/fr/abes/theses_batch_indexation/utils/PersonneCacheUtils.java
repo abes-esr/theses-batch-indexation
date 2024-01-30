@@ -3,6 +3,8 @@ package fr.abes.theses_batch_indexation.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import fr.abes.theses_batch_indexation.database.TheseModel;
+import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -120,6 +123,18 @@ public class PersonneCacheUtils {
             log.error("Erreur dans deletePersonneES " + e);
             throw e;
         }
+    }
+
+    public List<TheseModel> getTheses(java.util.Set<String> nntSet) {
+        if (nntSet.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String nnts = nntSet.stream().map(i -> "'" + i + "', ").reduce(String::concat).get();
+        nnts = nnts.substring(0, nnts.lastIndexOf("', ") + 1);
+
+        return jdbcTemplate.query("select * from Document where nnt in (" + nnts + ")" +
+                "or numsujet in (" + nnts +")",
+                new TheseRowMapper());
     }
 
     public static PersonneModelES mapperJson(String json) throws IOException {
