@@ -299,13 +299,15 @@ public class TheseMappee {
                         .getThesisDegree().getThesisDegreeGrantor();
                 Iterator<ThesisDegreeGrantor> iteGrantor = grantors.iterator();
                 // l'étab de soutenance est le premier de la liste
-                ThesisDegreeGrantor premier = iteGrantor.next();
-                if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne())) {
-                    etabSoutenance.setPpn(OutilsTef.getPPN(premier.getAutoriteExterne()));
-                    etabSoutenancePpn = OutilsTef.getPPN(premier.getAutoriteExterne());
+                if (iteGrantor.hasNext()) {
+                    ThesisDegreeGrantor premier = iteGrantor.next();
+                    if (premier.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(premier.getAutoriteExterne())) {
+                        etabSoutenance.setPpn(OutilsTef.getPPN(premier.getAutoriteExterne()));
+                        etabSoutenancePpn = OutilsTef.getPPN(premier.getAutoriteExterne());
+                    }
+                    etabSoutenance.setNom(premier.getNom());
+                    etabSoutenanceN = premier.getNom();
                 }
-                etabSoutenance.setNom(premier.getNom());
-                etabSoutenanceN = premier.getNom();
 
                 // les potentiels suivants sont les cotutelles
                 while (iteGrantor.hasNext()) {
