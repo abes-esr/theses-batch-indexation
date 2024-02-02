@@ -23,7 +23,7 @@ Pour le faire fonctionner :
 - il faut ajouter un application.properties à placer dans src/main/resources: 
 
 ~~~~
-spring.batch.initialize-schema=always
+#spring.batch.initialize-schema=always
 
 # oracle
 spring.datasource.driverClassName=oracle.jdbc.pool.OracleDataSource
@@ -111,4 +111,19 @@ BEGIN
     INSERT INTO indexation_es_recherche_personne (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
     INSERT INTO indexation_es_thematique (iddoc, nnt, numsujet) VALUES (:new.iddoc, :new.nnt, :new.numsujet);
 END;
+~~~~
+
+La taille des champs ~~~~ SHORT_CONTEXT ~~~~ et ~~~~ EXIT_MESSAGE ~~~~ des tables de Spring Batch doit être augmentée.
+(Spring essaie d'insérer des messages plus longs que 2500 caractères).
+Il faut donc commenter spring.batch.initialize-schema=always dans l'application.properties
+
+il faut également augmenter la valeur INITTRANS des tables de Spring Batch pour éviter des erreurs de sérialisations.
+
+~~~~
+alter table batch_step_execution_context INITRANS 100;
+alter table batch_job_execution_params INITRANS 100;
+alter table batch_step_execution INITRANS 100;
+alter table batch_job_execution_context INITRANS 100;
+alter table batch_job_execution INITRANS 100;
+alter table batch_job_instance INITRANS 100;
 ~~~~
