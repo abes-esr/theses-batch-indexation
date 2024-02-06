@@ -39,7 +39,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     private final XMLJsonMarshalling marshall;
     String nomIndex;
 
-    @Value("${table.personne.name}")
+    @Value("${table.ajout.personne.name}")
     private String tablePersonneName;
 
     List<String> ppnList = new ArrayList<>();
@@ -79,6 +79,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     @Override
     public TheseModel process(TheseModel theseModel) throws Exception {
 
+        //TODO: Utiliser une table different pour la suppression et l'ajout
+
         // Initialisation de la table en BDD (donc pas de multi-thread possible)
         personneCacheUtils.initialisePersonneCacheBDD();
 
@@ -98,8 +100,13 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         // recuperation des ids des theses
         personnesES.stream().map(PersonneModelES::getTheses_id).forEach(nntSet::addAll);
 
+        //  Vérifier qu'on ne transforme pas un sujet en NNT, dans ce cas, il faut supprimer IdSujet de nntSet
+        if (nntSet.stream().anyMatch(n -> n.equals(theseModel.getIdSujet()))) {
+            nntSet = nntSet.stream().filter(n -> !n.equals(theseModel.getIdSujet()))
+                    .collect(Collectors.toSet());
+        }
+
         // Ajout de l'id de thèse qu'on indexe
-        // TODO: vérifier qu'on ne transforme pas un sujet en NNT, dans ce cas, il faut supprimer IdSujet de nntSet
         nntSet.add(theseModel.getId());
 
         // Ré-indexer la liste des thèses
@@ -125,17 +132,17 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         }
 
         // Nettoyage de la table personne_cache des personnes sans ppn et sans la thèse dans leur theses_id
-        List<PersonneModelES> personneModelEsEnBDD1 = personneCacheUtils.getAllPersonneModelBDD();
+        List<PersonneModelES> personneModelEsEnBDD = personneCacheUtils.getAllPersonneModelBDD();
         personneCacheUtils.initialisePersonneCacheBDD();
 
-        personneModelEsEnBDD1.stream().filter(p ->
+        personneModelEsEnBDD.stream().filter(p ->
                 (!p.isHas_idref() && p.getTheses_id().contains(theseModel.getId()))
         ).forEach(p -> {
             personneCacheUtils.ajoutPersonneDansBDD(p);
         });
 
         // Nettoyer la table personne_cache des personnes qui ne sont pas dans ppnList
-        personneModelEsEnBDD1.stream().filter(p ->
+        personneModelEsEnBDD.stream().filter(p ->
                 p.isHas_idref() && ppnList.contains(p.getPpn())
         ).forEach(p -> {
             personneCacheUtils.ajoutPersonneDansBDD(p);
