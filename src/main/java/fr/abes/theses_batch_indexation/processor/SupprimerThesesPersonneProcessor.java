@@ -39,7 +39,7 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     private final XMLJsonMarshalling marshall;
     String nomIndex;
 
-    @Value("${table.personne.name}")
+    @Value("${table.suppression.personne.name}")
     private String tablePersonneName;
 
     List<String> ppnList = new ArrayList<>();
