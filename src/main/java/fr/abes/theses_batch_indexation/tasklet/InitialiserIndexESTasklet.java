@@ -74,6 +74,7 @@ public class InitialiserIndexESTasklet implements Tasklet {
             case "indexationThesesDansES" :
                 f = new File(pathTheses);
                 break;
+            case "indexationPersonnesDeBddVersES" :
             case "indexationPersonnesDansES" :
                 f = new File(pathPersonnes);
                 break;

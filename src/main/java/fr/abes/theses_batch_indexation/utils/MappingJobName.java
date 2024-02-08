@@ -17,6 +17,8 @@ public class MappingJobName {
         // correspondance nom du job / nom de la table dans la BD
         nomTableES.put("indexationThesesDansES", TableIndexationES.indexation_es_these);
         nomTableES.put("indexationPersonnesDansES", TableIndexationES.indexation_es_personne);
+        nomTableES.put("indexationPersonnesDeBddVersES", TableIndexationES.indexation_es_personne);
+        nomTableES.put("ajoutPersonnesDansES", TableIndexationES.indexation_es_personne);
         nomTableES.put("indexationRecherchePersonnesDansES", TableIndexationES.indexation_es_recherche_personne);
         nomTableES.put("indexationThematiquesDansES", TableIndexationES.indexation_es_thematique);
         nomTableES.put("suppressionThesesDansES", TableIndexationES.suppression_es_these);
@@ -27,6 +29,8 @@ public class MappingJobName {
         // correspondance nom du job / nom de l'index dans ES
         nomIndexES.put("indexationThesesDansES", "theses");
         nomIndexES.put("indexationPersonnesDansES", "personnes");
+        nomIndexES.put("indexationPersonnesDeBddVersES", "personnes");
+        nomIndexES.put("ajoutPersonnesDansES", "personnes");
         nomIndexES.put("indexationRecherchePersonnesDansES", "recherche_personnes");
         nomIndexES.put("indexationThematiquesDansES", "thematiques");
         nomIndexES.put("suppressionThesesDansES", "theses");

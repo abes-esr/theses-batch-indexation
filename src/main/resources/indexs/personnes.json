@@ -107,6 +107,9 @@
           }
         }
       },
+      "theses_id": {
+        "type": "keyword"
+      },
       "roles": {
         "type": "keyword"
       },
