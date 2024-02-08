@@ -56,6 +56,7 @@ COPY ./src/main/resources/indexs/recherche_personnes.json   /scripts/src/main/re
 COPY ./src/main/resources/indexs/thematiques.json   /scripts/src/main/resources/indexs/thematiques.json
 COPY ./src/main/resources/indexs/theses.json   /scripts/src/main/resources/indexs/theses.json
 COPY ./src/main/resources/oaisets/listeOaiSets.xml   /scripts/src/main/resources/oaisets/listeOaiSets.xml
+COPY ./src/main/resources/application.properties   /scripts/src/main/resources/application.properties
 # Les locales fr_FR
 RUN dnf install langpacks-fr glibc-all-langpacks -y
 ENV LANG fr_FR.UTF-8
