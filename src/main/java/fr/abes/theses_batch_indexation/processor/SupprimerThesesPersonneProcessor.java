@@ -3,6 +3,8 @@ package fr.abes.theses_batch_indexation.processor;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.database.DbService;
+import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneMapee;
@@ -20,6 +22,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -51,9 +54,12 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
     private final JdbcTemplate jdbcTemplate;
 
-    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate) {
+    final DbService dbService;
+
+    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
+        this.dbService = dbService;
     }
 
 
@@ -131,6 +137,8 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
                 personneCacheUtils.ajoutPersonneDansBDD(p);
             }
         });
+
+        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_personne);
 
         jdbcTemplate.execute("commit");
         // Rechargement de la BDD vers ES (à faire avec le job)

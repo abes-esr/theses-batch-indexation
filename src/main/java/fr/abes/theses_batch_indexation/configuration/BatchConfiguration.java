@@ -153,7 +153,6 @@ public class BatchConfiguration {
     @Bean
     public Job jobSuppressionPersonnesDansES(Step stepSupprimePersonnesDansES,
                                              JobRepository jobRepository,
-                                             Tasklet initiliserIndexBDDTasklet,
                                              Tasklet indexerPersonnesDansESTasklet,
                                              Tasklet chargerOaiSetsTasklet,
                                              JobTheseCompletionNotificationListener listener) {
@@ -161,8 +160,7 @@ public class BatchConfiguration {
 
         return jobs.get("suppressionPersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
-                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepSupprimePersonnesDansES)
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
@@ -171,14 +169,12 @@ public class BatchConfiguration {
     @Bean
     public Job jobAjoutPersonnesDansES(Step stepAjouterPersonnesDansES,
                                        JobRepository jobRepository,
-                                       Tasklet initiliserIndexBDDTasklet,
                                        Tasklet indexerPersonnesDansESTasklet,
                                        Tasklet chargerOaiSetsTasklet,
                                        JobTheseCompletionNotificationListener listener) {
         return jobs.get("ajoutPersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
-                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepAjouterPersonnesDansES)
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
