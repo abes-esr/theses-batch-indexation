@@ -153,7 +153,6 @@ public class BatchConfiguration {
     @Bean
     public Job jobSuppressionPersonnesDansES(Step stepSupprimePersonnesDansES,
                                              JobRepository jobRepository,
-                                             Tasklet indexerPersonnesDansESTasklet,
                                              Tasklet chargerOaiSetsTasklet,
                                              JobTheseCompletionNotificationListener listener) {
         log.debug("debut du job de suppression des personnes dans ES...");
@@ -162,21 +161,18 @@ public class BatchConfiguration {
                 .listener(listener)
                 .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepSupprimePersonnesDansES)
-                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
 
     @Bean
     public Job jobAjoutPersonnesDansES(Step stepAjouterPersonnesDansES,
                                        JobRepository jobRepository,
-                                       Tasklet indexerPersonnesDansESTasklet,
                                        Tasklet chargerOaiSetsTasklet,
                                        JobTheseCompletionNotificationListener listener) {
         return jobs.get("ajoutPersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepAjouterPersonnesDansES)
-                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
 
