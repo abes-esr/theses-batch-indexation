@@ -3,6 +3,7 @@ package fr.abes.theses_batch_indexation.processor;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
@@ -17,10 +18,8 @@ import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import fr.abes.theses_batch_indexation.utils.PersonneCacheUtils;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ExitStatus;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
-import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.*;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener {
+public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener, ChunkListener {
 
     MappingJobName mappingJobName = new MappingJobName();
     private final XMLJsonMarshalling marshall;
@@ -55,11 +54,13 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     private final JdbcTemplate jdbcTemplate;
 
     final DbService dbService;
+    private final ElasticConfig elasticConfig;
 
-    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService) {
+    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService, ElasticConfig elasticConfig) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
         this.dbService = dbService;
+        this.elasticConfig = elasticConfig;
     }
 
 
@@ -79,6 +80,28 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
     public ExitStatus afterStep(StepExecution stepExecution) {
         return null;
+    }
+
+    @Override
+    public void beforeChunk(ChunkContext chunkContext) {
+
+    }
+
+    @Override
+    public void afterChunk(ChunkContext chunkContext) {
+        try {
+            elasticSearchUtils.indexerPersonnesDansEsBulk(tablePersonneName,
+                    10,
+                    jdbcTemplate,
+                    elasticConfig);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void afterChunkError(ChunkContext chunkContext) {
+
     }
 
     @Override

@@ -1,18 +1,33 @@
 package fr.abes.theses_batch_indexation.utils;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
+import co.elastic.clients.elasticsearch.core.BulkRequest;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
+import co.elastic.clients.json.JsonData;
+import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelESAvecId;
+import fr.abes.theses_batch_indexation.model.bdd.PersonnesCacheModel;
+import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,8 +35,96 @@ public class ElasticSearchUtils {
 
     private String nomIndex;
 
+    private AtomicInteger page = new AtomicInteger(0);
+
     public ElasticSearchUtils(String nomIndex) {
         this.nomIndex = nomIndex;
+    }
+
+
+    public void indexerPersonnesDansEsBulk(
+            String tablePersonneName,
+            int chunkPersonneES,
+            JdbcTemplate jdbcTemplate,
+            ElasticConfig elasticConfig) throws Exception {
+        log.debug("Table personne name : " + tablePersonneName);
+        log.debug("Index nom : " + nomIndex);
+
+        while (true) {
+            BulkRequest.Builder br = new BulkRequest.Builder();
+
+            int pageCourante = page.getAndIncrement();
+
+            log.debug("Indexation de la page " + pageCourante);
+
+            List<Map<String, Object>> r = jdbcTemplate.queryForList(
+                    "select * from " + tablePersonneName + " where nom_index = ? " +
+                            "OFFSET " + chunkPersonneES * pageCourante +
+                            " ROWS FETCH NEXT " + chunkPersonneES + " ROWS ONLY",
+                    nomIndex);
+
+            if (r.size() == 0) {
+                log.debug("Fin de ce thread");
+                break;
+            }
+
+            List<PersonnesCacheModel> items = r.stream()
+                    .map(p -> new PersonnesCacheModel((String) p.get("PPN"),(String) p.get("NOM_INDEX"),(String) p.get("PERSONNE")))
+                    .collect(Collectors.toList());
+            boolean auMoinsUneOperation = false;
+            for (PersonnesCacheModel personnesCacheModel : items) {
+
+                JsonData json = readJson(
+                        new ByteArrayInputStream(
+                                personnesCacheModel.getPersonne().getBytes()),
+                        ElasticClient.getElasticsearchClient()
+                );
+
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(nomIndex.toLowerCase())
+                                .id(personnesCacheModel.getPpn())
+                                .document(json)
+                        )
+                );
+                auMoinsUneOperation = true;
+            }
+            if (auMoinsUneOperation) {
+                BulkRequest bulkRequest = br.build();
+                BulkResponse result = null;
+                try {
+                    result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+                } catch (IOException e) {
+                    log.error("IOException, retry ...");
+                    ElasticClient.chargeClient(
+                            elasticConfig.getHostname(),
+                            elasticConfig.getPort(),
+                            elasticConfig.getScheme(),
+                            elasticConfig.getUserName(),
+                            elasticConfig.getPassword(),
+                            elasticConfig.getProtocol());
+                    log.error("Reload elastic client done");
+                    result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+                }
+
+
+                if (result.errors()) {
+                    log.error("Erreurs dans le bulk : ");
+                    for (BulkResponseItem item : result.items()) {
+                        if (item.error() != null) {
+                            log.error(item.id() + item.error());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static JsonData readJson(InputStream input, ElasticsearchClient esClient) {
+        JsonpMapper jsonpMapper = esClient._transport().jsonpMapper();
+        JsonProvider jsonProvider = jsonpMapper.jsonProvider();
+
+        return JsonData.from(jsonProvider.createParser(input), jsonpMapper);
     }
 
     public void deletePersonneModelESSansPPN(String theseId) throws IOException {
@@ -35,6 +138,7 @@ public class ElasticSearchUtils {
                     }
                 });
     }
+
 
     public void deletePersonnesSansPPN(List<PersonneModelESAvecId> personnes) {
         personnes.forEach(p ->
