@@ -82,6 +82,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
+
+        log.info("Début afterStep");
         return null;
     }
 
@@ -92,6 +94,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     @Override
     public void afterChunk(ChunkContext chunkContext) {
+        log.info("Début after chunk");
         try {
             elasticSearchUtils.indexerPersonnesDansEsBulk(tablePersonneName,
                     10,
@@ -109,6 +112,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     @Override
     public TheseModel process(TheseModel theseModel) throws Exception {
+
+        log.info("Début execute");
 
         // Initialisation de la table en BDD (donc pas de multi-thread possible)
         personneCacheUtils.initialisePersonneCacheBDD();
@@ -177,7 +182,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             personneCacheUtils.ajoutPersonneDansBDD(p);
         });
 
-        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_personne);
+        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
 
         jdbcTemplate.execute("commit");
 

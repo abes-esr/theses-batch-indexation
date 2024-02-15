@@ -274,7 +274,6 @@ public class BatchConfiguration {
                 .listener(theseWriteListener)
                 .reader(itemReader)
                 .processor(itemProcessor)
-                .taskExecutor(taskExecutor())
                 .build();
     }
 
@@ -285,7 +284,6 @@ public class BatchConfiguration {
                 .listener(theseWriteListener)
                 .reader(itemReader)
                 .processor(itemProcessor)
-                .taskExecutor(taskExecutor())
                 .build();
     }
 
