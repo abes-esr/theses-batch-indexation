@@ -268,7 +268,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepSupprimePersonnesDansES(@Qualifier("jdbcPagingDeleteReader") JdbcPagingDeleteReader itemReader,
+    public Step stepSupprimePersonnesDansES(JdbcPagingCustomReader itemReader,
                                             @Qualifier("supprimerThesesPersonneProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepSupprimePersonnesDansES").<TheseModel, TheseModel>chunk(1)
                 .listener(theseWriteListener)

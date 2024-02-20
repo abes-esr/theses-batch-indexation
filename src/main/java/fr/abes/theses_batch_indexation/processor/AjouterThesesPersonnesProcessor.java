@@ -9,6 +9,7 @@ import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
+import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneMapee;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelESAvecId;
@@ -58,6 +59,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     private final ElasticConfig elasticConfig;
 
+    private TheseModel theseModel;
+
     public AjouterThesesPersonnesProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService, ElasticConfig elasticConfig) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
@@ -90,6 +93,13 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
 
+        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
+
+        List<TheseModel> theseModels= jdbcTemplate.query("select * from DOCUMENT," + tableName +
+                        " where DOCUMENT.iddoc = " + tableName + ".iddoc FETCH NEXT 1 ROWS ONLY",
+                new TheseRowMapper());
+
+        this.theseModel = theseModels.stream().findFirst().orElse(null);
     }
 
     @Override
@@ -111,7 +121,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     }
 
     @Override
-    public TheseModel process(TheseModel theseModel) throws Exception {
+    public TheseModel process(TheseModel theseModel1) throws Exception {
 
         log.info("Début execute");
 

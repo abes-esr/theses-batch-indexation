@@ -56,6 +56,8 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     final DbService dbService;
     private final ElasticConfig elasticConfig;
 
+    private TheseModel theseModel;
+
     public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService, ElasticConfig elasticConfig) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
@@ -84,7 +86,13 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
+        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
 
+        List<TheseModel> theseModels= jdbcTemplate.query("select * from DOCUMENT," + tableName +
+                        " where DOCUMENT.iddoc = " + tableName + ".iddoc FETCH NEXT 1 ROWS ONLY",
+                new TheseRowMapper());
+
+        this.theseModel = theseModels.stream().findFirst().orElse(null);
     }
 
     @Override
@@ -105,7 +113,7 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     }
 
     @Override
-    public TheseModel process(TheseModel theseModel) throws Exception {
+    public TheseModel process(TheseModel theseModel1) throws Exception {
 
         // Initialisation de la table en BDD (donc pas de multi-thread possible)
         personneCacheUtils.initialisePersonneCacheBDD();
