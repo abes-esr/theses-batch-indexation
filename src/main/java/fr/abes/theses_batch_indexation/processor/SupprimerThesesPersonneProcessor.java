@@ -22,10 +22,12 @@ import org.springframework.batch.core.*;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,16 +55,23 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    @Qualifier("dataSourceLecture")
+    DataSource dataSourceLecture;
+
     final DbService dbService;
     private final ElasticConfig elasticConfig;
 
     private TheseModel theseModel;
 
+    @Autowired
     public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService, ElasticConfig elasticConfig) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
+
         this.dbService = dbService;
         this.elasticConfig = elasticConfig;
+
     }
 
 
@@ -88,6 +97,7 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     public void beforeChunk(ChunkContext chunkContext) {
         String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
 
+        jdbcTemplate.setDataSource(dataSourceLecture);
         List<TheseModel> theseModels= jdbcTemplate.query("select * from DOCUMENT," + tableName +
                         " where DOCUMENT.iddoc = " + tableName + ".iddoc FETCH NEXT 1 ROWS ONLY",
                 new TheseRowMapper());
