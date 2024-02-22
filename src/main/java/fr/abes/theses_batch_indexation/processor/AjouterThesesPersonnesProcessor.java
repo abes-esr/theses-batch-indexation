@@ -25,10 +25,12 @@ import org.springframework.batch.core.annotation.AfterChunk;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,14 +60,19 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     final DbService dbService;
 
     private final ElasticConfig elasticConfig;
+    final DataSource dataSourceLecture;
 
-    private TheseModel theseModel;
-
-    public AjouterThesesPersonnesProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService, ElasticConfig elasticConfig) {
+    public AjouterThesesPersonnesProcessor(XMLJsonMarshalling marshall,
+                                           JdbcTemplate jdbcTemplate,
+                                           DbService dbService,
+                                           ElasticConfig elasticConfig,
+                                           @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
+        this.jdbcTemplate.setDataSource(dataSourceLecture);
         this.dbService = dbService;
         this.elasticConfig = elasticConfig;
+        this.dataSourceLecture = dataSourceLecture;
     }
 
     @Override
@@ -93,13 +100,13 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
 
-        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
+/*        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
 
         List<TheseModel> theseModels= jdbcTemplate.query("select * from DOCUMENT," + tableName +
                         " where DOCUMENT.iddoc = " + tableName + ".iddoc FETCH NEXT 1 ROWS ONLY",
                 new TheseRowMapper());
 
-        this.theseModel = theseModels.stream().findFirst().orElse(null);
+        this.theseModel = theseModels.stream().findFirst().orElse(null);*/
     }
 
     @Override
@@ -121,7 +128,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     }
 
     @Override
-    public TheseModel process(TheseModel theseModel1) throws Exception {
+    public TheseModel process(TheseModel theseModel) throws Exception {
 
         log.info("Début execute");
 

@@ -55,23 +55,23 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    @Qualifier("dataSourceLecture")
-    DataSource dataSourceLecture;
+    final DataSource dataSourceLecture;
 
     final DbService dbService;
     private final ElasticConfig elasticConfig;
 
-    private TheseModel theseModel;
-
     @Autowired
-    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall, JdbcTemplate jdbcTemplate, DbService dbService, ElasticConfig elasticConfig) {
+    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall,
+                                            JdbcTemplate jdbcTemplate,
+                                            DbService dbService,
+                                            ElasticConfig elasticConfig,
+                                            @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
-
+        this.jdbcTemplate.setDataSource(dataSourceLecture);
         this.dbService = dbService;
         this.elasticConfig = elasticConfig;
-
+        this.dataSourceLecture = dataSourceLecture;
     }
 
 
@@ -95,14 +95,12 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
-        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
+/*        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
 
-        jdbcTemplate.setDataSource(dataSourceLecture);
-        List<TheseModel> theseModels= jdbcTemplate.query("select * from DOCUMENT," + tableName +
-                        " where DOCUMENT.iddoc = " + tableName + ".iddoc FETCH NEXT 1 ROWS ONLY",
+        List<TheseModel> theseModels= jdbcTemplate.query("select * from " + tableName + " FETCH NEXT 1 ROWS ONLY",
                 new TheseRowMapper());
 
-        this.theseModel = theseModels.stream().findFirst().orElse(null);
+        this.theseModel = theseModels.stream().findFirst().orElse(null);*/
     }
 
     @Override
@@ -123,7 +121,7 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     }
 
     @Override
-    public TheseModel process(TheseModel theseModel1) throws Exception {
+    public TheseModel process(TheseModel theseModel) throws Exception {
 
         // Initialisation de la table en BDD (donc pas de multi-thread possible)
         personneCacheUtils.initialisePersonneCacheBDD();

@@ -4,6 +4,7 @@ import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingDeleteReader;
+import fr.abes.theses_batch_indexation.reader.JdbcPersonneReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
@@ -268,7 +269,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepSupprimePersonnesDansES(JdbcPagingCustomReader itemReader,
+    public Step stepSupprimePersonnesDansES(JdbcPersonneReader itemReader,
                                             @Qualifier("supprimerThesesPersonneProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepSupprimePersonnesDansES").<TheseModel, TheseModel>chunk(1)
                 .listener(theseWriteListener)
@@ -278,7 +279,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepAjouterPersonnesDansES(JdbcPagingCustomReader itemReader,
+    public Step stepAjouterPersonnesDansES(JdbcPersonneReader itemReader,
                                            @Qualifier("ajouterThesesPersonnesProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepAjouterPersonnesDansES").chunk(1)
                 .listener(theseWriteListener)
