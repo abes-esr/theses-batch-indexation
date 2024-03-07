@@ -210,10 +210,12 @@ public class TheseMappee {
             accessible = "non";
 
             try {
-                if ((cas.equals("cas1") || cas.equals("cas2") || cas.equals("cas3") || cas.equals("cas4"))
-                        && (dateFinEmbargo == null || dateFinEmbargo.isEmpty() || LocalDate.parse(dateFinEmbargo).isBefore(LocalDate.now()))) {
+                if (((cas.equals("cas1") || cas.equals("cas2") || cas.equals("cas3") || cas.equals("cas4"))
+                        && (dateFinEmbargo == null || dateFinEmbargo.isEmpty() || LocalDate.parse(dateFinEmbargo).isBefore(LocalDate.now())))
+                || (dmdSec.getID().contains("EDITION_AO"))) {
                     accessible = "oui";
                 }
+
             } catch (NullPointerException e) {
                 log.error("PB pour accessible de " + nnt);
             }
