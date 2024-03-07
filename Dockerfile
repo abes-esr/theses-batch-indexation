@@ -44,6 +44,11 @@ COPY docker/batch/thematiques-batch-indexation.sh /scripts/thematiques-batch-ind
 RUN chmod +x /scripts/thematiques-batch-indexation.sh
 COPY docker/batch/thematiques-batch-suppression.sh /scripts/thematiques-batch-suppression.sh
 RUN chmod +x /scripts/thematiques-batch-suppression.sh
+COPY docker/batch/personnes-batch-indexation.sh /scripts/personnes-batch-indexation.sh
+RUN chmod +x /scripts/personnes-batch-indexation.sh
+COPY docker/batch/personnes-batch-suppression.sh /scripts/personnes-batch-suppression.sh
+RUN chmod +x /scripts/personnes-batch-suppression.sh
+
 COPY --from=build-image /build/target/*.jar /scripts/theses-batch-indexation.jar
 # Les fichiers de définition d'index et oaisets :
 COPY ./src/main/resources/indexs/personnes.json   /scripts/src/main/resources/indexs/personnes.json
@@ -51,6 +56,7 @@ COPY ./src/main/resources/indexs/recherche_personnes.json   /scripts/src/main/re
 COPY ./src/main/resources/indexs/thematiques.json   /scripts/src/main/resources/indexs/thematiques.json
 COPY ./src/main/resources/indexs/theses.json   /scripts/src/main/resources/indexs/theses.json
 COPY ./src/main/resources/oaisets/listeOaiSets.xml   /scripts/src/main/resources/oaisets/listeOaiSets.xml
+COPY ./src/main/resources/application.properties   /scripts/src/main/resources/application.properties
 # Les locales fr_FR
 RUN dnf install langpacks-fr glibc-all-langpacks -y
 ENV LANG fr_FR.UTF-8
