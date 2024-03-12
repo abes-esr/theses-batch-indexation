@@ -65,13 +65,32 @@ public class ESItemWriter implements ItemWriter<TheseModel> {
 
             JsonData json = readJson(jsonByteArrayInputStream, ElasticClient.getElasticsearchClient());
 
-            br.operations(op -> op
-                    .index(idx -> idx
-                            .index(nomIndex.toLowerCase())
-                            .id(theseModel.getNnt() == null? theseModel.getIdSujet() : theseModel.getNnt())
-                            .document(json)
-                    )
-            );
+            if (theseModel.getNnt() == null) {
+                // Indexation numSujet
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(nomIndex.toLowerCase())
+                                .id(theseModel.getIdSujet())
+                                .document(json)
+                        )
+                );
+            }
+            else {
+                // Suppression sujet eventuel
+                br.operations(op -> op
+                        .delete(d->d.index(nomIndex.toLowerCase())
+                                .id(theseModel.getIdSujet())
+                        )
+                );
+                // Indexation NNT
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(nomIndex.toLowerCase())
+                                .id(theseModel.getNnt())
+                                .document(json)
+                        )
+                );
+            }
         }
 
         BulkResponse result = proxyRetry.executerDansES(br);
