@@ -210,10 +210,16 @@ public class TheseMappee {
             accessible = "non";
 
             try {
-                if (((cas.equals("cas1") || cas.equals("cas2") || cas.equals("cas3") || cas.equals("cas4"))
-                        && (dateFinEmbargo == null || dateFinEmbargo.isEmpty() || LocalDate.parse(dateFinEmbargo).isBefore(LocalDate.now())))
-                || (dmdSec.getID().contains("EDITION_AO"))) {
+                if ((cas.equals("cas1") || cas.equals("cas2") || cas.equals("cas3") || cas.equals("cas4"))
+                        && (dateFinEmbargo == null || dateFinEmbargo.isEmpty() || LocalDate.parse(dateFinEmbargo).isBefore(LocalDate.now()))) {
                     accessible = "oui";
+                }
+
+                Iterator<DmdSec> iteratorDmdSec = mets.getDmdSec().iterator();
+                while (iteratorDmdSec.hasNext()) {
+                    DmdSec dmdSecCourante = iteratorDmdSec.next();
+                    if (dmdSecCourante.getID().contains("EDITION_AO"))
+                        accessible = "oui";
                 }
 
             } catch (NullPointerException e) {
