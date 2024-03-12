@@ -99,14 +99,6 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
-
-/*        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
-
-        List<TheseModel> theseModels= jdbcTemplate.query("select * from DOCUMENT," + tableName +
-                        " where DOCUMENT.iddoc = " + tableName + ".iddoc FETCH NEXT 1 ROWS ONLY",
-                new TheseRowMapper());
-
-        this.theseModel = theseModels.stream().findFirst().orElse(null);*/
     }
 
     @Override
@@ -140,6 +132,10 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         // sortir la liste des personnes de la thèse
         List<PersonneModelES> personnesTef = getPersonnesModelESFromTef(theseModel.getId());
+
+        List<PersonneModelESAvecId> personneModelESAvecIds = elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId());
+
+        personnesTef.addAll(personneModelESAvecIds);
 
         // recuperation des ppn
         ppnList = personnesTef.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
