@@ -27,6 +27,8 @@ public class TheseMappee {
     Boolean isSoutenue;
     String codeEtab;
     String nnt;
+    String numSujet;
+    String numSujetSansS;
     String dateSoutenance;
     String datePremiereInscriptionDoctorat;
     String dateFinEmbargo;
@@ -94,6 +96,7 @@ public class TheseMappee {
                 dateInsertionDansES = java.time.Clock.systemUTC().instant().toString();
 
                 // nnt
+                log.debug("traitement de nnt");
                 techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
 
                 Iterator<Identifier> iteIdentifiers = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
@@ -103,6 +106,19 @@ public class TheseMappee {
                         nnt = i.getValue();
                 }
                 log.info("traitement de " + nnt);
+
+                // numsujet
+                log.debug("traitement de numSujet");
+                Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
+
+                if (stepGestion.isPresent()) {
+                    if (stepGestion.get().getMdWrap().getXmlData().getStepGestion().getIDSUJET() != null) {
+                        String numSujetAIndexer = stepGestion.get().getMdWrap().getXmlData().getStepGestion().getIDSUJET().substring(6,
+                                stepGestion.get().getMdWrap().getXmlData().getStepGestion().getIDSUJET().length());
+                        numSujet = "s".concat(numSujetAIndexer);
+                        numSujetSansS = numSujetAIndexer;
+                    }
+                }
             } catch (NullPointerException e) {
                 log.error("PB pour nnt " + e);
             }
