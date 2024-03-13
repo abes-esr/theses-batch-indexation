@@ -3,6 +3,8 @@ package fr.abes.theses_batch_indexation.dto.these;
 import fr.abes.theses_batch_indexation.model.tef.*;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.utils.OutilsTef;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -12,6 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
+@Getter
+@Setter
 public class TheseMappee {
 
     //String id;
@@ -704,190 +708,5 @@ public class TheseMappee {
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(identifier);
         return m.matches();
-    }
-
-
-    public String getNnt() {
-        return nnt;
-    }
-
-    public void setNnt(String nnt) {
-        this.nnt = nnt;
-    }
-
-    public OrganismeDTO getEtabSoutenance() {
-        return etabSoutenance;
-    }
-
-    public void setEtabSoutenance(OrganismeDTO etabSoutenance) {
-        this.etabSoutenance = etabSoutenance;
-    }
-
-    public List<OrganismeDTO> getPartenairesRecherche() {
-        return partenairesRecherche;
-    }
-
-    public void setPartenairesRecherche(List<OrganismeDTO> partenairesRecherche) {
-        this.partenairesRecherche = partenairesRecherche;
-    }
-
-    public List<PersonneDTO> getRapporteurs() {
-        return rapporteurs;
-    }
-
-    public void setRapporteurs(List<PersonneDTO> rapporteurs) {
-        this.rapporteurs = rapporteurs;
-    }
-
-    public List<PersonneDTO> getMembresJury() {
-        return membresJury;
-    }
-
-    public void setMembresJury(List<PersonneDTO> membresJury) {
-        this.membresJury = membresJury;
-    }
-
-    public List<PersonneDTO> getAuteurs() {
-        return auteurs;
-    }
-
-    public void setAuteurs(List<PersonneDTO> auteurs) {
-        this.auteurs = auteurs;
-    }
-
-    public List<PersonneDTO> getDirecteurs() {
-        return directeurs;
-    }
-
-    public void setDirecteurs(List<PersonneDTO> directeurs) {
-        this.directeurs = directeurs;
-    }
-
-    public Map<String, String> getResumes() {
-        return resumes;
-    }
-
-    public void setResumes(Map<String, String> resumes) {
-        this.resumes = resumes;
-    }
-
-    public String getDateSoutenance() {
-        return dateSoutenance;
-    }
-
-    public void setDateSoutenance(String dateSoutenance) {
-        this.dateSoutenance = dateSoutenance;
-    }
-
-    public String getDatePremiereInscriptionDoctorat() {
-        return datePremiereInscriptionDoctorat;
-    }
-
-    public void setDatePremiereInscriptionDoctorat(String datePremiereInscriptionDoctorat) {
-        this.datePremiereInscriptionDoctorat = datePremiereInscriptionDoctorat;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public List<String> getPpn() {
-        return ppn;
-    }
-
-    public void setPpn(List<String> ppn) {
-        this.ppn = ppn;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public String getAccessible() {
-        return accessible;
-    }
-
-    public void setAccessible(String accessible) {
-        this.accessible = accessible;
-    }
-
-    public Map<String, String> getTitres() {
-        return titres;
-    }
-
-    public void setTitres(Map<String, String> titres) {
-        this.titres = titres;
-    }
-
-    public List<OrganismeDTO> getEtabsCotutelle() {
-        return etabsCotutelle;
-    }
-
-    public void setEtabsCotutelle(List<OrganismeDTO> etabsCotutelle) {
-        this.etabsCotutelle = etabsCotutelle;
-    }
-
-    public String getDiscipline() {
-        return discipline;
-    }
-
-    public void setDiscipline(String discipline) {
-        this.discipline = discipline;
-    }
-
-    public List<OrganismeDTO> getEcolesDoctorales() {
-        return ecolesDoctorales;
-    }
-
-    public void setEcolesDoctorales(List<OrganismeDTO> ecolesDoctorales) {
-        this.ecolesDoctorales = ecolesDoctorales;
-    }
-
-    public String getCodeEtab() {
-        return codeEtab;
-    }
-
-    public void setCodeEtab(String codeEtab) {
-        this.codeEtab = codeEtab;
-    }
-
-    public String getDateFinEmbargo() {
-        return dateFinEmbargo;
-    }
-
-    public void setDateFinEmbargo(String dateFinEmbargo) {
-        this.dateFinEmbargo = dateFinEmbargo;
-    }
-
-    public List<String> getLangues() {
-        return langues;
-    }
-
-    public void setLangues(List<String> langues) {
-        this.langues = langues;
-    }
-
-    public List<String> getOaiSetNames() {
-        return oaiSetNames;
-    }
-
-    public void setOaiSetNames(List<String> oaiSetNames) {
-        this.oaiSetNames = oaiSetNames;
-    }
-
-    public List<SujetDTO> getSujets() {
-        return sujets;
-    }
-
-    public void setSujets(List<SujetDTO> sujets) {
-        this.sujets = sujets;
     }
 }
