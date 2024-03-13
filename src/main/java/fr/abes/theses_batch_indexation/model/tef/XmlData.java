@@ -2,7 +2,7 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2023.11.02 à 05:24:00 PM CET 
+// Généré le : 2024.03.13 à 01:41:34 PM CET 
 //
 
 
@@ -310,6 +310,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *             &lt;complexType>
  *               &lt;complexContent>
  *                 &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                   &lt;attribute name="ID_SUJET" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *                   &lt;attribute name="stepEtat" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *                 &lt;/restriction>
  *               &lt;/complexContent>
@@ -4681,6 +4682,7 @@ public class XmlData {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="ID_SUJET" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
      *       &lt;attribute name="stepEtat" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -4693,10 +4695,38 @@ public class XmlData {
     @XmlType(name = "")
     public static class StepGestion {
 
+        @XmlAttribute(name = "ID_SUJET", required = true)
+        @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+        @XmlSchemaType(name = "NCName")
+        protected String idsujet;
         @XmlAttribute(name = "stepEtat", required = true)
         @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
         @XmlSchemaType(name = "NCName")
         protected String stepEtat;
+
+        /**
+         * Obtient la valeur de la propriété idsujet.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getIDSUJET() {
+            return idsujet;
+        }
+
+        /**
+         * Définit la valeur de la propriété idsujet.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setIDSUJET(String value) {
+            this.idsujet = value;
+        }
 
         /**
          * Obtient la valeur de la propriété stepEtat.
