@@ -76,12 +76,16 @@ public class ESItemWriter implements ItemWriter<TheseModel> {
                 );
             }
             else {
+
                 // Suppression sujet eventuel
-                br.operations(op -> op
-                        .delete(d->d.index(nomIndex.toLowerCase())
-                                .id(theseModel.getIdSujet())
-                        )
-                );
+                if (theseModel.getIdSujet() != null) {
+                    br.operations(op -> op
+                            .delete(d -> d.index(nomIndex.toLowerCase())
+                                    .id(theseModel.getIdSujet())
+                            )
+                    );
+                }
+
                 // Indexation NNT
                 br.operations(op -> op
                         .index(idx -> idx
