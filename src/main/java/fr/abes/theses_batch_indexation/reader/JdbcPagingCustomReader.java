@@ -44,7 +44,7 @@ public class JdbcPagingCustomReader
 
     private PagingQueryProvider createQueryProvider(TableIndexationES nomTableIndexationES) {
         OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
-        queryProvider.setSelectClause("SELECT DOCUMENT.iddoc, DOCUMENT.nnt, doc, DOCUMENT.numsujet");
+        queryProvider.setSelectClause("SELECT /*+ opt_param('_optimizer_rownum_pred_based_fkr','false')*/ DOCUMENT.iddoc, DOCUMENT.nnt, doc, DOCUMENT.numsujet");
 
         if (config.getNomTable().toLowerCase().contains("document_test")) {
             queryProvider.setFromClause("from "+ config.getNomTable());
