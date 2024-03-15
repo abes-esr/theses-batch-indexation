@@ -50,6 +50,8 @@ public class ElasticSearchUtils {
         log.debug("Table personne name : " + tablePersonneName);
         log.debug("Index nom : " + nomIndex);
 
+        page.set(0);
+
         while (true) {
             BulkRequest.Builder br = new BulkRequest.Builder();
 
@@ -64,6 +66,7 @@ public class ElasticSearchUtils {
                     nomIndex);
 
             if (r.size() == 0) {
+                page.set(0);
                 log.debug("Fin de ce thread");
                 break;
             }
