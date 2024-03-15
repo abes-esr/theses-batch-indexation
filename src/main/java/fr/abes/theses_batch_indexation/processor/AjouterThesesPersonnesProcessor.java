@@ -99,6 +99,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
+        ppnList = new ArrayList<>();
+        nntSet = new HashSet<>();
     }
 
     @Override

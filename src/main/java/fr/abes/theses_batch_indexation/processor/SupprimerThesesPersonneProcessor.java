@@ -95,12 +95,8 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
-/*        String tableName = mappingJobName.getNomTableES().get(chunkContext.getStepContext().getJobName()).name();
-
-        List<TheseModel> theseModels= jdbcTemplate.query("select * from " + tableName + " FETCH NEXT 1 ROWS ONLY",
-                new TheseRowMapper());
-
-        this.theseModel = theseModels.stream().findFirst().orElse(null);*/
+        ppnList = new ArrayList<>();
+        nntSet = new HashSet<>();
     }
 
     @Override
