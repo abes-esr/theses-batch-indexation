@@ -191,11 +191,11 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Job jobAjoutnRecherchePersonnesDansES(Step stepAjouterRecherchePersonnesDansES,
+    public Job jobAjoutRecherchePersonnesDansES(Step stepAjouterRecherchePersonnesDansES,
                                        JobRepository jobRepository,
                                        Tasklet chargerOaiSetsTasklet,
                                        JobTheseCompletionNotificationListener listener) {
-        return jobs.get("ajoutnRecherchePersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+        return jobs.get("ajoutRecherchePersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepAjouterRecherchePersonnesDansES)
@@ -315,7 +315,7 @@ public class BatchConfiguration {
 
     @Bean
     public Step stepSupprimeRecherchePersonnesDansES(JdbcPersonneReader itemReader,
-                                            @Qualifier("supprimerThesesPersonneProcessor") ItemProcessor itemProcessor) {
+                                            @Qualifier("supprimerThesesRecherchePersonneProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepSupprimeRecherchePersonnesDansES").<TheseModel, TheseModel>chunk(1)
                 .listener(theseWriteListener)
                 .reader(itemReader)
@@ -325,8 +325,8 @@ public class BatchConfiguration {
 
     @Bean
     public Step stepAjouterRecherchePersonnesDansES(JdbcPersonneReader itemReader,
-                                           @Qualifier("ajouterThesesPersonnesProcessor") ItemProcessor itemProcessor) {
-        return stepBuilderFactory.get("stepAjouterRecherchePersonnesDansES").chunk(1)
+                                           @Qualifier("ajouterThesesRecherchePersonnesProcessor") ItemProcessor itemProcessor) {
+        return stepBuilderFactory.get("stepAjouterRecherchePersonnesDansES").<TheseModel, TheseModel>chunk(1)
                 .listener(theseWriteListener)
                 .reader(itemReader)
                 .processor(itemProcessor)

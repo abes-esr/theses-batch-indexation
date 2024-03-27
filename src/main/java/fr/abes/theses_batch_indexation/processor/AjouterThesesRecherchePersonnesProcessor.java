@@ -4,10 +4,7 @@ import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneMapee;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
-import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneMappe;
-import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
+import fr.abes.theses_batch_indexation.dto.personne.*;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.model.tef.Mets;
 import fr.abes.theses_batch_indexation.utils.ElasticSearchUtils;
@@ -91,6 +88,8 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
 
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
+        ppnList = new ArrayList<>();
+        nntSet = new HashSet<>();
     }
 
     @Override
@@ -123,10 +122,14 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         elasticSearchUtils.deleteRecherchePersonneModelESSansPPN(theseModel.getId());
 
         // sortir la liste des personnes de la thèse
-        List<RecherchePersonneModelES> personnesTef = getRecherchePersonnesModelESFromTef(theseModel.getId());
+        List<PersonneModelES> personnesTef = getPersonnesModelESFromTef(theseModel.getId());
+
+        List<PersonneModelESAvecId> personneModelESAvecIds = elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId());
+
+        personnesTef.addAll(personneModelESAvecIds);
 
         // recuperation des ppn
-        ppnList = personnesTef.stream().filter(RecherchePersonneModelES::isHas_idref).map(RecherchePersonneModelES::getPpn)
+        ppnList = personnesTef.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
                 .collect(Collectors.toList());
 
         // récupérer les personnes dans ES
@@ -157,33 +160,33 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
 
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
-            for (PersonneModelES personneModelES : theseModelToAddBdd.getPersonnes()) {
-                if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
-                    personneCacheUtils.updatePersonneDansBDD(personneModelES);
+            for (RecherchePersonneModelES recherchePersonneModelES : theseModelToAddBdd.getRecherchePersonnes()) {
+                if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
+                    personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
                 } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES);
+                    personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
                 }
             }
         }
 
         // Nettoyage de la table personne_cache des personnes sans ppn et sans la thèse dans leur theses_id
-        List<PersonneModelES> personneModelEsEnBDD = personneCacheUtils.getAllPersonneModelBDD();
+        List<RecherchePersonneModelES> recherchePersonneModelESEnBDD = personneCacheUtils.getAllRecherchePersonneModelBDD();
         personneCacheUtils.initialisePersonneCacheBDD();
 
-        personneModelEsEnBDD.stream().filter(p ->
+        recherchePersonneModelESEnBDD.stream().filter(p ->
                 (!p.isHas_idref() && p.getTheses_id().contains(theseModel.getId()))
         ).forEach(p -> {
-            personneCacheUtils.ajoutPersonneDansBDD(p);
+            personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
         });
 
         // Nettoyer la table personne_cache des personnes qui ne sont pas dans ppnList
-        personneModelEsEnBDD.stream().filter(p ->
+        recherchePersonneModelESEnBDD.stream().filter(p ->
                 p.isHas_idref() && ppnList.contains(p.getPpn())
         ).forEach(p -> {
-            personneCacheUtils.ajoutPersonneDansBDD(p);
+            personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
         });
 
-        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
+        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_recherche_personne);
 
         jdbcTemplate.execute("commit");
 
@@ -193,14 +196,14 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         return theseModel;
     }
 
-    private List<RecherchePersonneModelES> getRecherchePersonnesModelESFromTef(String id) throws Exception {
+    private List<PersonneModelES> getPersonnesModelESFromTef(String id) throws Exception {
 
         java.util.Set<String> nnt = new HashSet<>();
         nnt.add(id);
         TheseModel theseModelToAdd = personneCacheUtils.getTheses(nnt).get(0);
 
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
-        RecherchePersonneMappe personneMapee = new RecherchePersonneMappe(mets, theseModelToAdd.getId(), oaiSets);
+        PersonneMapee personneMapee = new PersonneMapee(mets, theseModelToAdd.getId(), oaiSets);
 
         return personneMapee.getPersonnes();
     }

@@ -1,18 +1,10 @@
 package fr.abes.theses_batch_indexation.processor;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
-import fr.abes.theses_batch_indexation.database.TheseRowMapper;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneMapee;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneModelESAvecId;
+import fr.abes.theses_batch_indexation.dto.personne.*;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.model.tef.Mets;
 import fr.abes.theses_batch_indexation.utils.ElasticSearchUtils;
@@ -21,10 +13,8 @@ import fr.abes.theses_batch_indexation.utils.PersonneCacheUtils;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
-import org.springframework.batch.core.annotation.AfterChunk;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -175,7 +164,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                 if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
                     personneCacheUtils.updatePersonneDansBDD(personneModelES);
                 } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES);
+                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
                 }
             }
         }
@@ -187,14 +176,14 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         personneModelEsEnBDD.stream().filter(p ->
                 (!p.isHas_idref() && p.getTheses_id().contains(theseModel.getId()))
         ).forEach(p -> {
-            personneCacheUtils.ajoutPersonneDansBDD(p);
+            personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
         });
 
         // Nettoyer la table personne_cache des personnes qui ne sont pas dans ppnList
         personneModelEsEnBDD.stream().filter(p ->
                 p.isHas_idref() && ppnList.contains(p.getPpn())
         ).forEach(p -> {
-            personneCacheUtils.ajoutPersonneDansBDD(p);
+            personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
         });
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);

@@ -7,6 +7,8 @@ export THESES_BATCH_INDEXATION_THEMATIQUES_CRON=${THESES_BATCH_INDEXATION_THEMAT
 export THESES_BATCH_SUPPRESSION_THEMATIQUES_CRON=${THESES_BATCH_SUPPRESSION_THEMATIQUES_CRON:='* * * * *'}
 export THESES_BATCH_INDEXATION_PERSONNES_CRON=${THESES_BATCH_INDEXATION_PERSONNES_CRON:='* * * * *'}
 export THESES_BATCH_SUPPRESSION_PERSONNES_CRON=${THESES_BATCH_SUPPRESSION_PERSONNES_CRON:='* * * * *'}
+export THESES_BATCH_INDEXATION_RECHERCHE_PERSONNES_CRON=${THESES_BATCH_INDEXATION_RECHERCHE_PERSONNES_CRON:='* * * * *'}
+export THESES_BATCH_SUPPRESSION_RECHERCHE_PERSONNES_CRON=${THESES_BATCH_SUPPRESSION_RECHERCHE_PERSONNES_CRON:='* * * * *'}
 export THESES_BATCH_INDEXATION_AT_STARTUP=${THESES_BATCH_INDEXATION_AT_STARTUP:='1'}
 
 # Réglage de /etc/environment pour que les crontab s'exécutent avec les bonnes variables d'env
@@ -33,6 +35,10 @@ if [ "$THESES_BATCH_INDEXATION_AT_STARTUP" = "1" ]; then
   /scripts/personnes-batch-indexation.sh
   echo "-> Lancement de personnes-batch-suppression.sh au démarrage du conteneur"
   /scripts/personnes-batch-suppression.sh
+  echo "-> Lancement de recherche-personnes-batch-indexation.sh au démarrage du conteneur"
+  /scripts/recherche-personnes-batch-indexation.sh
+  echo "-> Lancement de recherche-personnes-batch-suppression.sh au démarrage du conteneur"
+  /scripts/recherche-personnes-batch-suppression.sh
 fi
 
 # execute CMD (crond)

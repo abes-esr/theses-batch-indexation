@@ -171,7 +171,34 @@ public class ElasticSearchUtils {
         );
     }
 
+    public void deleteRecherchePersonnesSansPPN(List<RecherchePersonneModelESAvecId> personnes) {
+        personnes.forEach(p ->
+                {
+                    if (!p.isHas_idref()) {
+                        try {
+                            deletePersonnesES(p.get_id());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
+    }
+
     public void deletePersonnesAvecUniquementTheseId(List<PersonneModelESAvecId> personnes, String theseModelId) {
+        personnes.forEach(p -> {
+            p.getTheses_id().remove(theseModelId);
+            if (p.getTheses_id().isEmpty()) {
+                try {
+                    deletePersonnesES(p.get_id());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    public void deleteRecherchePersonnesAvecUniquementTheseId(List<RecherchePersonneModelESAvecId> personnes, String theseModelId) {
         personnes.forEach(p -> {
             p.getTheses_id().remove(theseModelId);
             if (p.getTheses_id().isEmpty()) {

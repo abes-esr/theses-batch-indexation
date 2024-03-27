@@ -1,16 +1,10 @@
 package fr.abes.theses_batch_indexation.processor;
 
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
-import fr.abes.theses_batch_indexation.database.TheseRowMapper;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneMapee;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
-import fr.abes.theses_batch_indexation.dto.personne.PersonneModelESAvecId;
+import fr.abes.theses_batch_indexation.dto.personne.*;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.model.tef.Mets;
 import fr.abes.theses_batch_indexation.utils.ElasticSearchUtils;
@@ -29,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -158,7 +151,7 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
                 if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
                     personneCacheUtils.updatePersonneDansBDD(personneModelES);
                 } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES);
+                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
                 }
             }
         }
@@ -169,7 +162,7 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
 
         personneModelEsEnBDD.forEach(p -> {
             if (p.isHas_idref() && ppnList.contains(p.getPpn())) {
-                personneCacheUtils.ajoutPersonneDansBDD(p);
+                personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
             }
         });
 
