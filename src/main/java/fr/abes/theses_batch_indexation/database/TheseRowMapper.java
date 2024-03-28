@@ -23,7 +23,11 @@ public class TheseRowMapper implements RowMapper<TheseModel> {
             log.debug("dans TheseRowMapper, l'iddoc est : " + these.getIdDoc());
             these.setNnt(rsOra.getString("nnt"));
             these.setIdSujet(rsOra.getString("numsujet"));
-            these.setDoc(XMLType.createXML(rsOra.getOPAQUE("doc")).getStringVal());
+
+            try {
+                these.setDoc(XMLType.createXML(rsOra.getOPAQUE("doc")).getStringVal());
+            } catch (java.sql.SQLException e) {
+            }
 
             return these;
 
