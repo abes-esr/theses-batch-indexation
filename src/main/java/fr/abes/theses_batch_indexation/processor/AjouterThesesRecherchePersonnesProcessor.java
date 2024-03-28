@@ -161,10 +161,12 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
             for (RecherchePersonneModelES recherchePersonneModelES : theseModelToAddBdd.getRecherchePersonnes()) {
-                if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
-                    personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
-                } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
+                if ( !recherchePersonneModelES.isHas_idref() || ppnList.contains(recherchePersonneModelES.getPpn())) {
+                    if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
+                        personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
+                    } else {
+                        personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
+                    }
                 }
             }
         }
