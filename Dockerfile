@@ -48,9 +48,9 @@ COPY docker/batch/personnes-batch-indexation.sh /scripts/personnes-batch-indexat
 RUN chmod +x /scripts/personnes-batch-indexation.sh
 COPY docker/batch/personnes-batch-suppression.sh /scripts/personnes-batch-suppression.sh
 RUN chmod +x /scripts/personnes-batch-suppression.sh
-COPY docker/batch/personnes-batch-indexation.sh /scripts/recherche-personnes-batch-indexation.sh
+COPY docker/batch/recherche-personnes-batch-indexation.sh /scripts/recherche-personnes-batch-indexation.sh
 RUN chmod +x /scripts/recherche-personnes-batch-indexation.sh
-COPY docker/batch/personnes-batch-suppression.sh /scripts/recherche-personnes-batch-suppression.sh
+COPY docker/batch/recherche-personnes-batch-suppression.sh /scripts/recherche-personnes-batch-suppression.sh
 RUN chmod +x /scripts/recherche-personnes-batch-suppression.sh
 
 COPY --from=build-image /build/target/*.jar /scripts/theses-batch-indexation.jar
