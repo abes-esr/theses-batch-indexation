@@ -122,14 +122,14 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         elasticSearchUtils.deleteRecherchePersonneModelESSansPPN(theseModel.getId());
 
         // sortir la liste des personnes de la thèse
-        List<PersonneModelES> personnesTef = getPersonnesModelESFromTef(theseModel.getId());
+        List<RecherchePersonneModelES> personnesTef = getPersonnesModelESFromTef(theseModel.getId());
 
-        List<PersonneModelESAvecId> personneModelESAvecIds = elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId());
+        List<RecherchePersonneModelESAvecId> personneModelESAvecIds = elasticSearchUtils.getRecherchePersonnesModelESAvecId(theseModel.getId());
 
         personnesTef.addAll(personneModelESAvecIds);
 
         // recuperation des ppn
-        ppnList = personnesTef.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
+        ppnList = personnesTef.stream().filter(RecherchePersonneModelES::isHas_idref).map(RecherchePersonneModelES::getPpn)
                 .collect(Collectors.toList());
 
         // récupérer les personnes dans ES
@@ -196,14 +196,14 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         return theseModel;
     }
 
-    private List<PersonneModelES> getPersonnesModelESFromTef(String id) throws Exception {
+    private List<RecherchePersonneModelES> getPersonnesModelESFromTef(String id) throws Exception {
 
         java.util.Set<String> nnt = new HashSet<>();
         nnt.add(id);
         TheseModel theseModelToAdd = personneCacheUtils.getTheses(nnt).get(0);
 
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
-        PersonneMapee personneMapee = new PersonneMapee(mets, theseModelToAdd.getId(), oaiSets);
+        RecherchePersonneMappe personneMapee = new RecherchePersonneMappe(mets, theseModelToAdd.getId(), oaiSets);
 
         return personneMapee.getPersonnes();
     }

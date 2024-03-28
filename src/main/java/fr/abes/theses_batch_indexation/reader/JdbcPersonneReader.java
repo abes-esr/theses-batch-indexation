@@ -52,7 +52,7 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
     @Override
     public TheseModel read() {
 
-        List<TheseModel> theseModels= jdbcTemplate.query("select * from " + tableName + " FETCH NEXT 1 ROWS ONLY",
+        List<TheseModel> theseModels= jdbcTemplate.query("select * from " + tableName + " where iddoc = 523634 FETCH NEXT 1 ROWS ONLY",
                 new TheseRowMapper());
 
         return theseModels.stream().findFirst().orElse(null);
