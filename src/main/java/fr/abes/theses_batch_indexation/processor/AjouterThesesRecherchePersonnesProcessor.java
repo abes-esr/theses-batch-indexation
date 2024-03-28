@@ -161,10 +161,12 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
             for (RecherchePersonneModelES recherchePersonneModelES : theseModelToAddBdd.getRecherchePersonnes()) {
-                if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
-                    personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
-                } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
+                if ( !recherchePersonneModelES.isHas_idref() || ppnList.contains(recherchePersonneModelES.getPpn())) {
+                    if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
+                        personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
+                    } else {
+                        personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
+                    }
                 }
             }
         }
@@ -200,6 +202,11 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
 
         java.util.Set<String> nnt = new HashSet<>();
         nnt.add(id);
+
+        if (personneCacheUtils.getTheses(nnt).size() == 0) {
+            return new ArrayList<>();
+        }
+
         TheseModel theseModelToAdd = personneCacheUtils.getTheses(nnt).get(0);
 
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
