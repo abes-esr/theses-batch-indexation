@@ -148,23 +148,15 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
             for (PersonneModelES personneModelES : theseModelToAddBdd.getPersonnes()) {
-                if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
-                    personneCacheUtils.updatePersonneDansBDD(personneModelES);
-                } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
+                if (personneModelES.isHas_idref() && ppnList.contains(personneModelES.getPpn())) {
+                    if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
+                        personneCacheUtils.updatePersonneDansBDD(personneModelES);
+                    } else {
+                        personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
+                    }
                 }
             }
         }
-
-        // Nettoyer la table personne_cache des personnes qui ne sont pas dans ppnList
-        List<PersonneModelES> personneModelEsEnBDD = personneCacheUtils.getAllPersonneModelBDD();
-        personneCacheUtils.initialisePersonneCacheBDD();
-
-        personneModelEsEnBDD.forEach(p -> {
-            if (p.isHas_idref() && ppnList.contains(p.getPpn())) {
-                personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
-            }
-        });
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_personne);
 

@@ -115,6 +115,11 @@ public class SupprimerThesesRecherchePersonneProcessor implements ItemProcessor<
         // Initialisation de la table en BDD (donc pas de multi-thread possible)
         personneCacheUtils.initialisePersonneCacheBDD();
 
+        if ( dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
+            dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_recherche_personne);
+            return theseModel;
+        }
+
         // sortir la liste des personnes de la thèse
         List<RecherchePersonneModelESAvecId> recherchePersonnesModelESAvecId = elasticSearchUtils.getRecherchePersonnesModelESAvecId(theseModel.getId());
 
@@ -148,23 +153,15 @@ public class SupprimerThesesRecherchePersonneProcessor implements ItemProcessor<
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
             for (RecherchePersonneModelES recherchePersonneModelES : theseModelToAddBdd.getRecherchePersonnes()) {
-                if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
-                    personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
-                } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
+                if (recherchePersonneModelES.isHas_idref() && ppnList.contains(recherchePersonneModelES.getPpn())) {
+                    if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
+                        personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
+                    } else {
+                        personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
+                    }
                 }
             }
         }
-
-        // Nettoyer la table personne_cache des personnes qui ne sont pas dans ppnList
-        List<PersonneModelES> personneModelEsEnBDD = personneCacheUtils.getAllPersonneModelBDD();
-        personneCacheUtils.initialisePersonneCacheBDD();
-
-        personneModelEsEnBDD.forEach(p -> {
-            if (p.isHas_idref() && ppnList.contains(p.getPpn())) {
-                personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
-            }
-        });
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_recherche_personne);
 
