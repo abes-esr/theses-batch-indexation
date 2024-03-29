@@ -23,6 +23,12 @@ public class DbService {
         jdbcTemplate.update("DELETE FROM "+ tableIndexationES.name() +" WHERE NNT = ? OR NUMSUJET = ?", id, id);
         log.info(id + " est indexé.");
     }
+
+    public boolean estPresentDansTableDocument(int iddoc) {
+        jdbcTemplate.setDataSource(dataSourceLecture);
+        return jdbcTemplate.queryForList("select * from DOCUMENT where iddoc = " + iddoc).size() > 0;
+    }
+
     public void mettreToutesLesThesesAIndexer(TableIndexationES tableIndexationES) {
         jdbcTemplate.setDataSource(dataSourceLecture);
         jdbcTemplate.update("insert into " + tableIndexationES.name() + " (iddoc, nnt, numsujet) select iddoc, nnt, numsujet from document");

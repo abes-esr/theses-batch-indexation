@@ -118,6 +118,11 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         // Initialisation de la table en BDD (donc pas de multi-thread possible)
         personneCacheUtils.initialisePersonneCacheBDD();
 
+        if ( !dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
+            dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_recherche_personne);
+            return theseModel;
+        }
+
         // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
         elasticSearchUtils.deleteRecherchePersonneModelESSansPPN(theseModel.getId());
 
@@ -161,7 +166,8 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
             for (RecherchePersonneModelES recherchePersonneModelES : theseModelToAddBdd.getRecherchePersonnes()) {
-                if ( !recherchePersonneModelES.isHas_idref() || ppnList.contains(recherchePersonneModelES.getPpn())) {
+                if ( (!recherchePersonneModelES.isHas_idref() && recherchePersonneModelES.getTheses_id().contains(theseModel.getId())) ||
+                        ppnList.contains(recherchePersonneModelES.getPpn())) {
                     if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
                         personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
                     } else {
@@ -170,23 +176,6 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
                 }
             }
         }
-
-        // Nettoyage de la table personne_cache des personnes sans ppn et sans la thèse dans leur theses_id
-        List<RecherchePersonneModelES> recherchePersonneModelESEnBDD = personneCacheUtils.getAllRecherchePersonneModelBDD();
-        personneCacheUtils.initialisePersonneCacheBDD();
-
-        recherchePersonneModelESEnBDD.stream().filter(p ->
-                (!p.isHas_idref() && p.getTheses_id().contains(theseModel.getId()))
-        ).forEach(p -> {
-            personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
-        });
-
-        // Nettoyer la table personne_cache des personnes qui ne sont pas dans ppnList
-        recherchePersonneModelESEnBDD.stream().filter(p ->
-                p.isHas_idref() && ppnList.contains(p.getPpn())
-        ).forEach(p -> {
-            personneCacheUtils.ajoutPersonneDansBDD(p, p.getPpn());
-        });
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_recherche_personne);
 
