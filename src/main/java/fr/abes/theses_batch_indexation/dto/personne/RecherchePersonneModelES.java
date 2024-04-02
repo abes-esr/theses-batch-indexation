@@ -1,5 +1,6 @@
 package fr.abes.theses_batch_indexation.dto.personne;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,36 +15,37 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class RecherchePersonneModelES {
-    private String ppn;
-    private boolean has_idref;
-    private String nom;
-    private String prenom;
-    private List<String> nom_complet = new ArrayList<>();
-    private List<SuggestionES> completion_nom = new ArrayList<>();
+    protected String ppn;
+    protected boolean has_idref;
+    protected String nom;
+    protected String prenom;
+    protected List<String> nom_complet = new ArrayList<>();
+    protected List<SuggestionES> completion_nom = new ArrayList<>();
 
-    private Set<String> theses_id = new LinkedHashSet<>();
+    protected Set<String> theses_id = new LinkedHashSet<>();
 
-    private Integer nb_theses;
+    protected Integer nb_theses;
 
-    private Set<String> theses_date = new LinkedHashSet<>();
+    protected Set<String> theses_date = new LinkedHashSet<>();
 
-    private List<String> roles = new ArrayList<>();
+    protected List<String> roles = new ArrayList<>();
 
-    private List<String> etablissements = new ArrayList<>();
+    protected List<String> etablissements = new ArrayList<>();
 
-    private List<String> disciplines = new ArrayList<>();
+    protected List<String> disciplines = new ArrayList<>();
 
     Map<String, List<String>> thematiques = new HashMap<>();
 
     /**
      * Champs utilisés pour les filtres
      */
-    private Set<String> facette_roles = new LinkedHashSet<>();
+    protected Set<String> facette_roles = new LinkedHashSet<>();
 
-    private Set<String> facette_etablissements = new LinkedHashSet<>();
+    protected Set<String> facette_etablissements = new LinkedHashSet<>();
 
-    private Set<String> facette_domaines = new LinkedHashSet<>();
+    protected Set<String> facette_domaines = new LinkedHashSet<>();
 
     public RecherchePersonneModelES(String ppn, String nom, String prenom) {
         if (ppn != null && !ppn.equals("")) {
