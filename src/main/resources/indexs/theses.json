@@ -79,6 +79,12 @@
       "nnt": {
         "type": "keyword"
       },
+      "numSujet": {
+        "type": "keyword"
+      },
+      "numSujetSansS": {
+        "type": "keyword"
+      },
       "dateSoutenance": {
         "type": "date"
       },

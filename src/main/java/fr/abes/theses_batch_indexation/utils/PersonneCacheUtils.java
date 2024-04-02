@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
+import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.repository.JobRepository;
@@ -36,12 +37,12 @@ public class PersonneCacheUtils {
         jdbcTemplate.update("commit");
     }
 
-    public void ajoutPersonneDansBDD(PersonneModelES personneModelES) {
+    public void ajoutPersonneDansBDD(Object personneModelES, String ppn) {
 
         try {
 
             jdbcTemplate.update("insert into " + tablePersonneName + "(ppn, personne, nom_index) VALUES (?,?,?)",
-                    personneModelES.getPpn(),
+                    ppn,
                     readJson(personneModelES),
                     nomIndex);
             //jdbcTemplate.update("commit");
@@ -82,6 +83,24 @@ public class PersonneCacheUtils {
         }
     }
 
+    public List<RecherchePersonneModelES> getAllRecherchePersonneModelBDD() throws IOException {
+        try {
+            List<Map<String, Object>> r = jdbcTemplate.queryForList("select * from " + tablePersonneName + " where nom_index = ?", nomIndex);
+
+            return r.stream().map(p -> {
+                try {
+                    return mapperJsonRecherchePersonne((String) p.get("PERSONNE"));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("Erreur dans getPersonneModelES : " + e);
+            throw e;
+        }
+    }
+
     public boolean estPresentDansBDD(String ppn) throws IOException {
         if (ppn != null && !ppn.equals("")) {
             return jdbcTemplate.queryForList("select * from " + tablePersonneName + " where ppn = ? and nom_index = ?", ppn, nomIndex).size() > 0;
@@ -108,7 +127,7 @@ public class PersonneCacheUtils {
             log.error("Le JSON stocké dans la base et le modèle Java ne correspondent pas : " + ex);
             log.info("On remplace la personne " + personneCourante.getPpn() + " de la base par le modèle Java");
             deletePersonneBDD(personneCourante.getPpn());
-            ajoutPersonneDansBDD(personneCourante);
+            ajoutPersonneDansBDD(personneCourante, personneCourante.getPpn());
         }
         //jdbcTemplate.update("commit");
     }
@@ -141,9 +160,55 @@ public class PersonneCacheUtils {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(json, PersonneModelES.class);
     }
+    public static RecherchePersonneModelES mapperJsonRecherchePersonne(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json, RecherchePersonneModelES.class);
+    }
 
-    public static String readJson(PersonneModelES personneModelES) throws JsonProcessingException {
+    public static String readJson(Object personneModelES) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(personneModelES);
+    }
+
+    public void updateRecherchePersonneDansBDD(RecherchePersonneModelES personneCourante) throws IOException {
+        try {
+            RecherchePersonneModelES personnePresentDansES = getRecherchePersonneModelBDD(personneCourante.getPpn());
+            personnePresentDansES.getTheses_id().addAll(personneCourante.getTheses_id());
+            personnePresentDansES.getTheses_date().addAll(personneCourante.getTheses_date());
+            personnePresentDansES.setNb_theses(personnePresentDansES.getTheses_id().size());
+
+            personnePresentDansES.getRoles().addAll((personneCourante.getRoles()));
+            personnePresentDansES.getEtablissements().addAll(personneCourante.getEtablissements());
+            personnePresentDansES.getDisciplines().addAll(personneCourante.getDisciplines());
+
+            // Facettes
+            personnePresentDansES.getFacette_roles().addAll(personneCourante.getFacette_roles());
+            personnePresentDansES.getFacette_etablissements().addAll(personneCourante.getFacette_etablissements());
+            personnePresentDansES.getFacette_domaines().addAll(personneCourante.getFacette_domaines());
+
+            jdbcTemplate.update("update " + tablePersonneName + " set personne = ?" +
+                            " where ppn = ? and nom_index = ?",
+                    readJson(personnePresentDansES),
+                    personnePresentDansES.getPpn(),
+                    nomIndex);
+        } catch (MismatchedInputException ex) {
+            log.error("Le JSON stocké dans la base et le modèle Java ne correspondent pas : " + ex);
+            log.info("On remplace la personne " + personneCourante.getPpn() + " de la base par le modèle Java");
+            deletePersonneBDD(personneCourante.getPpn());
+            ajoutPersonneDansBDD(personneCourante, personneCourante.getPpn());
+        }
+    }
+
+    private RecherchePersonneModelES getRecherchePersonneModelBDD(String ppn) throws IOException {
+        try {
+
+            List<Map<String, Object>> r = jdbcTemplate.queryForList("select * from " + tablePersonneName + " where ppn = ? and nom_index = ?", ppn, nomIndex);
+
+            return mapperJsonRecherchePersonne((String) r.get(0).get("PERSONNE"));
+
+        } catch (Exception e) {
+            log.error("Erreur dans getPersonneModelES : " + e);
+            throw e;
+        }
     }
 }

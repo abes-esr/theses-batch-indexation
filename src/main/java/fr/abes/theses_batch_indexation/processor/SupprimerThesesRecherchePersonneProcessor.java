@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener, ChunkListener {
+public class SupprimerThesesRecherchePersonneProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener, ChunkListener {
 
     MappingJobName mappingJobName = new MappingJobName();
     private final XMLJsonMarshalling marshall;
@@ -54,7 +54,7 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     private final ElasticConfig elasticConfig;
 
     @Autowired
-    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall,
+    public SupprimerThesesRecherchePersonneProcessor(XMLJsonMarshalling marshall,
                                             JdbcTemplate jdbcTemplate,
                                             DbService dbService,
                                             ElasticConfig elasticConfig,
@@ -115,20 +115,25 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
         // Initialisation de la table en BDD (donc pas de multi-thread possible)
         personneCacheUtils.initialisePersonneCacheBDD();
 
+        if ( dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
+            dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_recherche_personne);
+            return theseModel;
+        }
+
         // sortir la liste des personnes de la thèse
-        List<PersonneModelESAvecId> personnes = elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId());
+        List<RecherchePersonneModelESAvecId> recherchePersonnesModelESAvecId = elasticSearchUtils.getRecherchePersonnesModelESAvecId(theseModel.getId());
 
         // supprimer les personnes sans ppn
-        elasticSearchUtils.deletePersonnesSansPPN(personnes);
+        elasticSearchUtils.deleteRecherchePersonnesSansPPN(recherchePersonnesModelESAvecId);
 
-        elasticSearchUtils.deletePersonnesAvecUniquementTheseId(personnes, theseModel.getId());
+        elasticSearchUtils.deleteRecherchePersonnesAvecUniquementTheseId(recherchePersonnesModelESAvecId, theseModel.getId());
 
         // recuperation des ppn
-        ppnList = personnes.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
+        ppnList = recherchePersonnesModelESAvecId.stream().filter(RecherchePersonneModelES::isHas_idref).map(RecherchePersonneModelES::getPpn)
                 .collect(Collectors.toList());
 
         // recuperation des ids des theses
-        personnes.stream().map(PersonneModelES::getTheses_id).forEach(nntSet::addAll);
+        recherchePersonnesModelESAvecId.stream().map(RecherchePersonneModelES::getTheses_id).forEach(nntSet::addAll);
 
         // Suppression de l'id qu'on supprime
         nntSet = nntSet.stream().filter(t -> !t.equals(theseModel.getId()))
@@ -139,26 +144,26 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
         List<TheseModel> theseModels = personneCacheUtils.getTheses(nntSet);
 
         for (TheseModel theseModelToAdd : theseModels) {
-            //   Utiliser PersonneMappee
+            //   Utiliser RecherchePersonneMappee
             Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
-            PersonneMapee personneMapee = new PersonneMapee(mets, theseModelToAdd.getId(), oaiSets);
-            theseModelToAdd.setPersonnes(personneMapee.getPersonnes());
+            RecherchePersonneMappe recherchePersonneMappe = new RecherchePersonneMappe(mets, theseModelToAdd.getId(), oaiSets);
+            theseModelToAdd.setRecherchePersonnes(recherchePersonneMappe.getPersonnes());
         }
 
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
-            for (PersonneModelES personneModelES : theseModelToAddBdd.getPersonnes()) {
-                if (personneModelES.isHas_idref() && ppnList.contains(personneModelES.getPpn())) {
-                    if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
-                        personneCacheUtils.updatePersonneDansBDD(personneModelES);
+            for (RecherchePersonneModelES recherchePersonneModelES : theseModelToAddBdd.getRecherchePersonnes()) {
+                if (recherchePersonneModelES.isHas_idref() && ppnList.contains(recherchePersonneModelES.getPpn())) {
+                    if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
+                        personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
                     } else {
-                        personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
+                        personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
                     }
                 }
             }
         }
 
-        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_personne);
+        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.suppression_es_recherche_personne);
 
         jdbcTemplate.execute("commit");
         // Rechargement de la BDD vers ES (à faire avec le job)

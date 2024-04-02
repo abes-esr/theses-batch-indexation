@@ -9,16 +9,18 @@ import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelESAvecId;
+import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
+import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelESAvecId;
 import fr.abes.theses_batch_indexation.model.bdd.PersonnesCacheModel;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.ByteArrayInputStream;
@@ -50,6 +52,8 @@ public class ElasticSearchUtils {
         log.debug("Table personne name : " + tablePersonneName);
         log.debug("Index nom : " + nomIndex);
 
+        page.set(0);
+
         while (true) {
             BulkRequest.Builder br = new BulkRequest.Builder();
 
@@ -64,6 +68,7 @@ public class ElasticSearchUtils {
                     nomIndex);
 
             if (r.size() == 0) {
+                page.set(0);
                 log.debug("Fin de ce thread");
                 break;
             }
@@ -139,6 +144,18 @@ public class ElasticSearchUtils {
                 });
     }
 
+    public void deleteRecherchePersonneModelESSansPPN(String theseId) throws IOException {
+        List<RecherchePersonneModelESAvecId> recherchePersonnesModelESAvecId = getRecherchePersonnesModelESAvecId(theseId);
+        recherchePersonnesModelESAvecId.stream().filter(p -> !p.isHas_idref())
+                .forEach(p -> {
+                    try {
+                        deletePersonnesES(p.get_id());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
 
     public void deletePersonnesSansPPN(List<PersonneModelESAvecId> personnes) {
         personnes.forEach(p ->
@@ -154,7 +171,34 @@ public class ElasticSearchUtils {
         );
     }
 
+    public void deleteRecherchePersonnesSansPPN(List<RecherchePersonneModelESAvecId> personnes) {
+        personnes.forEach(p ->
+                {
+                    if (!p.isHas_idref()) {
+                        try {
+                            deletePersonnesES(p.get_id());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
+    }
+
     public void deletePersonnesAvecUniquementTheseId(List<PersonneModelESAvecId> personnes, String theseModelId) {
+        personnes.forEach(p -> {
+            p.getTheses_id().remove(theseModelId);
+            if (p.getTheses_id().isEmpty()) {
+                try {
+                    deletePersonnesES(p.get_id());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    public void deleteRecherchePersonnesAvecUniquementTheseId(List<RecherchePersonneModelESAvecId> personnes, String theseModelId) {
         personnes.forEach(p -> {
             p.getTheses_id().remove(theseModelId);
             if (p.getTheses_id().isEmpty()) {
@@ -218,6 +262,34 @@ public class ElasticSearchUtils {
             throw e;
         }
     }
+    public List<RecherchePersonneModelESAvecId> getRecherchePersonnesModelESAvecId(String theseId) throws IOException {
+
+        List<FieldValue> thesesIdList = new ArrayList<>();
+        thesesIdList.add(FieldValue.of(theseId));
+
+        try {
+            SearchResponse<RecherchePersonneModelES> response = ElasticClient.getElasticsearchClient().search(s -> s
+                            .index(nomIndex.toLowerCase())
+                            .size(100000)
+                            .query(q -> q
+                                    .terms(t -> t.field("theses_id")
+                                            .terms(builder ->
+                                                    builder.value(
+                                                            thesesIdList
+                                                    ))
+                                    )),
+                    RecherchePersonneModelES.class
+            );
+
+            return response.hits().hits().stream().map( p->
+                    new RecherchePersonneModelESAvecId(p.id(), p.source())
+            ).collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("Erreur dans getPersonneModelES : " + e);
+            throw e;
+        }
+    }
 
     public List<PersonneModelES> getPersonnesModelESFromES(List<String> ppnList) {
         List<PersonneModelES> personneModelES = new ArrayList<>();
@@ -244,5 +316,32 @@ public class ElasticSearchUtils {
         });
 
         return personneModelES;
+    }
+
+    public List<RecherchePersonneModelES> getRecherchePersonnesModelESFromES(List<String> ppnList) {
+        List<RecherchePersonneModelES> recherchePersonneModelES = new ArrayList<>();
+
+        ppnList.forEach(p -> {
+            SearchResponse<RecherchePersonneModelES> response = null;
+            try {
+                TermQuery termQuery = QueryBuilders.term().field("_id").value(p).build();
+                Query query = new Query.Builder().term(termQuery).build();
+
+                response = ElasticClient.getElasticsearchClient().search(s -> s
+                                .index(nomIndex.toLowerCase())
+                                .query(query),
+                        RecherchePersonneModelES.class
+                );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (response.hits().total().value() > 0) {
+                recherchePersonneModelES.addAll(response.hits().hits().stream().map(per -> per.source()
+                ).collect(Collectors.toList()));
+            }
+
+        });
+
+        return recherchePersonneModelES;
     }
 }

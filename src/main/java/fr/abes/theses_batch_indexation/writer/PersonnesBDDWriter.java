@@ -88,7 +88,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
                     nombreDePersonnesUpdated.incrementAndGet();
                     nombreDePersonnesUpdatedDansCeChunk.incrementAndGet();
                 } else {
-                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES);
+                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
                 }
             }
         }
