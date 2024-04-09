@@ -591,7 +591,7 @@ public class TheseMappee {
                 while (vedetteRameauNomCommunIterator.hasNext()) {
                     VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
-                    if (vedette.getElementdEntree() != null) {
+                    if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
@@ -605,7 +605,7 @@ public class TheseMappee {
                 while (vedetteRameauAuteurTitreIterator.hasNext()) {
                     VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
-                    if (vedette.getElementdEntree() != null) {
+                    if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
@@ -619,7 +619,7 @@ public class TheseMappee {
                 while (vedetteRameauCollectiviteIterator.hasNext()) {
                     VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
-                    if (vedette.getElementdEntree() != null) {
+                    if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
@@ -633,7 +633,7 @@ public class TheseMappee {
                 while (vedetteRameauFamilleIterator.hasNext()) {
                     VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
-                    if (vedette.getElementdEntree() != null) {
+                    if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
@@ -647,7 +647,7 @@ public class TheseMappee {
                 while (vedetteRameauPersonneIterator.hasNext()) {
                     VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
-                    if (vedette.getElementdEntree() != null) {
+                    if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
@@ -661,7 +661,7 @@ public class TheseMappee {
                 while (vedetteRameauNomGeographiqueIterator.hasNext()) {
                     VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
-                    if (vedette.getElementdEntree() != null) {
+                    if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
@@ -675,7 +675,7 @@ public class TheseMappee {
                 while (vedetteRameauTitreIterator.hasNext()) {
                     VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
-                    if (vedette.getElementdEntree() != null) {
+                    if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
