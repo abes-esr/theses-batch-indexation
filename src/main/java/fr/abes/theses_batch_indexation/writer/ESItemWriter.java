@@ -108,8 +108,10 @@ public class ESItemWriter implements ItemWriter<TheseModel> {
                 switch (nomIndex) {
                     case "theses" :
                         dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_these);
+                        break;
                     case "thematiques":
                         dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_thematique);
+                        break;
                 }
             }
         }

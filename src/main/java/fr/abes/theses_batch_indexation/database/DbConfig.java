@@ -43,6 +43,7 @@ public class DbConfig {
         dataSource.setJdbcUrl("jdbc:h2:mem:testdb");
         dataSource.setUsername("sa");
         dataSource.setPassword("");
+        dataSource.setAutoCommit(true);
         return dataSource;
     }
 }
