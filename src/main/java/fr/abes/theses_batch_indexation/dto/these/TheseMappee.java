@@ -591,12 +591,20 @@ public class TheseMappee {
                 while (vedetteRameauNomCommunIterator.hasNext()) {
                     VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
+                    SujetRameauDTO subdivision = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                    if (vedette.getSubdivision() != null && !sujetsRameauPpn.contains(vedette.getSubdivision().getAutoriteExterne())) {
+                        subdivision.setPpn(vedette.getSubdivision().getAutoriteExterne());
+                        subdivision.setLibelle(vedette.getSubdivision().getContent());
+                        sujetsRameau.add(subdivision);
+                        sujetsRameauPpn.add(vedette.getSubdivision().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getSubdivision().getContent());
                     }
                 }
                 List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -605,12 +613,20 @@ public class TheseMappee {
                 while (vedetteRameauAuteurTitreIterator.hasNext()) {
                     VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
+                    SujetRameauDTO subdivision = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                    if (vedette.getSubdivision() != null && !sujetsRameauPpn.contains(vedette.getSubdivision().getAutoriteExterne())) {
+                        subdivision.setPpn(vedette.getSubdivision().getAutoriteExterne());
+                        subdivision.setLibelle(vedette.getSubdivision().getContent());
+                        sujetsRameau.add(subdivision);
+                        sujetsRameauPpn.add(vedette.getSubdivision().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getSubdivision().getContent());
                     }
                 }
                 List<VedetteRameauCollectivite> sujetsRameauCollectiviteDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -619,12 +635,20 @@ public class TheseMappee {
                 while (vedetteRameauCollectiviteIterator.hasNext()) {
                     VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
+                    SujetRameauDTO subdivision = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                    if (vedette.getSubdivision() != null && !sujetsRameauPpn.contains(vedette.getSubdivision().getAutoriteExterne())) {
+                        subdivision.setPpn(vedette.getSubdivision().getAutoriteExterne());
+                        subdivision.setLibelle(vedette.getSubdivision().getContent());
+                        sujetsRameau.add(subdivision);
+                        sujetsRameauPpn.add(vedette.getSubdivision().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getSubdivision().getContent());
                     }
                 }
                 List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -633,12 +657,20 @@ public class TheseMappee {
                 while (vedetteRameauFamilleIterator.hasNext()) {
                     VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
+                    SujetRameauDTO subdivision = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                    if (vedette.getSubdivision() != null && !sujetsRameauPpn.contains(vedette.getSubdivision().getAutoriteExterne())) {
+                        subdivision.setPpn(vedette.getSubdivision().getAutoriteExterne());
+                        subdivision.setLibelle(vedette.getSubdivision().getContent());
+                        sujetsRameau.add(subdivision);
+                        sujetsRameauPpn.add(vedette.getSubdivision().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getSubdivision().getContent());
                     }
                 }
                 List<VedetteRameauPersonne> sujetsRameauPersonneDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -647,12 +679,20 @@ public class TheseMappee {
                 while (vedetteRameauPersonneIterator.hasNext()) {
                     VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
+                    SujetRameauDTO subdivision = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                    if (vedette.getSubdivision() != null && !sujetsRameauPpn.contains(vedette.getSubdivision().getAutoriteExterne())) {
+                        subdivision.setPpn(vedette.getSubdivision().getAutoriteExterne());
+                        subdivision.setLibelle(vedette.getSubdivision().getContent());
+                        sujetsRameau.add(subdivision);
+                        sujetsRameauPpn.add(vedette.getSubdivision().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getSubdivision().getContent());
                     }
                 }
                 List<VedetteRameauNomGeographique> sujetsRameauNomGeographiqueDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -661,12 +701,20 @@ public class TheseMappee {
                 while (vedetteRameauNomGeographiqueIterator.hasNext()) {
                     VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
+                    SujetRameauDTO subdivision = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                    if (vedette.getSubdivision() != null && !sujetsRameauPpn.contains(vedette.getSubdivision().getAutoriteExterne())) {
+                        subdivision.setPpn(vedette.getSubdivision().getAutoriteExterne());
+                        subdivision.setLibelle(vedette.getSubdivision().getContent());
+                        sujetsRameau.add(subdivision);
+                        sujetsRameauPpn.add(vedette.getSubdivision().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getSubdivision().getContent());
                     }
                 }
                 List<VedetteRameauTitre> sujetsRameauTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
@@ -675,12 +723,20 @@ public class TheseMappee {
                 while (vedetteRameauTitreIterator.hasNext()) {
                     VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
                     SujetRameauDTO sujetRameauDTO = new SujetRameauDTO();
+                    SujetRameauDTO subdivision = new SujetRameauDTO();
                     if (vedette.getElementdEntree() != null && !sujetsRameauPpn.contains(vedette.getElementdEntree().getAutoriteExterne())) {
                         sujetRameauDTO.setPpn(vedette.getElementdEntree().getAutoriteExterne());
                         sujetRameauDTO.setLibelle(vedette.getElementdEntree().getContent());
                         sujetsRameau.add(sujetRameauDTO);
                         sujetsRameauPpn.add(vedette.getElementdEntree().getAutoriteExterne());
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
+                    }
+                    if (vedette.getSubdivision() != null && !sujetsRameauPpn.contains(vedette.getSubdivision().getAutoriteExterne())) {
+                        subdivision.setPpn(vedette.getSubdivision().getAutoriteExterne());
+                        subdivision.setLibelle(vedette.getSubdivision().getContent());
+                        sujetsRameau.add(subdivision);
+                        sujetsRameauPpn.add(vedette.getSubdivision().getAutoriteExterne());
+                        sujetsRameauLibelle.add(vedette.getSubdivision().getContent());
                     }
                 }
             } catch (NullPointerException e) {
