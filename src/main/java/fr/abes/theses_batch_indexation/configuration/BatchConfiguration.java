@@ -55,6 +55,7 @@ public class BatchConfiguration {
                                          JobRepository jobRepository,
                                          Tasklet initialiserIndexESTasklet,
                                          Tasklet chargerOaiSetsTasklet,
+                                         Tasklet chargerThesesAIndexerBDD,
                                          JobTheseCompletionNotificationListener listener) {
         log.debug("debut du job indexation des theses dans ES...");
 
@@ -62,6 +63,7 @@ public class BatchConfiguration {
                 .listener(listener)
                 .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepChargerThesesAIndexerBDD(chargerThesesAIndexerBDD))
                 .next(stepIndexThesesDansES)
                 .build();
     }
@@ -115,12 +117,14 @@ public class BatchConfiguration {
     public Job jobIndexationThematiquesDansES(Step stepIndexThematiquesDansES,
                                               JobRepository jobRepository,
                                               Tasklet initialiserIndexESTasklet,
+                                              Tasklet chargerThesesAIndexerBDD,
                                               JobTheseCompletionNotificationListener listener) {
         log.debug("debut du job indexation des thematiques dans ES...");
 
         return jobs.get("indexationThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepChargerThesesAIndexerBDD(chargerThesesAIndexerBDD))
                 .next(stepIndexThematiquesDansES)
                 .build();
     }
@@ -260,6 +264,7 @@ public class BatchConfiguration {
                 .tasklet(t).build();
     }
 
+
     @Bean
     public Step stepInitiliserIndexBDDTasklet(@Qualifier("initiliserIndexBDDTasklet") Tasklet t) {
         return stepBuilderFactory.get("InitiliserIndexBDDTasklet").allowStartIfComplete(true)
@@ -278,6 +283,12 @@ public class BatchConfiguration {
     @Bean
     public Step stepChargerListeOaiSets(@Qualifier("chargerOaiSetsTasklet") Tasklet t) {
         return stepBuilderFactory.get("ChargerOaiSetsTasklet").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+
+    @Bean
+    public Step stepChargerThesesAIndexerBDD(@Qualifier("chargerThesesAIndexerBDD") Tasklet t){
+        return stepBuilderFactory.get("ChargerThesesAIndexerBDD").allowStartIfComplete(true)
                 .tasklet(t).build();
     }
 

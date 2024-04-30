@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -60,8 +61,6 @@ public class InitialiserIndexESTasklet implements Tasklet {
                 log.info("Index " + nomIndex + " supprimé");
                 createIndexES(f, nomIndex);
                 log.info("Index " + nomIndex + " créé avec le schéma présent dans " + f.getPath());
-                dbService.mettreToutesLesThesesAIndexer(mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names")));
-                log.info("table d'indexation "+ mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names"))+" remplie dans la base.");
             }
         }
         return RepeatStatus.FINISHED;
