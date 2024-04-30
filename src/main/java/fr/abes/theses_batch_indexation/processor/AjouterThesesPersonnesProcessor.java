@@ -123,6 +123,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             return theseModel;
         }
 
+        log.info("1");
+
         // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
         elasticSearchUtils.deletePersonneModelESSansPPN(theseModel.getId());
 
@@ -131,12 +133,14 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         List<PersonneModelESAvecId> personneModelESAvecIds = elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId());
 
+        log.info("2");
         personnesTef.addAll(personneModelESAvecIds);
 
         // recuperation des ppn
         ppnList = personnesTef.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
                 .collect(Collectors.toList());
 
+        log.info("3");
         // récupérer les personnes dans ES
         List<PersonneModelES> personnesES = elasticSearchUtils.getPersonnesModelESFromES(ppnList);
 
@@ -152,6 +156,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         // Ajout de l'id de thèse qu'on indexe
         nntSet.add(theseModel.getId());
 
+        log.info("4 début traitement");
         // Ré-indexer la liste des thèses
         //  Récupérer les theses avec JDBCTemplate
         List<TheseModel> theseModels = personneCacheUtils.getTheses(nntSet);
@@ -162,6 +167,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             PersonneMapee personneMapee = new PersonneMapee(mets, theseModelToAdd.getId(), oaiSets);
             theseModelToAdd.setPersonnes(personneMapee.getPersonnes());
         }
+
+        log.info("5");
 
         //   MàJ dans la BDD
         for (TheseModel theseModelToAddBdd : theseModels) {
@@ -176,6 +183,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                 }
             }
         }
+
+        log.info("6 fin traitement");
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
 
