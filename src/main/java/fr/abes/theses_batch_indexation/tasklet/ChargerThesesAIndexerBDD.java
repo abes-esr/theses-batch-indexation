@@ -27,8 +27,12 @@ public class ChargerThesesAIndexerBDD implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
-        dbService.mettreToutesLesThesesAIndexer(mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names")));
-        log.info("table d'indexation "+ mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names"))+" remplie dans la base.");
+        if (env.getProperty("initialiseIndex") != null &&
+                env.getProperty("initialiseIndex").equals("true")) {
+
+            dbService.mettreToutesLesThesesAIndexer(mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names")));
+            log.info("table d'indexation "+ mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names"))+" remplie dans la base.");
+        }
 
         return RepeatStatus.FINISHED;
     }
