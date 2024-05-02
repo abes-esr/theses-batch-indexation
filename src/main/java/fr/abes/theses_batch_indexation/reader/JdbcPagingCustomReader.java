@@ -72,7 +72,7 @@ public class JdbcPagingCustomReader
 
     private Map<String, Order> sortByIdAsc() {
         Map<String, Order> sortConfiguration = new HashMap<>();
-        sortConfiguration.put("DOCUMENT.iddoc", Order.ASCENDING);
+        sortConfiguration.put("iddoc", Order.ASCENDING);
         return sortConfiguration;
     }
 }
