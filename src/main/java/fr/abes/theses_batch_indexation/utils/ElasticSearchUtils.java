@@ -9,7 +9,6 @@ import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
@@ -343,5 +342,54 @@ public class ElasticSearchUtils {
         });
 
         return recherchePersonneModelES;
+    }
+
+    public void indexerPersonnesDansEs(List<PersonneModelES> items, ElasticConfig elasticConfig) throws Exception {
+
+        boolean auMoinsUneOperation = false;
+        BulkRequest.Builder br = new BulkRequest.Builder();
+
+        for (PersonneModelES personneModelES : items) {
+
+            JsonData json = readJson(new ByteArrayInputStream(PersonneCacheUtils.readJson(personneModelES).getBytes()),
+                    ElasticClient.getElasticsearchClient());
+
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index(nomIndex.toLowerCase())
+                            .id(personneModelES.getPpn())
+                            .document(json)
+                    )
+            );
+            auMoinsUneOperation = true;
+        }
+        if (auMoinsUneOperation) {
+            BulkRequest bulkRequest = br.build();
+            BulkResponse result = null;
+            try {
+                result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+            } catch (IOException e) {
+                log.error("IOException, retry ...");
+                ElasticClient.chargeClient(
+                        elasticConfig.getHostname(),
+                        elasticConfig.getPort(),
+                        elasticConfig.getScheme(),
+                        elasticConfig.getUserName(),
+                        elasticConfig.getPassword(),
+                        elasticConfig.getProtocol());
+                log.error("Reload elastic client done");
+                result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+            }
+
+
+            if (result.errors()) {
+                log.error("Erreurs dans le bulk : ");
+                for (BulkResponseItem item : result.items()) {
+                    if (item.error() != null) {
+                        log.error(item.id() + item.error());
+                    }
+                }
+            }
+        }
     }
 }

@@ -32,7 +32,8 @@ import java.util.stream.Collectors;
 @Component
 public class SupprimerThesesRecherchePersonneProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener, ChunkListener {
 
-    MappingJobName mappingJobName = new MappingJobName();
+    @Autowired
+    MappingJobName mappingJobName;
     private final XMLJsonMarshalling marshall;
     String nomIndex;
 

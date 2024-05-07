@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,12 +26,15 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener, ChunkListener {
-    MappingJobName mappingJobName = new MappingJobName();
+
+    @Autowired
+    MappingJobName mappingJobName;
     private final XMLJsonMarshalling marshall;
     String nomIndex;
 
@@ -94,15 +98,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     @Override
     public void afterChunk(ChunkContext chunkContext) {
-        log.info("Début after chunk");
-        try {
-            elasticSearchUtils.indexerPersonnesDansEsBulk(tablePersonneName,
-                    10,
-                    jdbcTemplate,
-                    elasticConfig);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     @Override
@@ -115,15 +111,10 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         log.info("Début execute");
 
-        // Initialisation de la table en BDD (donc pas de multi-thread possible)
-        personneCacheUtils.initialisePersonneCacheBDD();
-
         if ( !dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
             dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
             return theseModel;
         }
-
-        log.info("1");
 
         // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
         elasticSearchUtils.deletePersonneModelESSansPPN(theseModel.getId());
@@ -157,32 +148,31 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         nntSet.add(theseModel.getId());
 
         log.info("4 début traitement");
-        // Ré-indexer la liste des thèses
-        //  Récupérer les theses avec JDBCTemplate
-        List<TheseModel> theseModels = personneCacheUtils.getTheses(nntSet);
 
-        for (TheseModel theseModelToAdd : theseModels) {
-            //   Utiliser PersonneMappee
-            Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
-            PersonneMapee personneMapee = new PersonneMapee(mets, theseModelToAdd.getId(), oaiSets);
-            theseModelToAdd.setPersonnes(personneMapee.getPersonnes());
+        Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
+        PersonneMapee personneMapee = new PersonneMapee(mets, theseModel.getId(), oaiSets);
+
+        for (PersonneModelES personneES: personnesES) {
+
+            // Enlever la thèse en cours
+            personneES.setTheses(
+                    personneES.getTheses().stream()
+                            .filter(t -> !Objects.equals(t.getId(), theseModel.getIdSujet())
+                                    || !Objects.equals(t.getId(), theseModel.getNnt()))
+                            .collect(Collectors.toList()));
+
+            personneES.setTheses_id(personneES.getTheses_id().stream().filter(
+                    t -> !Objects.equals(t, theseModel.getIdSujet())
+                            || !Objects.equals(t, theseModel.getNnt()))
+                    .collect(Collectors.toSet()
+            ));
+
+            // Ajout de la thèse en cours
+            personneES.getTheses().add(personneMapee.getTheseModelES());
+            personneES.getTheses_id().add(personneMapee.getTheseModelES().getId());
         }
 
-        log.info("5");
-
-        //   MàJ dans la BDD
-        for (TheseModel theseModelToAddBdd : theseModels) {
-            for (PersonneModelES personneModelES : theseModelToAddBdd.getPersonnes()) {
-                if ((!personneModelES.isHas_idref() && personneModelES.getTheses_id().contains(theseModel.getId())) ||
-                        ppnList.contains(personneModelES.getPpn())) {
-                    if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
-                        personneCacheUtils.updatePersonneDansBDD(personneModelES);
-                    } else {
-                        personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
-                    }
-                }
-            }
-        }
+        elasticSearchUtils.indexerPersonnesDansEs(personnesES, elasticConfig);
 
         log.info("6 fin traitement");
 

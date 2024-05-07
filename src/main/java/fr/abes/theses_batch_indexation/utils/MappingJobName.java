@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.HashMap;
 
 @Component
@@ -27,6 +28,10 @@ public class MappingJobName {
     HashMap<String, String> nomIndexES = new HashMap<>();
 
     public MappingJobName() {
+    }
+
+    @PostConstruct
+    public void init() {
         // correspondance nom du job / nom de la table dans la BD
         nomTableES.put("indexationThesesDansES", TableIndexationES.indexation_es_these);
         nomTableES.put("indexationPersonnesDansES", TableIndexationES.indexation_es_personne);
