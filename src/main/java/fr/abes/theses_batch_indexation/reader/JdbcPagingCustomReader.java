@@ -28,7 +28,7 @@ public class JdbcPagingCustomReader
 
     public JdbcPagingCustomReader(
             @Autowired Environment env,
-            @Autowired MappingJobName mappingJobName,
+            MappingJobName mappingJobName,
             @Qualifier("jobConfig") JobConfig config,
             @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
 

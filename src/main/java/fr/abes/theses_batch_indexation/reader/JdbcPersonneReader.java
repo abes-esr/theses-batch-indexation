@@ -3,21 +3,13 @@ package fr.abes.theses_batch_indexation.reader;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
-import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
-import org.springframework.batch.core.annotation.BeforeStep;
-import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +22,8 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
 
     final DataSource dataSourceLecture;
 
-    MappingJobName mappingJobName = new MappingJobName();
+    @Autowired
+    MappingJobName mappingJobName;
     JdbcTemplate jdbcTemplate;
 
     private String tableName;
@@ -39,6 +32,7 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
         this.dataSourceLecture = dataSourceLecture;
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate.setDataSource(dataSourceLecture);
+
     }
 
     @Override
