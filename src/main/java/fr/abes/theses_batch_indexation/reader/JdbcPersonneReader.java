@@ -4,9 +4,11 @@ import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ChunkListener;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
-public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecutionListener {
+public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecutionListener, ChunkListener {
 
     final DataSource dataSourceLecture;
 
@@ -44,10 +46,6 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
         this.tableName = mappingJobName.getNomTableES().get(
                 stepExecution.getJobExecution().getJobInstance().getJobName()
         ).name();
-
-        theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 10 ROWS ONLY",
-                new TheseRowMapper());
-        n.set(0);
     }
 
 
@@ -62,5 +60,22 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
         return null;
+    }
+
+    @Override
+    public void beforeChunk(ChunkContext chunkContext) {
+        theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 20 ROWS ONLY",
+                new TheseRowMapper());
+        n.set(0);
+    }
+
+    @Override
+    public void afterChunk(ChunkContext chunkContext) {
+
+    }
+
+    @Override
+    public void afterChunkError(ChunkContext chunkContext) {
+
     }
 }
