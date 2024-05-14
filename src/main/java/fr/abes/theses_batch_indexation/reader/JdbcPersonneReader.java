@@ -52,7 +52,11 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
     @Override
     public TheseModel read() {
 
-        return theseModels.get(n.getAndIncrement());
+        if (n.get() <= theseModels.size()) {
+            return theseModels.get(n.getAndIncrement());
+        } else {
+            return null;
+        }
 
         //return theseModels.stream().findFirst().orElse(null);
     }
