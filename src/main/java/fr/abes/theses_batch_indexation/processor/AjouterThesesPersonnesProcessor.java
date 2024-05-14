@@ -115,7 +115,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                         n -> thesesEnTraitement.contains(n)
                 )
         ) {
-            Thread.sleep(100);
+            //Thread.sleep(100);
         }
 
         java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
