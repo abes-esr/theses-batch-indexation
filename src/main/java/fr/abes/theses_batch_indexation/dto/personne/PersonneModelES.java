@@ -41,6 +41,17 @@ public class PersonneModelES {
         nom_complet.add(String.format("%1$s %2$s", nom, prenom));
     }
 
+    public PersonneModelES(PersonneModelESAvecId autreObjet) {
+        this.ppn = autreObjet.ppn;
+        this.has_idref = autreObjet.has_idref;
+        this.nom = autreObjet.nom;
+        this.prenom = autreObjet.prenom;
+        this.nom_complet = new ArrayList<>(autreObjet.nom_complet);
+        this.theses_id = new HashSet<>(autreObjet.theses_id);
+        this.roles = new ArrayList<>(autreObjet.roles);
+        this.theses = new ArrayList<>(autreObjet.theses);
+    }
+
 
     /**
      * Recherche une thèse dans la liste des thèses

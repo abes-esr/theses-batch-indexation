@@ -321,6 +321,8 @@ public class BatchConfiguration {
                 .listener(theseWriteListener)
                 .reader(itemReader)
                 .processor(itemProcessor)
+                .taskExecutor(taskExecutor())
+                .throttleLimit(config.getThrottle())
                 .build();
     }
 

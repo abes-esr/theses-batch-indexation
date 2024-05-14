@@ -32,7 +32,6 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
         this.dataSourceLecture = dataSourceLecture;
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate.setDataSource(dataSourceLecture);
-
     }
 
     @Override
@@ -46,7 +45,7 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
     @Override
     public TheseModel read() {
 
-        List<TheseModel> theseModels= jdbcTemplate.query("select * from " + tableName + " FETCH NEXT 1 ROWS ONLY",
+        List<TheseModel> theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 1 ROWS ONLY",
                 new TheseRowMapper());
 
         return theseModels.stream().findFirst().orElse(null);

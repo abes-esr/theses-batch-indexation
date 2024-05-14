@@ -25,9 +25,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -229,6 +227,41 @@ public class ElasticSearchUtils {
                                     .id(personneId));
         } catch (Exception e) {
             log.error("Erreur dans deletePersonnesSansPPN : " + e);
+            throw e;
+        }
+    }
+
+    //récupérer tous les nnt, lié a une thèse
+    public Set<String> getNntLies(String nnt) throws IOException {
+
+        List<FieldValue> thesesIdList = new ArrayList<>();
+        thesesIdList.add(FieldValue.of(nnt));
+
+        try {
+            SearchResponse<PersonneModelES> response = ElasticClient.getElasticsearchClient().search(s -> s
+                            .index(nomIndex.toLowerCase())
+                            .size(100000)
+                            .query(q -> q
+                                    .terms(t -> t.field("theses_id")
+                                            .terms(builder ->
+                                                    builder.value(
+                                                            thesesIdList
+                                                    ))
+                                    )),
+                    PersonneModelES.class
+            );
+
+            Set<String> nntSet = new HashSet<>();
+
+            response.hits().hits().stream().forEach(p ->{
+                assert p.source() != null;
+                nntSet.addAll(p.source().getTheses_id());
+            });
+
+            return nntSet;
+
+        } catch (Exception e) {
+            log.error("Erreur dans getPersonneModelES : " + e);
             throw e;
         }
     }

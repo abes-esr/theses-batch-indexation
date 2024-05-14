@@ -23,10 +23,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,6 +51,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     private final ElasticConfig elasticConfig;
     final DataSource dataSourceLecture;
+
+    java.util.Set<Object> thesesEnTraitement = Collections.synchronizedSet(new HashSet<>());
 
     public AjouterThesesPersonnesProcessor(XMLJsonMarshalling marshall,
                                            JdbcTemplate jdbcTemplate,
@@ -109,9 +108,18 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     @Override
     public TheseModel process(TheseModel theseModel) throws Exception {
 
-        log.info("Début execute");
+        log.info("Début execute : " + theseModel.getNnt());
+        thesesEnTraitement.add(theseModel.getId());
 
-        if ( !dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
+        while (
+                elasticSearchUtils.getNntLies(theseModel.getId()).stream().anyMatch(
+                        n -> thesesEnTraitement.contains(n)
+                )
+        ) {
+            Thread.sleep(10000);
+        }
+
+        if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
             dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
             return theseModel;
         }
@@ -119,24 +127,45 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
         elasticSearchUtils.deletePersonneModelESSansPPN(theseModel.getId());
 
+        log.info("fin suppression");
         // sortir la liste des personnes de la thèse
-        List<PersonneModelES> personnesTef = getPersonnesModelESFromTef(theseModel.getId());
+        List<PersonneModelES> personnesTefList = getPersonnesModelESFromTef(theseModel.getId());
 
-        List<PersonneModelESAvecId> personneModelESAvecIds = elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId());
+        log.info("1");
+        List<PersonneModelES> personneModelESList = new ArrayList<>(elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId()))
+                .stream().map(PersonneModelES::new).filter(PersonneModelES::isHas_idref).collect(Collectors.toList());
+
+        log.info("fin recupération");
+        //personneModelESAvecIds.addAll(personnesTef);
+        //personnesTef.addAll(personneModelESAvecIds);
+
+        List<PersonneModelES> personneModelESEtTef = new ArrayList<>(personneModelESList);
+
+        // TODO Dédoublonage des personnes en gardant celles de ES
+        for (PersonneModelES personneTef : personnesTefList) {
+
+            if (personneModelESList.stream().noneMatch(p -> {
+                if (p.getPpn() == null) {
+                    log.info("null");
+                }
+                return p.getPpn().equals(personneTef.getPpn());
+            })) {
+                personneModelESEtTef.add(personneTef);
+            }
+        }
 
         log.info("2");
-        personnesTef.addAll(personneModelESAvecIds);
 
         // recuperation des ppn
-        ppnList = personnesTef.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
+        ppnList = personneModelESEtTef.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
                 .collect(Collectors.toList());
 
         log.info("3");
         // récupérer les personnes dans ES
-        List<PersonneModelES> personnesES = elasticSearchUtils.getPersonnesModelESFromES(ppnList);
+        //List<PersonneModelES> personnesES = elasticSearchUtils.getPersonnesModelESFromES(ppnList);
 
         // recuperation des ids des theses
-        personnesES.stream().map(PersonneModelES::getTheses_id).forEach(nntSet::addAll);
+        personneModelESEtTef.stream().map(PersonneModelES::getTheses_id).forEach(nntSet::addAll);
 
         //  Vérifier qu'on ne transforme pas un sujet en NNT, dans ce cas, il faut supprimer IdSujet de nntSet
         if (nntSet.stream().anyMatch(n -> n.equals(theseModel.getIdSujet()))) {
@@ -149,10 +178,12 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         log.info("4 début traitement");
 
-        Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
-        PersonneMapee personneMapee = new PersonneMapee(mets, theseModel.getId(), oaiSets);
+        //Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
+        //PersonneMapee personneMapee = new PersonneMapee(mets, theseModel.getId(), oaiSets);
 
-        for (PersonneModelES personneES: personnesES) {
+        TheseModelES theseModelES = personnesTefList.stream().findFirst().orElseThrow().getTheses().stream().findFirst().orElseThrow();
+
+        for (PersonneModelES personneES : personneModelESEtTef) {
 
             // Enlever la thèse en cours
             personneES.setTheses(
@@ -162,17 +193,19 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                             .collect(Collectors.toList()));
 
             personneES.setTheses_id(personneES.getTheses_id().stream().filter(
-                    t -> !Objects.equals(t, theseModel.getIdSujet())
-                            || !Objects.equals(t, theseModel.getNnt()))
+                            t -> !Objects.equals(t, theseModel.getIdSujet())
+                                    || !Objects.equals(t, theseModel.getNnt()))
                     .collect(Collectors.toSet()
-            ));
+                    ));
 
             // Ajout de la thèse en cours
-            personneES.getTheses().add(personneMapee.getTheseModelES());
-            personneES.getTheses_id().add(personneMapee.getTheseModelES().getId());
+            personneES.getTheses().add(theseModelES);
+            personneES.getTheses_id().add(theseModelES.getId());
         }
 
-        elasticSearchUtils.indexerPersonnesDansEs(personnesES, elasticConfig);
+        log.info("5");
+
+        elasticSearchUtils.indexerPersonnesDansEs(personneModelESEtTef, elasticConfig);
 
         log.info("6 fin traitement");
 
