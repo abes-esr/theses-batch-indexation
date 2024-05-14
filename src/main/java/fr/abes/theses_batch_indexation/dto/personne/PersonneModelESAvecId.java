@@ -23,4 +23,6 @@ public class PersonneModelESAvecId extends PersonneModelES{
         this.roles = new ArrayList<>(autreObjet.roles);
         this.theses = new ArrayList<>(autreObjet.theses);
     }
+
+
 }
