@@ -118,7 +118,9 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             Thread.sleep(100);
         }
 
-        thesesEnTraitement.addAll(elasticSearchUtils.getNntLies(theseModel.getId()));
+        java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
+
+        thesesEnTraitement.addAll(nntLies);
 
         if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
             dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
@@ -209,6 +211,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         elasticSearchUtils.indexerPersonnesDansEs(personneModelESEtTef, elasticConfig);
 
         log.info("6 fin traitement");
+
+        nntSet.removeAll(nntLies);
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
 
