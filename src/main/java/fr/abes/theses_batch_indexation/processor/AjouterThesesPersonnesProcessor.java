@@ -109,7 +109,6 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     public TheseModel process(TheseModel theseModel) throws Exception {
 
         log.info("Début execute : " + theseModel.getNnt());
-        thesesEnTraitement.add(theseModel.getId());
 
         while (
                 elasticSearchUtils.getNntLies(theseModel.getId()).stream().anyMatch(
@@ -118,6 +117,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         ) {
             Thread.sleep(100);
         }
+
+        thesesEnTraitement.addAll(elasticSearchUtils.getNntLies(theseModel.getId()));
 
         if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
             dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);

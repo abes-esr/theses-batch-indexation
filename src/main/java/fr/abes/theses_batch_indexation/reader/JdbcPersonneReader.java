@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 @Slf4j
@@ -26,7 +27,11 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
     MappingJobName mappingJobName;
     JdbcTemplate jdbcTemplate;
 
+    List<TheseModel> theseModels;
+
     private String tableName;
+
+    private AtomicInteger n = new AtomicInteger();
 
     public JdbcPersonneReader(@Qualifier("dataSourceLecture") DataSource dataSourceLecture, JdbcTemplate jdbcTemplate) {
         this.dataSourceLecture = dataSourceLecture;
@@ -39,16 +44,19 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
         this.tableName = mappingJobName.getNomTableES().get(
                 stepExecution.getJobExecution().getJobInstance().getJobName()
         ).name();
+
+        theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 10 ROWS ONLY",
+                new TheseRowMapper());
+        n.set(0);
     }
 
 
     @Override
     public TheseModel read() {
 
-        List<TheseModel> theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 1 ROWS ONLY",
-                new TheseRowMapper());
+        return theseModels.get(n.getAndIncrement());
 
-        return theseModels.stream().findFirst().orElse(null);
+        //return theseModels.stream().findFirst().orElse(null);
     }
 
     @Override
