@@ -116,7 +116,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                         n -> thesesEnTraitement.contains(n)
                 )
         ) {
-            Thread.sleep(10000);
+            Thread.sleep(100);
         }
 
         if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
