@@ -2,12 +2,13 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2024.05.02 à 11:39:34 AM CEST 
+// Généré le : 2024.05.14 à 04:50:23 PM CEST 
 //
 
 
 package fr.abes.theses_batch_indexation.model.tef;
 
+import java.math.BigInteger;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
@@ -34,6 +35,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _VilleAdresseDoctorant_QNAME = new QName("http://www.theses.fr/namespace/sujets", "villeAdresseDoctorant");
     private final static QName _Peb_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "peb");
     private final static QName _Note_QNAME = new QName("http://www.loc.gov/METS/", "note");
     private final static QName _Rcr_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "rcr");
@@ -48,11 +50,14 @@ public class ObjectFactory {
     private final static QName _DateNaissance_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "dateNaissance");
     private final static QName _ThesisDegreeLevel_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "thesis.degree.level");
     private final static QName _ContratDoctoral_QNAME = new QName("http://www.theses.fr/namespace/sujets", "contratDoctoral");
+    private final static QName _PaysAdresseDoctorant_QNAME = new QName("http://www.theses.fr/namespace/sujets", "paysAdresseDoctorant");
+    private final static QName _AdresseDoctorant_QNAME = new QName("http://www.theses.fr/namespace/sujets", "adresseDoctorant");
     private final static QName _ISBN_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "ISBN");
     private final static QName _Name_QNAME = new QName("http://www.loc.gov/METS/", "name");
     private final static QName _Nom_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "nom");
     private final static QName _BiblioIndex_QNAME = new QName("http://www.theses.fr/namespace/tefudoc", "biblioIndex");
     private final static QName _OaiSetSpec_QNAME = new QName("http://www.abes.fr/abes/documents/tef", "oaiSetSpec");
+    private final static QName _CodePostalDoctorant_QNAME = new QName("http://www.theses.fr/namespace/sujets", "codePostalDoctorant");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: fr.abes.theses_batch_indexation.model.tef
@@ -366,6 +371,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CoAuteur }
+     * 
+     */
+    public CoAuteur createCoAuteur() {
+        return new CoAuteur();
+    }
+
+    /**
+     * Create an instance of {@link TelephoneDoctorant }
+     * 
+     */
+    public TelephoneDoctorant createTelephoneDoctorant() {
+        return new TelephoneDoctorant();
+    }
+
+    /**
      * Create an instance of {@link DateAccepted }
      * 
      */
@@ -657,6 +678,16 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
+    @XmlElementDecl(namespace = "http://www.theses.fr/namespace/sujets", name = "villeAdresseDoctorant")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    public JAXBElement<String> createVilleAdresseDoctorant(String value) {
+        return new JAXBElement<String>(_VilleAdresseDoctorant_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
     @XmlElementDecl(namespace = "http://www.theses.fr/namespace/tefudoc", name = "peb")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createPeb(String value) {
@@ -791,6 +822,25 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
+    @XmlElementDecl(namespace = "http://www.theses.fr/namespace/sujets", name = "paysAdresseDoctorant")
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    public JAXBElement<String> createPaysAdresseDoctorant(String value) {
+        return new JAXBElement<String>(_PaysAdresseDoctorant_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.theses.fr/namespace/sujets", name = "adresseDoctorant")
+    public JAXBElement<String> createAdresseDoctorant(String value) {
+        return new JAXBElement<String>(_AdresseDoctorant_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
     @XmlElementDecl(namespace = "http://www.theses.fr/namespace/tefudoc", name = "ISBN")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createISBN(String value) {
@@ -832,6 +882,15 @@ public class ObjectFactory {
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createOaiSetSpec(String value) {
         return new JAXBElement<String>(_OaiSetSpec_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BigInteger }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.theses.fr/namespace/sujets", name = "codePostalDoctorant")
+    public JAXBElement<BigInteger> createCodePostalDoctorant(BigInteger value) {
+        return new JAXBElement<BigInteger>(_CodePostalDoctorant_QNAME, BigInteger.class, null, value);
     }
 
 }

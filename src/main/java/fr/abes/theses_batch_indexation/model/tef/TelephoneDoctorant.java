@@ -32,8 +32,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "cote", namespace = "http://www.theses.fr/namespace/tefudoc")
-public class Cote {
+@XmlRootElement(name = "telephoneDoctorant", namespace = "http://www.theses.fr/namespace/sujets")
+public class TelephoneDoctorant {
 
 
 }
