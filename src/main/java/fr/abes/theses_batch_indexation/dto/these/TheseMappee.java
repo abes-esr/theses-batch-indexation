@@ -468,6 +468,31 @@ public class TheseMappee {
                 log.error("PB pour auteurs de " + nnt + "," + e.getMessage());
             }
 
+            // co-auteurs
+
+            log.debug("traitement de co-auteurs");
+            try {
+                List<CoAuteur> coAuteursDepuisTef = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                        .getCoAuteur();
+                Iterator<CoAuteur> coAuteurIterator = coAuteursDepuisTef.iterator();
+                while (coAuteurIterator.hasNext()) {
+                    CoAuteur ca = coAuteurIterator.next();
+                    PersonneDTO adto = new PersonneDTO();
+                    if (ca.getAutoriteExterne() != null && OutilsTef.ppnEstPresent(ca.getAutoriteExterne())) {
+                        adto.setPpn(OutilsTef.getPPN(ca.getAutoriteExterne()));
+                        auteursPpn.add(OutilsTef.getPPN(ca.getAutoriteExterne()));
+                    }
+
+                    adto.setNom(ca.getNom());
+                    adto.setPrenom(ca.getPrenom());
+                    auteurs.add(adto);
+                    auteursNP.add(ca.getNom() + " " + ca.getPrenom());
+                    auteursPN.add(ca.getPrenom() + " " + ca.getNom());
+                }
+            } catch (NullPointerException e) {
+                log.error("PB pour co-auteurs de " + nnt + "," + e.getMessage());
+            }
+
             // directeurs
             log.debug("traitement de directeurs");
             try {

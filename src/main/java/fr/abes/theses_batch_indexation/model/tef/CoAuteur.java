@@ -8,6 +8,7 @@
 
 package fr.abes.theses_batch_indexation.model.tef;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,6 +17,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
@@ -34,6 +37,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}dateNaissance"/>
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}nationalite"/>
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}autoriteExterne" maxOccurs="unbounded"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}adresseDoctorant"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}codePostalDoctorant"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}villeAdresseDoctorant"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}paysAdresseDoctorant"/>
+ *         &lt;element ref="{http://www.theses.fr/namespace/sujets}telephoneDoctorant"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -48,10 +56,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "prenom",
     "dateNaissance",
     "nationalite",
-    "autoriteExterne"
+    "autoriteExterne",
+    "adresseDoctorant",
+    "codePostalDoctorant",
+    "villeAdresseDoctorant",
+    "paysAdresseDoctorant",
+    "telephoneDoctorant"
 })
-@XmlRootElement(name = "auteur")
-public class Auteur {
+@XmlRootElement(name = "coAuteur", namespace = "http://www.abes.fr/abes/documents/tefextension")
+public class CoAuteur {
 
     @XmlElement(required = true)
     protected String nom;
@@ -64,6 +77,20 @@ public class Auteur {
     protected Nationalite nationalite;
     @XmlElement(required = true)
     protected List<AutoriteExterne> autoriteExterne;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    protected String adresseDoctorant;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    protected BigInteger codePostalDoctorant;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String villeAdresseDoctorant;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+    @XmlSchemaType(name = "NCName")
+    protected String paysAdresseDoctorant;
+    @XmlElement(namespace = "http://www.theses.fr/namespace/sujets", required = true)
+    protected TelephoneDoctorant telephoneDoctorant;
 
     /**
      * Obtient la valeur de la propriété nom.
@@ -188,6 +215,126 @@ public class Auteur {
             autoriteExterne = new ArrayList<AutoriteExterne>();
         }
         return this.autoriteExterne;
+    }
+
+    /**
+     * Obtient la valeur de la propriété adresseDoctorant.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAdresseDoctorant() {
+        return adresseDoctorant;
+    }
+
+    /**
+     * Définit la valeur de la propriété adresseDoctorant.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAdresseDoctorant(String value) {
+        this.adresseDoctorant = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété codePostalDoctorant.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigInteger }
+     *     
+     */
+    public BigInteger getCodePostalDoctorant() {
+        return codePostalDoctorant;
+    }
+
+    /**
+     * Définit la valeur de la propriété codePostalDoctorant.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigInteger }
+     *     
+     */
+    public void setCodePostalDoctorant(BigInteger value) {
+        this.codePostalDoctorant = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété villeAdresseDoctorant.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVilleAdresseDoctorant() {
+        return villeAdresseDoctorant;
+    }
+
+    /**
+     * Définit la valeur de la propriété villeAdresseDoctorant.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVilleAdresseDoctorant(String value) {
+        this.villeAdresseDoctorant = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété paysAdresseDoctorant.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPaysAdresseDoctorant() {
+        return paysAdresseDoctorant;
+    }
+
+    /**
+     * Définit la valeur de la propriété paysAdresseDoctorant.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPaysAdresseDoctorant(String value) {
+        this.paysAdresseDoctorant = value;
+    }
+
+    /**
+     * Obtient la valeur de la propriété telephoneDoctorant.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TelephoneDoctorant }
+     *     
+     */
+    public TelephoneDoctorant getTelephoneDoctorant() {
+        return telephoneDoctorant;
+    }
+
+    /**
+     * Définit la valeur de la propriété telephoneDoctorant.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TelephoneDoctorant }
+     *     
+     */
+    public void setTelephoneDoctorant(TelephoneDoctorant value) {
+        this.telephoneDoctorant = value;
     }
 
 }
