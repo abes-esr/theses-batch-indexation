@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,6 +54,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     final DataSource dataSourceLecture;
 
     java.util.Set<String> thesesEnTraitement = Collections.synchronizedSet(new HashSet<>());
+
+    private ReentrantLock mutex = new ReentrantLock();
 
     public AjouterThesesPersonnesProcessor(XMLJsonMarshalling marshall,
                                            JdbcTemplate jdbcTemplate,
@@ -110,22 +113,26 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         log.info("Début execute : " + theseModel.getNnt());
 
+        java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
+        mutex.lock();
+
         log.info("Dans la liste des thesesEnTraitement  : " + thesesEnTraitement.size());
 
         while (
-                elasticSearchUtils.getNntLies(theseModel.getId()).stream().anyMatch(
+                nntLies.stream().anyMatch(
                         n -> {
                            return thesesEnTraitement.contains(n);
                         }
                 )
         ) {
+            mutex.unlock();
             log.info("On attends ...");
             Thread.sleep(100);
+            mutex.lock();
         }
-
-        java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
-
         thesesEnTraitement.addAll(nntLies);
+
+        mutex.unlock();
 
         if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
             dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
@@ -217,7 +224,9 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         log.info("6 fin traitement");
 
+        mutex.lock();
         thesesEnTraitement.removeAll(nntLies);
+        mutex.unlock();
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
 
