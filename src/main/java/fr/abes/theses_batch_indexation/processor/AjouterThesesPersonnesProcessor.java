@@ -114,25 +114,28 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         log.info("Début execute : " + theseModel.getNnt());
 
         java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
+
         mutex.lock();
 
-        log.info("Dans la liste des thesesEnTraitement  : " + thesesEnTraitement.size());
+        try {
+            log.info("Dans la liste des thesesEnTraitement  : " + thesesEnTraitement.size());
 
-        while (
-                nntLies.stream().anyMatch(
-                        n -> {
-                           return thesesEnTraitement.contains(n);
-                        }
-                )
-        ) {
+            while (
+                    nntLies.stream().anyMatch(
+                            n -> {
+                                return thesesEnTraitement.contains(n);
+                            }
+                    )
+            ) {
+                mutex.unlock();
+                log.info("On attends ...");
+                Thread.sleep(100);
+                mutex.lock();
+            }
+            thesesEnTraitement.addAll(nntLies);
+        } finally {
             mutex.unlock();
-            log.info("On attends ...");
-            Thread.sleep(100);
-            mutex.lock();
         }
-        thesesEnTraitement.addAll(nntLies);
-
-        mutex.unlock();
 
         if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
             dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
@@ -225,8 +228,11 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         log.info("6 fin traitement");
 
         mutex.lock();
-        thesesEnTraitement.removeAll(nntLies);
-        mutex.unlock();
+        try {
+            thesesEnTraitement.removeAll(nntLies);
+        } finally {
+            mutex.unlock();
+        }
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
 
