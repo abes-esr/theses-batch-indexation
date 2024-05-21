@@ -187,20 +187,12 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         //  Vérifier qu'on ne transforme pas un sujet en NNT, dans ce cas, il faut supprimer IdSujet de nntSet
 
-
-        HashSet<String> idsSujetASupprimer = new HashSet<>();
-        Iterator<String> iteratorNntSet = nntSet.iterator();
-        while (iteratorNntSet.hasNext()) {
-            if (iteratorNntSet.next().equals(theseModel.getIdSujet())) {
-                idsSujetASupprimer.add(theseModel.getIdSujet());
-            }
-        }
-        for (String s:idsSujetASupprimer) {
-            nntSet.remove(s);
-        }
+        nntSet.remove(theseModel.getIdSujet());
 
         // Ajout de l'id de thèse qu'on indexe
         nntSet.add(theseModel.getId());
+
+        // @TODO si la thèse est passée en soutenue (et a donc un nnt), faut-il supprimer le sujet pour la personne ?
 
         log.info("4 début traitement");
 
@@ -244,7 +236,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
 
-        jdbcTemplate.execute("commit");
+        //jdbcTemplate.execute("commit");
 
 
         // Rechargement de la BDD vers ES (à faire avec l'afterChunk)
