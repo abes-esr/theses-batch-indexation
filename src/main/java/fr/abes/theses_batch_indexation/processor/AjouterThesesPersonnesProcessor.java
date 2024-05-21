@@ -186,18 +186,17 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         personneModelESEtTef.stream().map(PersonneModelES::getTheses_id).forEach(nntSet::addAll);
 
         //  Vérifier qu'on ne transforme pas un sujet en NNT, dans ce cas, il faut supprimer IdSujet de nntSet
-        try {
-            mutex.lock();
-            HashSet<String> idsSujetASupprimer = new HashSet<>();
-            if (nntSet.stream().anyMatch(n -> n.equals(theseModel.getIdSujet()))) {
+
+
+        HashSet<String> idsSujetASupprimer = new HashSet<>();
+        Iterator<String> iteratorNntSet = nntSet.iterator();
+        while (iteratorNntSet.hasNext()) {
+            if (iteratorNntSet.next().equals(theseModel.getIdSujet())) {
                 idsSujetASupprimer.add(theseModel.getIdSujet());
             }
-            nntSet = nntSet.stream().filter(n -> !idsSujetASupprimer.contains(n))
-                    .collect(Collectors.toSet());
-
         }
-        finally {
-            mutex.unlock();
+        for (String s:idsSujetASupprimer) {
+            nntSet.remove(s);
         }
 
         // Ajout de l'id de thèse qu'on indexe
