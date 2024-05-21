@@ -230,7 +230,13 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         mutex.lock();
         try {
             thesesEnTraitement.removeAll(nntLies);
-        } finally {
+        } catch (Exception e) {
+            for (Object nnt:nntLies) {
+                log.error("nnt lies " + nnt);
+            }
+            log.error("removeall de nntlies ne fonctionne pas : " + e);
+        }
+        finally {
             mutex.unlock();
         }
 
