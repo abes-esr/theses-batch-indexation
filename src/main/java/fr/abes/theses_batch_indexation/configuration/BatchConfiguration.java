@@ -2,6 +2,7 @@ package fr.abes.theses_batch_indexation.configuration;
 
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificationListener;
+import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomPersonneReader;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingDeleteReader;
 import fr.abes.theses_batch_indexation.reader.JdbcPersonneReader;
@@ -315,7 +316,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepAjouterPersonnesDansES(JdbcPersonneReader itemReader,
+    public Step stepAjouterPersonnesDansES(JdbcPagingCustomPersonneReader itemReader,
                                            @Qualifier("ajouterThesesPersonnesProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepAjouterPersonnesDansES").chunk(1)
                 .listener(theseWriteListener)

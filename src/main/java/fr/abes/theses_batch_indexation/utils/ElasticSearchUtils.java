@@ -231,7 +231,7 @@ public class ElasticSearchUtils {
         }
     }
 
-    //récupérer tous les nnt, lié a une thèse
+    //récupérer tous les nnt/IdSujet, lié a une thèse
     public Set<String> getNntLies(String nnt) throws IOException {
 
         List<FieldValue> thesesIdList = new ArrayList<>();
@@ -251,14 +251,14 @@ public class ElasticSearchUtils {
                     PersonneModelES.class
             );
 
-            Set<String> nntSet = new HashSet<>();
+            Set<String> idThesesSet = new HashSet<>();
 
             response.hits().hits().stream().forEach(p ->{
                 assert p.source() != null;
-                nntSet.addAll(p.source().getTheses_id());
+                idThesesSet.addAll(p.source().getTheses_id());
             });
 
-            return nntSet;
+            return idThesesSet;
 
         } catch (Exception e) {
             log.error("Erreur dans getPersonneModelES : " + e);

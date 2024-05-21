@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -52,7 +53,9 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     private final ElasticConfig elasticConfig;
     final DataSource dataSourceLecture;
 
-    java.util.Set<Object> thesesEnTraitement = Collections.synchronizedSet(new HashSet<>());
+    java.util.Set<String> thesesEnTraitement = Collections.synchronizedSet(new HashSet<>());
+
+    private ReentrantLock mutex = new ReentrantLock();
 
     public AjouterThesesPersonnesProcessor(XMLJsonMarshalling marshall,
                                            JdbcTemplate jdbcTemplate,
@@ -110,17 +113,29 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         log.info("Début execute : " + theseModel.getNnt());
 
-        while (
-                elasticSearchUtils.getNntLies(theseModel.getId()).stream().anyMatch(
-                        n -> thesesEnTraitement.contains(n)
-                )
-        ) {
-            //Thread.sleep(100);
-        }
-
         java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
 
-        thesesEnTraitement.addAll(nntLies);
+        mutex.lock();
+
+        try {
+            log.info("Dans la liste des thesesEnTraitement  : " + thesesEnTraitement.size());
+
+            while (
+                    nntLies.stream().anyMatch(
+                            n -> {
+                                return thesesEnTraitement.contains(n);
+                            }
+                    )
+            ) {
+                mutex.unlock();
+                log.info("On attends ...");
+                Thread.sleep(100);
+                mutex.lock();
+            }
+            thesesEnTraitement.addAll(nntLies);
+        } finally {
+            mutex.unlock();
+        }
 
         if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
             dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
@@ -144,7 +159,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         List<PersonneModelES> personneModelESEtTef = new ArrayList<>(personneModelESList);
 
-        // TODO Dédoublonage des personnes en gardant celles de ES
+        // Dédoublonage des personnes en gardant celles de ES
         for (PersonneModelES personneTef : personnesTefList) {
 
             if (personneModelESList.stream().noneMatch(p -> {
@@ -212,7 +227,12 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         log.info("6 fin traitement");
 
-        nntSet.removeAll(nntLies);
+        mutex.lock();
+        try {
+            thesesEnTraitement.removeAll(nntLies);
+        } finally {
+            mutex.unlock();
+        }
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
 

@@ -10,6 +10,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,13 +47,17 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
         this.tableName = mappingJobName.getNomTableES().get(
                 stepExecution.getJobExecution().getJobInstance().getJobName()
         ).name();
+
+        theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 20 ROWS ONLY",
+                new TheseRowMapper());
+        n.set(0);
     }
 
 
     @Override
     public TheseModel read() {
 
-        if (n.get() <= theseModels.size()) {
+        if (n.get() < theseModels.size()) {
             return theseModels.get(n.getAndIncrement());
         } else {
             return null;
@@ -68,9 +73,7 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
 
     @Override
     public void beforeChunk(ChunkContext chunkContext) {
-        theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 20 ROWS ONLY",
-                new TheseRowMapper());
-        n.set(0);
+
     }
 
     @Override
