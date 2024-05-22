@@ -61,7 +61,6 @@ public class JdbcPagingCustomPersonneReader
 
 
             queryProvider.setFromClause("from " + nomTableIndexationES.name());
-            queryProvider.setWhereClause("where nnt is not null");
             queryProvider.setSortKeys(sortByIdAsc());
             return queryProvider;
         }
