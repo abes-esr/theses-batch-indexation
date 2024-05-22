@@ -48,7 +48,7 @@ public class JdbcPersonneReader implements ItemReader<TheseModel>, StepExecution
                 stepExecution.getJobExecution().getJobInstance().getJobName()
         ).name();
 
-        theseModels= jdbcTemplate.query("select * from " + tableName + " where nnt is not null FETCH NEXT 20 ROWS ONLY",
+        theseModels= jdbcTemplate.query("select * from " + tableName + " FETCH NEXT 20 ROWS ONLY",
                 new TheseRowMapper());
         n.set(0);
     }
