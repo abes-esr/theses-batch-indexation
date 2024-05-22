@@ -111,7 +111,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     @Override
     public TheseModel process(TheseModel theseModel) throws Exception {
 
-        log.info("Début execute : " + theseModel.getNnt());
+        log.info("Début execute : " + theseModel.getId());
 
         java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
 
