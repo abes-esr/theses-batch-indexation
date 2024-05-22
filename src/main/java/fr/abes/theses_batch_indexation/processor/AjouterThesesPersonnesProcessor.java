@@ -117,8 +117,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
 
         try {
-            mutex.lock();
             log.info("Dans la liste des thesesEnTraitement  : " + thesesEnTraitement.size());
+            mutex.lock();
 
             while (
                     nntLies.stream().anyMatch(
