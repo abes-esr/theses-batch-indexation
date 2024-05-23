@@ -57,12 +57,13 @@ public class JdbcPagingCustomPersonneReader
 
         private PagingQueryProvider createQueryProvider(TableIndexationES nomTableIndexationES) {
             OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
-            queryProvider.setSelectClause("SELECT *");
 
+            queryProvider.setSelectClause("SELECT IDDOC, NNT, NUMSUJET, DOC");
+            queryProvider.setFromClause("(SELECT IDDOC, NNT, NUMSUJET, DOC, ROW_NUMBER() OVER (PARTITION BY IDDOC ORDER BY IDDOC) AS rn FROM "
+                    + nomTableIndexationES.name() + ") subquery");
+            queryProvider.setWhereClause("WHERE rn = 1");
+            queryProvider.setSortKeys(Map.of("IDDOC", Order.ASCENDING));
 
-            queryProvider.setFromClause("from " + nomTableIndexationES.name());
-            queryProvider.setWhereClause("where nnt is not null");
-            queryProvider.setSortKeys(sortByIdAsc());
             return queryProvider;
         }
 
