@@ -5,7 +5,7 @@ import fr.abes.theses_batch_indexation.notification.JobTheseCompletionNotificati
 import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomPersonneReader;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomReader;
 import fr.abes.theses_batch_indexation.reader.JdbcPagingDeleteReader;
-import fr.abes.theses_batch_indexation.reader.JdbcPersonneReader;
+import fr.abes.theses_batch_indexation.reader.JdbcPagingCustomRecherchePersonneReader;
 import fr.abes.theses_batch_indexation.utils.XMLJsonMarshalling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ItemProcessListener;
@@ -306,7 +306,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepSupprimePersonnesDansES(JdbcPersonneReader itemReader,
+    public Step stepSupprimePersonnesDansES(JdbcPagingCustomRecherchePersonneReader itemReader,
                                             @Qualifier("supprimerThesesPersonneProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepSupprimePersonnesDansES").<TheseModel, TheseModel>chunk(1)
                 .listener(theseWriteListener)
@@ -328,8 +328,8 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepSupprimeRecherchePersonnesDansES(JdbcPersonneReader itemReader,
-                                            @Qualifier("supprimerThesesRecherchePersonneProcessor") ItemProcessor itemProcessor) {
+    public Step stepSupprimeRecherchePersonnesDansES(JdbcPagingCustomRecherchePersonneReader itemReader,
+                                                     @Qualifier("supprimerThesesRecherchePersonneProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepSupprimeRecherchePersonnesDansES").<TheseModel, TheseModel>chunk(1)
                 .listener(theseWriteListener)
                 .reader(itemReader)
@@ -338,8 +338,8 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepAjouterRecherchePersonnesDansES(JdbcPersonneReader itemReader,
-                                           @Qualifier("ajouterThesesRecherchePersonnesProcessor") ItemProcessor itemProcessor) {
+    public Step stepAjouterRecherchePersonnesDansES(JdbcPagingCustomRecherchePersonneReader itemReader,
+                                                    @Qualifier("ajouterThesesRecherchePersonnesProcessor") ItemProcessor itemProcessor) {
         return stepBuilderFactory.get("stepAjouterRecherchePersonnesDansES").<TheseModel, TheseModel>chunk(1)
                 .listener(theseWriteListener)
                 .reader(itemReader)

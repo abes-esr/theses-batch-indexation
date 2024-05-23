@@ -35,6 +35,7 @@ RUN dnf install -y cronie gettext && \
     crond -V && rm -rf /etc/cron.*/*
 COPY ./docker/batch/tasks-theses.tmpl /etc/cron.d/tasks-theses.tmpl
 COPY ./docker/batch/tasks-personnes.tmpl /etc/cron.d/tasks-personnes.tmpl
+COPY ./docker/batch/tasks-recherche-personnes.tmpl /etc/cron.d/tasks-recherche-personnes.tmpl
 # Le JAR et le script pour le batch d'insertion des thèses et personnes dans ES
 RUN dnf install -y java-11-openjdk
 COPY docker/batch/theses-batch-indexation.sh /scripts/theses-batch-indexation.sh

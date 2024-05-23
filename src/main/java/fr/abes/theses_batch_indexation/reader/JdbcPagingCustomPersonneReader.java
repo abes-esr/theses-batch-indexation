@@ -5,19 +5,6 @@ import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseRowMapper;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.database.JdbcPagingItemReader;
-import org.springframework.batch.item.database.Order;
-import org.springframework.batch.item.database.PagingQueryProvider;
-import org.springframework.batch.item.database.support.OraclePagingQueryProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
-import fr.abes.theses_batch_indexation.configuration.JobConfig;
-import fr.abes.theses_batch_indexation.database.TableIndexationES;
-import fr.abes.theses_batch_indexation.database.TheseRowMapper;
-import fr.abes.theses_batch_indexation.utils.MappingJobName;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.JdbcPagingItemReader;
 import org.springframework.batch.item.database.Order;
@@ -29,7 +16,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -59,18 +45,12 @@ public class JdbcPagingCustomPersonneReader
             OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
 
             queryProvider.setSelectClause("SELECT IDDOC, NNT, NUMSUJET, DOC");
-            queryProvider.setFromClause("(SELECT IDDOC, NNT, NUMSUJET, DOC, ROW_NUMBER() OVER (PARTITION BY IDDOC ORDER BY IDDOC) AS rn FROM "
+            queryProvider.setFromClause("(SELECT IDDOC, NNT, NUMSUJET, DOC, ROW_NUMBER() OVER (PARTITION BY IDDOC ORDER BY ordre desc) AS rn FROM "
                     + nomTableIndexationES.name() + ") subquery");
             queryProvider.setWhereClause("WHERE rn = 1");
-            queryProvider.setSortKeys(Map.of("IDDOC", Order.ASCENDING));
+            queryProvider.setSortKeys(Map.of("ordre", Order.ASCENDING));
 
             return queryProvider;
         }
-
-    private Map<String, Order> sortByIdAsc() {
-        Map<String, Order> sortConfiguration = new HashMap<>();
-        sortConfiguration.put("iddoc", Order.ASCENDING);
-        return sortConfiguration;
-    }
     }
 
