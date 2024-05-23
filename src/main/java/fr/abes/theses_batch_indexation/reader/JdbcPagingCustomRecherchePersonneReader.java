@@ -44,8 +44,8 @@ public class JdbcPagingCustomRecherchePersonneReader
     private PagingQueryProvider createQueryProvider(TableIndexationES nomTableIndexationES) {
         OraclePagingQueryProvider queryProvider = new OraclePagingQueryProvider();
 
-        queryProvider.setSelectClause("SELECT IDDOC, NNT, NUMSUJET");
-        queryProvider.setFromClause("(SELECT IDDOC, NNT, NUMSUJET, ROW_NUMBER() OVER (PARTITION BY IDDOC ORDER BY ordre desc) AS rn FROM "
+        queryProvider.setSelectClause("SELECT IDDOC, NNT, NUMSUJET, ORDRE");
+        queryProvider.setFromClause("(SELECT IDDOC, NNT, NUMSUJET, ORDRE, ROW_NUMBER() OVER (PARTITION BY IDDOC ORDER BY ordre desc) AS rn FROM "
                 + nomTableIndexationES.name() + ") subquery");
         queryProvider.setWhereClause("WHERE rn = 1");
         queryProvider.setSortKeys(Map.of("ordre", Order.ASCENDING));
