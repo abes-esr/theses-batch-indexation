@@ -111,14 +111,14 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
     @Override
     public TheseModel process(TheseModel theseModel) throws Exception {
 
-        log.info("Début execute : " + theseModel.getNnt());
+        log.info("Début execute : " + theseModel.getId());
 
         java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
 
-        mutex.lock();
 
         try {
             log.info("Dans la liste des thesesEnTraitement  : " + thesesEnTraitement.size());
+            mutex.lock();
 
             while (
                     nntLies.stream().anyMatch(
@@ -129,7 +129,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             ) {
                 mutex.unlock();
                 log.info("On attends ...");
-                Thread.sleep(100);
+                Thread.sleep(200);
                 mutex.lock();
             }
             thesesEnTraitement.addAll(nntLies);
@@ -227,8 +227,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
         log.info("6 fin traitement");
 
-        mutex.lock();
         try {
+            mutex.lock();
             thesesEnTraitement.removeAll(nntLies);
         } catch (Exception e) {
             for (Object nnt:nntLies) {
