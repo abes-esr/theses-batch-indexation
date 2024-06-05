@@ -160,38 +160,37 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         // Dédoublonage des personnes en gardant celles de ES
         for (PersonneModelES personneTef : personnesTefList) {
 
-            if (personneModelESList.stream().noneMatch(p -> {
-                if (p.getPpn() == null) {
-                    log.info("null");
-                }
-                return p.getPpn().equals(personneTef.getPpn());
-            })) {
+            if (personneModelESList.stream().noneMatch(p -> p.getPpn().equals(personneTef.getPpn()))) {
                 personneModelESEtTef.add(personneTef);
             }
         }
 
         log.info("2 début traitement");
 
-        TheseModelES theseModelES = new TheseModelES();
+        Optional<TheseModelES> theseModelES = Optional.empty();
 
         for (PersonneModelES personneES : personneModelESEtTef) {
 
+            Optional<PersonneModelES> personneModelES;
             if (personneES.isHas_idref()) {
-                theseModelES = personnesTefList.stream().filter(p -> p.isHas_idref() && p.getPpn().equals(personneES.getPpn())).findFirst().orElseThrow()
-                        .getTheses().stream().findFirst().orElseThrow();
+                personneModelES = personnesTefList.stream().filter(p -> p.isHas_idref() && p.getPpn().equals(personneES.getPpn())).findFirst();
             } else {
-                // TODO : si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
-                theseModelES = personnesTefList.stream().filter(p -> p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())).findFirst().orElseThrow()
-                        .findThese(theseModel.getId());
+                // si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
+                personneModelES = personnesTefList.stream().filter(p -> p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())).findFirst();
+            }
+            if (personneModelES.isPresent()) {
+                theseModelES = personneModelES.get().getTheses().stream().findFirst();
             }
 
-                    // Enlever la thèse en cours
-                            personneES.getTheses().removeIf(t -> t.getId().equals(theseModel.getIdSujet()) || t.getId().equals(theseModel.getNnt()));
+            // Enlever la thèse en cours
+            personneES.getTheses().removeIf(t -> t.getId().equals(theseModel.getIdSujet()) || t.getId().equals(theseModel.getNnt()));
             personneES.getTheses_id().removeIf(t -> t.equals(theseModel.getIdSujet()) || t.equals(theseModel.getNnt()));
 
-            // Ajout de la thèse en cours
-            personneES.getTheses().add(theseModelES);
-            personneES.getTheses_id().add(theseModelES.getId());
+            if (theseModelES.isPresent()) {
+                // Ajout de la thèse en cours
+                personneES.getTheses().add(theseModelES.get());
+                personneES.getTheses_id().add(theseModelES.get().getId());
+            }
         }
 
         log.info("5");
@@ -204,12 +203,11 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             mutex.lock();
             thesesEnTraitement.removeAll(nntLies);
         } catch (Exception e) {
-            for (Object nnt:nntLies) {
+            for (Object nnt : nntLies) {
                 log.error("nnt lies " + nnt);
             }
             log.error("removeall de nntlies ne fonctionne pas : " + e);
-        }
-        finally {
+        } finally {
             mutex.unlock();
         }
 
