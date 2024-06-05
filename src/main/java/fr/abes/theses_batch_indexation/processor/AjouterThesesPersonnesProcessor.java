@@ -122,9 +122,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
             while (
                     nntLies.stream().anyMatch(
-                            n -> {
-                                return thesesEnTraitement.contains(n);
-                            }
+                            n -> thesesEnTraitement.contains(n)
                     )
             ) {
                 mutex.unlock();
@@ -172,49 +170,24 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             }
         }
 
-        log.info("2");
+        log.info("2 début traitement");
 
-        // recuperation des ppn
-        ppnList = personneModelESEtTef.stream().filter(PersonneModelES::isHas_idref).map(PersonneModelES::getPpn)
-                .collect(Collectors.toList());
-
-        log.info("3");
-        // récupérer les personnes dans ES
-        //List<PersonneModelES> personnesES = elasticSearchUtils.getPersonnesModelESFromES(ppnList);
-
-        // recuperation des ids des theses
-        personneModelESEtTef.stream().map(PersonneModelES::getTheses_id).forEach(nntSet::addAll);
-
-        //  Vérifier qu'on ne transforme pas un sujet en NNT, dans ce cas, il faut supprimer IdSujet de nntSet
-
-        nntSet.remove(theseModel.getIdSujet());
-
-        // Ajout de l'id de thèse qu'on indexe
-        nntSet.add(theseModel.getId());
-
-        // @TODO si la thèse est passée en soutenue (et a donc un nnt), faut-il supprimer le sujet pour la personne ?
-
-        log.info("4 début traitement");
-
-        //Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModel.getDoc().getBytes()));
-        //PersonneMapee personneMapee = new PersonneMapee(mets, theseModel.getId(), oaiSets);
-
-        TheseModelES theseModelES = personnesTefList.stream().findFirst().orElseThrow().getTheses().stream().findFirst().orElseThrow();
+        TheseModelES theseModelES = new TheseModelES();
 
         for (PersonneModelES personneES : personneModelESEtTef) {
 
-            // Enlever la thèse en cours
-            personneES.setTheses(
-                    personneES.getTheses().stream()
-                            .filter(t -> !Objects.equals(t.getId(), theseModel.getIdSujet())
-                                    || !Objects.equals(t.getId(), theseModel.getNnt()))
-                            .collect(Collectors.toList()));
+            if (personneES.isHas_idref()) {
+                theseModelES = personnesTefList.stream().filter(p -> p.isHas_idref() && p.getPpn().equals(personneES.getPpn())).findFirst().orElseThrow()
+                        .getTheses().stream().findFirst().orElseThrow();
+            } else {
+                // TODO : si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
+                theseModelES = personnesTefList.stream().filter(p -> p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())).findFirst().orElseThrow()
+                        .findThese(theseModel.getId());
+            }
 
-            personneES.setTheses_id(personneES.getTheses_id().stream().filter(
-                            t -> !Objects.equals(t, theseModel.getIdSujet())
-                                    || !Objects.equals(t, theseModel.getNnt()))
-                    .collect(Collectors.toSet()
-                    ));
+                    // Enlever la thèse en cours
+                            personneES.getTheses().removeIf(t -> t.getId().equals(theseModel.getIdSujet()) || t.getId().equals(theseModel.getNnt()));
+            personneES.getTheses_id().removeIf(t -> t.equals(theseModel.getIdSujet()) || t.equals(theseModel.getNnt()));
 
             // Ajout de la thèse en cours
             personneES.getTheses().add(theseModelES);
