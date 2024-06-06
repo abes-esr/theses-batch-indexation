@@ -135,80 +135,83 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             mutex.unlock();
         }
 
-        if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
-            dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
-            return theseModel;
-        }
-
-        // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
-        elasticSearchUtils.deletePersonneModelESSansPPN(theseModel.getId());
-
-        log.info("fin suppression");
-        // sortir la liste des personnes de la thèse
-        List<PersonneModelES> personnesTefList = getPersonnesModelESFromTef(theseModel.getId());
-
-        log.info("1");
-        List<PersonneModelES> personneModelESList = new ArrayList<>(elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId()))
-                .stream().map(PersonneModelES::new).filter(PersonneModelES::isHas_idref).collect(Collectors.toList());
-
-        log.info("fin recupération");
-        //personneModelESAvecIds.addAll(personnesTef);
-        //personnesTef.addAll(personneModelESAvecIds);
-
-        List<PersonneModelES> personneModelESEtTef = new ArrayList<>(personneModelESList);
-
-        // Dédoublonage des personnes en gardant celles de ES
-        for (PersonneModelES personneTef : personnesTefList) {
-
-            if (personneModelESList.stream().noneMatch(p -> p.getPpn().equals(personneTef.getPpn()))) {
-                personneModelESEtTef.add(personneTef);
-            }
-        }
-
-        log.info("2 début traitement");
-
-        Optional<TheseModelES> theseModelES = Optional.empty();
-
-        for (PersonneModelES personneES : personneModelESEtTef) {
-
-            Optional<PersonneModelES> personneModelES;
-            if (personneES.isHas_idref()) {
-                personneModelES = personnesTefList.stream().filter(p -> p.isHas_idref() && p.getPpn().equals(personneES.getPpn())).findFirst();
-            } else {
-                // si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
-                personneModelES = personnesTefList.stream().filter(p -> p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())).findFirst();
-            }
-            if (personneModelES.isPresent()) {
-                theseModelES = personneModelES.get().getTheses().stream().findFirst();
-            }
-
-            // Enlever la thèse en cours
-            personneES.getTheses().removeIf(t -> t.getId().equals(theseModel.getIdSujet()) || t.getId().equals(theseModel.getNnt()));
-            personneES.getTheses_id().removeIf(t -> t.equals(theseModel.getIdSujet()) || t.equals(theseModel.getNnt()));
-
-            if (theseModelES.isPresent()) {
-                // Ajout de la thèse en cours
-                personneES.getTheses().add(theseModelES.get());
-                personneES.getTheses_id().add(theseModelES.get().getId());
-            }
-        }
-
-        log.info("5");
-
-        elasticSearchUtils.indexerPersonnesDansEs(personneModelESEtTef, elasticConfig);
-
-        log.info("6 fin traitement");
-
         try {
-            mutex.lock();
-            thesesEnTraitement.removeAll(nntLies);
-        } catch (Exception e) {
-            for (Object nnt : nntLies) {
-                log.error("nnt lies " + nnt);
+            if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
+                dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
+                return theseModel;
             }
-            log.error("removeall de nntlies ne fonctionne pas : " + e);
-        } finally {
-            mutex.unlock();
+
+            // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
+            elasticSearchUtils.deletePersonneModelESSansPPN(theseModel.getId());
+
+            log.info("fin suppression");
+            // sortir la liste des personnes de la thèse
+            List<PersonneModelES> personnesTefList = getPersonnesModelESFromTef(theseModel.getId());
+
+            log.info("1");
+            List<PersonneModelES> personneModelESList = new ArrayList<>(elasticSearchUtils.getPersonnesModelESAvecId(theseModel.getId()))
+                    .stream().map(PersonneModelES::new).filter(PersonneModelES::isHas_idref).collect(Collectors.toList());
+
+            log.info("fin recupération");
+            //personneModelESAvecIds.addAll(personnesTef);
+            //personnesTef.addAll(personneModelESAvecIds);
+
+            List<PersonneModelES> personneModelESEtTef = new ArrayList<>(personneModelESList);
+
+            // Dédoublonage des personnes en gardant celles de ES
+            for (PersonneModelES personneTef : personnesTefList) {
+
+                if (personneModelESList.stream().noneMatch(p -> p.getPpn().equals(personneTef.getPpn()))) {
+                    personneModelESEtTef.add(personneTef);
+                }
+            }
+
+            log.info("2 début traitement");
+
+            Optional<TheseModelES> theseModelES = Optional.empty();
+
+            for (PersonneModelES personneES : personneModelESEtTef) {
+
+                Optional<PersonneModelES> personneModelES;
+                if (personneES.isHas_idref()) {
+                    personneModelES = personnesTefList.stream().filter(p -> p.isHas_idref() && p.getPpn().equals(personneES.getPpn())).findFirst();
+                } else {
+                    // si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
+                    personneModelES = personnesTefList.stream().filter(p -> p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())).findFirst();
+                }
+                if (personneModelES.isPresent()) {
+                    theseModelES = personneModelES.get().getTheses().stream().findFirst();
+                }
+
+                // Enlever la thèse en cours
+                personneES.getTheses().removeIf(t -> t.getId().equals(theseModel.getIdSujet()) || t.getId().equals(theseModel.getNnt()));
+                personneES.getTheses_id().removeIf(t -> t.equals(theseModel.getIdSujet()) || t.equals(theseModel.getNnt()));
+
+                if (theseModelES.isPresent()) {
+                    // Ajout de la thèse en cours
+                    personneES.getTheses().add(theseModelES.get());
+                    personneES.getTheses_id().add(theseModelES.get().getId());
+                }
+            }
+
+            log.info("5");
+
+            elasticSearchUtils.indexerPersonnesDansEs(personneModelESEtTef, elasticConfig);
+
+            log.info("6 fin traitement");
+        }
+        finally {
+            try {
+                mutex.lock();
+                thesesEnTraitement.removeAll(nntLies);
+            } catch (Exception e) {
+                for (Object nnt : nntLies) {
+                    log.error("nnt lies " + nnt);
+                }
+                log.error("removeall de nntlies ne fonctionne pas : " + e);
+            } finally {
+                mutex.unlock();
+            }
         }
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
