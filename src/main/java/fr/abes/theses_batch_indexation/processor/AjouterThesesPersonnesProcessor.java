@@ -55,7 +55,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
     java.util.Set<String> thesesEnTraitement = Collections.synchronizedSet(new HashSet<>());
 
-    private ReentrantLock mutex = new ReentrantLock();
+    private final ReentrantLock mutex = new ReentrantLock();
 
     public AjouterThesesPersonnesProcessor(XMLJsonMarshalling marshall,
                                            JdbcTemplate jdbcTemplate,
@@ -156,13 +156,12 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             //personneModelESAvecIds.addAll(personnesTef);
             //personnesTef.addAll(personneModelESAvecIds);
 
-            List<PersonneModelES> personneModelESEtTef = new ArrayList<>(personneModelESList);
+            List<PersonneModelES> personnesEsEtTef = new ArrayList<>(personneModelESList);
 
             // Dédoublonage des personnes en gardant celles de ES
             for (PersonneModelES personneTef : personnesTefList) {
-
                 if (personneModelESList.stream().noneMatch(p -> p.getPpn().equals(personneTef.getPpn()))) {
-                    personneModelESEtTef.add(personneTef);
+                    personnesEsEtTef.add(personneTef);
                 }
             }
 
@@ -170,7 +169,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
             Optional<TheseModelES> theseModelES = Optional.empty();
 
-            for (PersonneModelES personneES : personneModelESEtTef) {
+            for (PersonneModelES personneES : personnesEsEtTef) {
 
                 Optional<PersonneModelES> personneModelES;
                 if (personneES.isHas_idref()) {
@@ -196,7 +195,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
 
             log.info("5");
 
-            elasticSearchUtils.indexerPersonnesDansEs(personneModelESEtTef, elasticConfig);
+            elasticSearchUtils.indexerPersonnesDansEs(personnesEsEtTef, elasticConfig);
 
             log.info("6 fin traitement");
         }
@@ -204,6 +203,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             try {
                 mutex.lock();
                 thesesEnTraitement.removeAll(nntLies);
+                log.info("nntLies supprimés");
             } catch (Exception e) {
                 for (Object nnt : nntLies) {
                     log.error("nnt lies " + nnt);
