@@ -63,4 +63,24 @@ public class RecherchePersonneModelES {
         completion_nom.add(SuggestionES.builder().input(String.format("%1$s %2$s",prenom,nom)).weight(10).build());
         completion_nom.add(SuggestionES.builder().input(String.format("%1$s %2$s",nom,prenom)).weight(10).build());
     }
+
+    public RecherchePersonneModelES(RecherchePersonneModelESAvecId autreObjet) {
+        this.ppn = autreObjet.ppn;
+        this.has_idref = autreObjet.has_idref;
+        this.nom = autreObjet.nom;
+        this.prenom = autreObjet.prenom;
+        this.nom_complet = new ArrayList<>(autreObjet.nom_complet);
+        this.completion_nom = new ArrayList<>(autreObjet.completion_nom);
+        this.theses_id = new LinkedHashSet<>(autreObjet.theses_id);
+        this.nb_theses = autreObjet.nb_theses;
+        this.theses_date = new LinkedHashSet<>(autreObjet.theses_date);
+        this.roles = new ArrayList<>(autreObjet.roles);
+        this.etablissements = new ArrayList<>(autreObjet.etablissements);
+        this.disciplines = new ArrayList<>(autreObjet.disciplines);
+        this.thematiques = new HashMap<>(autreObjet.thematiques);
+
+        this.facette_roles = new LinkedHashSet<>(autreObjet.facette_roles);
+        this.facette_etablissements = new LinkedHashSet<>(autreObjet.facette_etablissements);
+        this.facette_domaines = new LinkedHashSet<>(autreObjet.facette_domaines);
+    }
 }

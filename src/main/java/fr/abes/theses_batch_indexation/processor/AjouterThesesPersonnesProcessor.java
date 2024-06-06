@@ -153,19 +153,17 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                     .stream().map(PersonneModelES::new).filter(PersonneModelES::isHas_idref).collect(Collectors.toList());
 
             log.info("fin recupération");
-            //personneModelESAvecIds.addAll(personnesTef);
-            //personnesTef.addAll(personneModelESAvecIds);
-
-            List<PersonneModelES> personnesEsEtTef = new ArrayList<>(personneModelESList);
 
             // Dédoublonage des personnes en gardant celles de ES
+            List<PersonneModelES> personnesEsEtTef = new ArrayList<>(personneModelESList);
+
             for (PersonneModelES personneTef : personnesTefList) {
                 if (personneModelESList.stream().noneMatch(p -> p.getPpn().equals(personneTef.getPpn()))) {
                     personnesEsEtTef.add(personneTef);
                 }
             }
 
-            log.info("2 début traitement");
+            log.info("Début traitement");
 
             Optional<TheseModelES> theseModelES = Optional.empty();
 
@@ -193,8 +191,6 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                 }
             }
 
-            log.info("5");
-
             elasticSearchUtils.indexerPersonnesDansEs(personnesEsEtTef, elasticConfig);
 
             log.info("6 fin traitement");
@@ -215,11 +211,6 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
         }
 
         dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_personne);
-
-        //jdbcTemplate.execute("commit");
-
-
-        // Rechargement de la BDD vers ES (à faire avec l'afterChunk)
 
         return theseModel;
     }

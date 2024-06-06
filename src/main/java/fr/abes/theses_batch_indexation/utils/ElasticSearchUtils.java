@@ -425,4 +425,53 @@ public class ElasticSearchUtils {
             }
         }
     }
+
+    public void indexerRecherchePersonnesDansEs(List<RecherchePersonneModelES> items, ElasticConfig elasticConfig) throws Exception {
+
+        boolean auMoinsUneOperation = false;
+        BulkRequest.Builder br = new BulkRequest.Builder();
+
+        for (RecherchePersonneModelES personneModelES : items) {
+
+            JsonData json = readJson(new ByteArrayInputStream(PersonneCacheUtils.readJson(personneModelES).getBytes()),
+                    ElasticClient.getElasticsearchClient());
+
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index(nomIndex.toLowerCase())
+                            .id(personneModelES.getPpn())
+                            .document(json)
+                    )
+            );
+            auMoinsUneOperation = true;
+        }
+        if (auMoinsUneOperation) {
+            BulkRequest bulkRequest = br.build();
+            BulkResponse result = null;
+            try {
+                result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+            } catch (IOException e) {
+                log.error("IOException, retry ...");
+                ElasticClient.chargeClient(
+                        elasticConfig.getHostname(),
+                        elasticConfig.getPort(),
+                        elasticConfig.getScheme(),
+                        elasticConfig.getUserName(),
+                        elasticConfig.getPassword(),
+                        elasticConfig.getProtocol());
+                log.error("Reload elastic client done");
+                result = ElasticClient.getElasticsearchClient().bulk(bulkRequest);
+            }
+
+
+            if (result.errors()) {
+                log.error("Erreurs dans le bulk : ");
+                for (BulkResponseItem item : result.items()) {
+                    if (item.error() != null) {
+                        log.error(item.id() + item.error());
+                    }
+                }
+            }
+        }
+    }
 }

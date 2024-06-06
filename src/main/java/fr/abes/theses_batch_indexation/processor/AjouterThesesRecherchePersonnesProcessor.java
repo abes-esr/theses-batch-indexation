@@ -23,9 +23,8 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,11 +52,15 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
     private final ElasticConfig elasticConfig;
     final DataSource dataSourceLecture;
 
+    java.util.Set<String> thesesEnTraitement = Collections.synchronizedSet(new HashSet<>());
+
+    private final ReentrantLock mutex = new ReentrantLock();
+
     public AjouterThesesRecherchePersonnesProcessor(XMLJsonMarshalling marshall,
-                                           JdbcTemplate jdbcTemplate,
-                                           DbService dbService,
-                                           ElasticConfig elasticConfig,
-                                           @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
+                                                    JdbcTemplate jdbcTemplate,
+                                                    DbService dbService,
+                                                    ElasticConfig elasticConfig,
+                                                    @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate.setDataSource(dataSourceLecture);
@@ -117,92 +120,119 @@ public class AjouterThesesRecherchePersonnesProcessor implements ItemProcessor<T
 
         log.info("Début execute");
 
-        // Initialisation de la table en BDD (donc pas de multi-thread possible)
-        personneCacheUtils.initialisePersonneCacheBDD();
+        java.util.Set nntLies = elasticSearchUtils.getNntLies(theseModel.getId());
+        try {
+            log.info("Dans la liste des thesesEnTraitement  : " + thesesEnTraitement.size());
+            mutex.lock();
 
-        if ( !dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
-            dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_recherche_personne);
-            return theseModel;
+            while (
+                    nntLies.stream().anyMatch(
+                            n -> thesesEnTraitement.contains(n)
+                    )
+            ) {
+                mutex.unlock();
+                log.info("On attends ...");
+                Thread.sleep(200);
+                mutex.lock();
+            }
+            thesesEnTraitement.addAll(nntLies);
+        } finally {
+            mutex.unlock();
         }
 
-        // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
-        elasticSearchUtils.deleteRecherchePersonneModelESSansPPN(theseModel.getId());
+        try {
+            if (!dbService.estPresentDansTableDocument(theseModel.getIdDoc())) {
+                dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_recherche_personne);
+                return theseModel;
+            }
 
-        // sortir la liste des personnes de la thèse
-        List<RecherchePersonneModelES> personnesTef = getPersonnesModelESFromTef(theseModel.getId());
+            // Rechercher les personnes qui ont cette thèse dans leur list et suppimer les personnes sans nnt
+            elasticSearchUtils.deleteRecherchePersonneModelESSansPPN(theseModel.getId());
 
-        List<RecherchePersonneModelESAvecId> personneModelESAvecIds = elasticSearchUtils.getRecherchePersonnesModelESAvecId(theseModel.getId());
+            // sortir la liste des personnes de la thèse
+            List<RecherchePersonneModelES> recherchePersonnesTefList = getRecherchePersonnesModelESFromTef(theseModel.getId());
 
-        personnesTef.addAll(personneModelESAvecIds);
+            List<RecherchePersonneModelES> recherchePersonnesESList = new ArrayList<>(elasticSearchUtils.getRecherchePersonnesModelESAvecId(theseModel.getId()))
+                    .stream().map(RecherchePersonneModelES::new).filter(RecherchePersonneModelES::isHas_idref).collect(Collectors.toList());
 
-        // recuperation des ppn
-        ppnList = personnesTef.stream().filter(RecherchePersonneModelES::isHas_idref).map(RecherchePersonneModelES::getPpn)
-                .collect(Collectors.toList());
+            log.info("fin recupération");
 
-        // récupérer les personnes dans ES
-        List<RecherchePersonneModelES> recherchePersonnesES = elasticSearchUtils.getRecherchePersonnesModelESFromES(ppnList);
+            // Dédoublonage des personnes en gardant celles de ES
+            List<RecherchePersonneModelES> recherchePersonnesEsEtTef = new ArrayList<>(recherchePersonnesESList);
 
-        // recuperation des ids des theses
-        recherchePersonnesES.stream().map(RecherchePersonneModelES::getTheses_id).forEach(nntSet::addAll);
-
-        //  Vérifier qu'on ne transforme pas un sujet en NNT, dans ce cas, il faut supprimer IdSujet de nntSet
-        if (nntSet.stream().anyMatch(n -> n.equals(theseModel.getIdSujet()))) {
-            nntSet = nntSet.stream().filter(n -> !n.equals(theseModel.getIdSujet()))
-                    .collect(Collectors.toSet());
-        }
-
-        // Ajout de l'id de thèse qu'on indexe
-        nntSet.add(theseModel.getId());
-
-        // Ré-indexer la liste des thèses
-        //  Récupérer les theses avec JDBCTemplate
-        List<TheseModel> theseModels = personneCacheUtils.getTheses(nntSet);
-
-        for (TheseModel theseModelToAdd : theseModels) {
-            //   Utiliser RecherchePersonneMappee
-            Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
-            RecherchePersonneMappe recherchePersonneMappe = new RecherchePersonneMappe(mets, theseModelToAdd.getId(), oaiSets);
-            theseModelToAdd.setRecherchePersonnes(recherchePersonneMappe.getPersonnes());
-        }
-
-        //   MàJ dans la BDD
-        for (TheseModel theseModelToAddBdd : theseModels) {
-            for (RecherchePersonneModelES recherchePersonneModelES : theseModelToAddBdd.getRecherchePersonnes()) {
-                if ( (!recherchePersonneModelES.isHas_idref() && recherchePersonneModelES.getTheses_id().contains(theseModel.getId())) ||
-                        ppnList.contains(recherchePersonneModelES.getPpn())) {
-                    if (personneCacheUtils.estPresentDansBDD(recherchePersonneModelES.getPpn())) {
-                        personneCacheUtils.updateRecherchePersonneDansBDD(recherchePersonneModelES);
-                    } else {
-                        personneCacheUtils.ajoutPersonneDansBDD(recherchePersonneModelES, recherchePersonneModelES.getPpn());
-                    }
+            for (RecherchePersonneModelES recherchePersonneTef : recherchePersonnesTefList) {
+                if (recherchePersonnesESList.stream().noneMatch(p -> p.getPpn().equals(recherchePersonneTef.getPpn()))) {
+                    recherchePersonnesEsEtTef.add(recherchePersonneTef);
                 }
+            }
+
+            log.info("Début traitement");
+
+            Optional<TheseModelES> theseModelES = Optional.empty();
+
+            for (RecherchePersonneModelES recherchePersonnesES : recherchePersonnesEsEtTef) {
+
+                Optional<RecherchePersonneModelES> recherchePersonneModelES;
+/*                if (recherchePersonnesES.isHas_idref()) {
+                    recherchePersonneModelES = recherchePersonnesTefList.stream().filter(p -> p.isHas_idref() && p.getPpn().equals(recherchePersonnesES.getPpn())).findFirst();
+                } else {
+                    // si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
+                    recherchePersonneModelES = recherchePersonnesTefList.stream().filter(p -> p.getNom().equals(recherchePersonnesES.getNom()) && p.getPrenom().equals(recherchePersonnesES.getPrenom())).findFirst();
+                }
+                if (recherchePersonneModelES.isPresent()) {
+                    theseModelES = recherchePersonneModelES.get().getTheses().stream().findFirst();
+                }
+
+                // Enlever la thèse en cours
+                recherchePersonnesES.getTheses().removeIf(t -> t.getId().equals(theseModel.getIdSujet()) || t.getId().equals(theseModel.getNnt()));
+                recherchePersonnesES.getTheses_id().removeIf(t -> t.equals(theseModel.getIdSujet()) || t.equals(theseModel.getNnt()));
+
+                if (theseModelES.isPresent()) {
+                    // Ajout de la thèse en cours
+                    recherchePersonnesES.getTheses().add(theseModelES.get());
+                    recherchePersonnesES.getTheses_id().add(theseModelES.get().getId());
+                }*/
+            }
+
+            elasticSearchUtils.indexerRecherchePersonnesDansEs(recherchePersonnesEsEtTef, elasticConfig);
+
+            log.info("Fin traitement");
+
+        }
+        finally {
+            try {
+                mutex.lock();
+                thesesEnTraitement.removeAll(nntLies);
+                log.info("nntLies supprimés");
+            } catch (Exception e) {
+                for (Object nnt : nntLies) {
+                    log.error("nnt lies " + nnt);
+                }
+                log.error("removeall de nntlies ne fonctionne pas : " + e);
+            } finally {
+                mutex.unlock();
             }
         }
 
-        dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_recherche_personne);
+            dbService.supprimerTheseATraiter(theseModel.getId(), TableIndexationES.indexation_es_recherche_personne);
 
-        jdbcTemplate.execute("commit");
-
-
-        // Rechargement de la BDD vers ES (à faire avec l'afterChunk)
-
-        return theseModel;
-    }
-
-    private List<RecherchePersonneModelES> getPersonnesModelESFromTef(String id) throws Exception {
-
-        java.util.Set<String> nnt = new HashSet<>();
-        nnt.add(id);
-
-        if (personneCacheUtils.getTheses(nnt).size() == 0) {
-            return new ArrayList<>();
+            return theseModel;
         }
 
-        TheseModel theseModelToAdd = personneCacheUtils.getTheses(nnt).get(0);
+        private List<RecherchePersonneModelES> getRecherchePersonnesModelESFromTef(String id) throws Exception {
 
-        Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
-        RecherchePersonneMappe personneMapee = new RecherchePersonneMappe(mets, theseModelToAdd.getId(), oaiSets);
+            java.util.Set<String> nnt = new HashSet<>();
+            nnt.add(id);
 
-        return personneMapee.getPersonnes();
+            if (personneCacheUtils.getTheses(nnt).size() == 0) {
+                return new ArrayList<>();
+            }
+
+            TheseModel theseModelToAdd = personneCacheUtils.getTheses(nnt).get(0);
+
+            Mets mets = marshall.chargerMets(new ByteArrayInputStream(theseModelToAdd.getDoc().getBytes()));
+            RecherchePersonneMappe recherchePersonneMappe = new RecherchePersonneMappe(mets, theseModelToAdd.getId(), oaiSets);
+
+            return recherchePersonneMappe.getPersonnes();
+        }
     }
-}
