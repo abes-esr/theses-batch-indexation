@@ -31,7 +31,8 @@ WORKDIR /scripts/
 # systeme pour les crontab
 # cronie: remplacant de crond qui support le CTRL+C dans docker (sans ce système c'est compliqué de stopper le conteneur)
 # gettext: pour avoir envsubst qui permet de gérer le template tasks.tmpl
-RUN dnf install -y pgrep
+# Installation manuelle de pgrep suite à sa disparition dans l'image
+RUN yum install -y procps
 RUN dnf install -y cronie gettext && \
     crond -V && rm -rf /etc/cron.*/*
 COPY ./docker/batch/tasks-theses.tmpl /etc/cron.d/tasks-theses.tmpl
