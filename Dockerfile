@@ -26,11 +26,12 @@ RUN mvn --batch-mode \
 # Image pour le module batch d'insertion des thèses et personnes dans ES
 # Remarque: l'image openjdk:11 n'est pas utilisée car nous avons besoin de cronie
 #           qui n'est que disponible sous centos/rockylinux.
-FROM rockylinux:9.3 as batch-image
+FROM rockylinux:8 as batch-image
 WORKDIR /scripts/
 # systeme pour les crontab
 # cronie: remplacant de crond qui support le CTRL+C dans docker (sans ce système c'est compliqué de stopper le conteneur)
 # gettext: pour avoir envsubst qui permet de gérer le template tasks.tmpl
+RUN dnf install -y pgrep
 RUN dnf install -y cronie gettext && \
     crond -V && rm -rf /etc/cron.*/*
 COPY ./docker/batch/tasks-theses.tmpl /etc/cron.d/tasks-theses.tmpl
