@@ -176,7 +176,7 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                     // si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
                     personneModelES = personnesTefList.stream().filter(p -> {
                         if (p.getNom() != null  && p.getPrenom() != null){
-                            return p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())
+                            return p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom());
                         } else {
                             return false;
                         }
