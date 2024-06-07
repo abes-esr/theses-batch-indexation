@@ -26,7 +26,7 @@ RUN mvn --batch-mode \
 # Image pour le module batch d'insertion des thèses et personnes dans ES
 # Remarque: l'image openjdk:11 n'est pas utilisée car nous avons besoin de cronie
 #           qui n'est que disponible sous centos/rockylinux.
-FROM rockylinux:8 as batch-image
+FROM rockylinux:9.3 as batch-image
 WORKDIR /scripts/
 # systeme pour les crontab
 # cronie: remplacant de crond qui support le CTRL+C dans docker (sans ce système c'est compliqué de stopper le conteneur)
