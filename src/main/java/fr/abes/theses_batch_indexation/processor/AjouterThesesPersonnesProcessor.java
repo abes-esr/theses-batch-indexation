@@ -174,7 +174,13 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
                     personneModelES = personnesTefList.stream().filter(p -> p.isHas_idref() && p.getPpn().equals(personneES.getPpn())).findFirst();
                 } else {
                     // si pas de idref, construction des personnes (sans idref); pas sur que ca fonctionne avec NomPrenom car si on change de nomPrenom
-                    personneModelES = personnesTefList.stream().filter(p -> p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())).findFirst();
+                    personneModelES = personnesTefList.stream().filter(p -> {
+                        if (p.getNom() != null  && p.getPrenom() != null){
+                            return p.getNom().equals(personneES.getNom()) && p.getPrenom().equals(personneES.getPrenom())
+                        } else {
+                            return false;
+                        }
+                    }).findFirst();
                 }
                 if (personneModelES.isPresent()) {
                     theseModelES = personneModelES.get().getTheses().stream().findFirst();
@@ -194,6 +200,8 @@ public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel
             elasticSearchUtils.indexerPersonnesDansEs(personnesEsEtTef, elasticConfig);
 
             log.info("6 fin traitement");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         finally {
             try {
