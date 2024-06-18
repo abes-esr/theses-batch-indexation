@@ -18,6 +18,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -68,7 +69,7 @@ public class BatchConfiguration {
 
     @Bean
     public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansBDD,
-                                            Tasklet initialiserIndexESTasklet,
+                                            Tasklet initialiserIndexEsPersonneTasklet,
                                             Tasklet initiliserIndexBDDTasklet,
                                             Tasklet indexerPersonnesDansESTasklet,
                                             Tasklet chargerOaiSetsTasklet,
@@ -78,25 +79,25 @@ public class BatchConfiguration {
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
                 .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepIndexPersonnesDansBDD)
-                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
 
     @Bean
     public Job jobIndexationPersonnesDeBddVersES(Tasklet initialiserIndexESTasklet,
-                                                 Tasklet indexerPersonnesDansESTasklet,
+                                                 Tasklet initialiserIndexEsPersonneTasklet,
                                                  JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationPersonnesDeBddVersES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitialiserIndexES(initialiserIndexESTasklet))
-                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .build();
     }
 
     @Bean
     public Job jobIndexationRecherchePersonnesDansES(Step stepIndexRecherchePersonnesDansBDD,
-                                                     Tasklet initialiserIndexESTasklet,
+                                                     Tasklet initialiserIndexEsPersonneTasklet,
                                                      Tasklet initiliserIndexBDDTasklet,
                                                      Tasklet indexerPersonnesDansESTasklet,
                                                      Tasklet chargerOaiSetsTasklet,
@@ -106,7 +107,7 @@ public class BatchConfiguration {
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
                 .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepIndexRecherchePersonnesDansBDD)
-                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
@@ -233,7 +234,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexPersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+    public Step stepIndexPersonnesDansBDD(@Qualifier("jdbcPagingPersonnesCustomReader") ItemReader itemReader,
                                           @Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
                                           @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationPersonne").chunk(config.getChunk())
@@ -244,7 +245,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("jdbcPagingPersonnesCustomReader") ItemReader itemReader,
                                                    @Qualifier("recherchePersonneItemProcessor") ItemProcessor itemProcessor,
                                                    @Qualifier("recherchePersonnesBDDWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationRecherchePersonne").chunk(config.getChunk())
@@ -261,8 +262,14 @@ public class BatchConfiguration {
     }
 
     @Bean
+    public Step stepInitialiserIndexESPersonne(@Qualifier("initialiserIndexEsPersonneTasklet") Tasklet t) {
+        return stepBuilderFactory.get("stepInitialiserIndexESPersonne").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+
+    @Bean
     public Step stepInitiliserIndexBDDTasklet(@Qualifier("initiliserIndexBDDTasklet") Tasklet t) {
-        return stepBuilderFactory.get("InitiliserIndexBDDTasklet").allowStartIfComplete(true)
+        return stepBuilderFactory.get("stepInitiliserIndexBDDTasklet").allowStartIfComplete(true)
                 .tasklet(t).build();
     }
 
