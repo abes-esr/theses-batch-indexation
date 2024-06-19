@@ -54,6 +54,7 @@ public class MappingJobName {
         nomIndexES.put("ajoutPersonnesDansES", personnes);
         nomIndexES.put("ajoutRecherchePersonnesDansES", recherche_personnes);
         nomIndexES.put("indexationRecherchePersonnesDansES", recherche_personnes);
+        nomIndexES.put("indexationRecherchePersonnesDeBddVersES", recherche_personnes);
         nomIndexES.put("suppressionRecherchePersonnesDansES", recherche_personnes);
         nomIndexES.put("indexationThematiquesDansES", thematiques);
         nomIndexES.put("suppressionThematiquesDansES", thematiques);

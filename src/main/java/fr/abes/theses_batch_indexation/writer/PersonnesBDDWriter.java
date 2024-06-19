@@ -84,10 +84,12 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
                 log.debug("ppn : " + personneModelES.getPpn());
                 log.debug("nom : " + personneModelES.getNom());
                 if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
+                    log.debug("update");
                     personneCacheUtils.updatePersonneDansBDD(personneModelES);
                     nombreDePersonnesUpdated.incrementAndGet();
                     nombreDePersonnesUpdatedDansCeChunk.incrementAndGet();
                 } else {
+                    log.debug("ajout");
                     personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
                 }
             }
