@@ -39,6 +39,7 @@ public class MappingJobName {
         nomTableES.put("ajoutPersonnesDansES", TableIndexationES.indexation_es_personne);
         nomTableES.put("ajoutRecherchePersonnesDansES", TableIndexationES.indexation_es_recherche_personne);
         nomTableES.put("indexationRecherchePersonnesDansES", TableIndexationES.indexation_es_recherche_personne);
+        nomTableES.put("indexationRecherchePersonnesDeBddVersES", TableIndexationES.indexation_es_recherche_personne);
         nomTableES.put("indexationThematiquesDansES", TableIndexationES.indexation_es_thematique);
         nomTableES.put("suppressionThesesDansES", TableIndexationES.suppression_es_these);
         nomTableES.put("suppressionPersonnesDansES", TableIndexationES.suppression_es_personne);
