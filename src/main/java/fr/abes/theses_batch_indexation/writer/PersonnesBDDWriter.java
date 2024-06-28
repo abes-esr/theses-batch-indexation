@@ -46,7 +46,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
 
      */
 
-    @Value("${index.name}")
+    @Value("${index.name.personnes}")
     private String nomIndex;
 
     @Value("${table.personne.name}")
