@@ -31,10 +31,13 @@ WORKDIR /scripts/
 # systeme pour les crontab
 # cronie: remplacant de crond qui support le CTRL+C dans docker (sans ce système c'est compliqué de stopper le conteneur)
 # gettext: pour avoir envsubst qui permet de gérer le template tasks.tmpl
+# Installation manuelle de pgrep suite à sa disparition dans l'image
+RUN yum install -y procps
 RUN dnf install -y cronie gettext && \
     crond -V && rm -rf /etc/cron.*/*
 COPY ./docker/batch/tasks-theses.tmpl /etc/cron.d/tasks-theses.tmpl
 COPY ./docker/batch/tasks-personnes.tmpl /etc/cron.d/tasks-personnes.tmpl
+COPY ./docker/batch/tasks-recherche-personnes.tmpl /etc/cron.d/tasks-recherche-personnes.tmpl
 # Le JAR et le script pour le batch d'insertion des thèses et personnes dans ES
 RUN dnf install -y java-11-openjdk
 COPY docker/batch/theses-batch-indexation.sh /scripts/theses-batch-indexation.sh
