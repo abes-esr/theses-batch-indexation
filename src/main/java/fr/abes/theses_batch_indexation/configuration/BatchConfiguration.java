@@ -73,14 +73,16 @@ public class BatchConfiguration {
                                             Tasklet initiliserIndexBDDTasklet,
                                             Tasklet indexerPersonnesDansESTasklet,
                                             Tasklet chargerOaiSetsTasklet,
+                                            Tasklet changerIndexAliasTasklet,
                                             JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
                 .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
-                .next(stepIndexPersonnesDansBDD)
                 .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
+                .next(stepIndexPersonnesDansBDD)
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .next(stepChangerIndexAlias(changerIndexAliasTasklet))
                 .build();
     }
 
@@ -101,14 +103,16 @@ public class BatchConfiguration {
                                                      Tasklet initiliserIndexBDDTasklet,
                                                      Tasklet indexerPersonnesDansESTasklet,
                                                      Tasklet chargerOaiSetsTasklet,
+                                                     Tasklet changerIndexAliasTasklet,
                                                      JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationRecherchePersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
                 .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
-                .next(stepIndexRecherchePersonnesDansBDD)
                 .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
+                .next(stepIndexRecherchePersonnesDansBDD)
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .next(stepChangerIndexAlias(changerIndexAliasTasklet))
                 .build();
     }
     @Bean
@@ -269,6 +273,12 @@ public class BatchConfiguration {
     @Bean
     public Step stepInitialiserIndexES(@Qualifier("initialiserIndexESTasklet") Tasklet t) {
         return stepBuilderFactory.get("InitialiserIndexESTasklet").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+
+    @Bean
+    public Step stepChangerIndexAlias(@Qualifier("changerIndexAliasTasklet") Tasklet t) {
+        return stepBuilderFactory.get("ChangerIndexAliasTasklet").allowStartIfComplete(true)
                 .tasklet(t).build();
     }
 

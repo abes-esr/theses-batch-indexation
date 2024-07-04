@@ -10,13 +10,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class NomIndexSelecteur {
 
     private final ElasticConfig elasticConfig;
 
-    @Value("#{'${indexes.sufixe.personnes}'.split(';')}")
+    @Value("#{'${indexes.suffixe.personnes}'.split(';')}")
     private List<String> sufixeListe;
 
     public NomIndexSelecteur(ElasticConfig elasticConfig) {
@@ -27,6 +28,13 @@ public class NomIndexSelecteur {
         return ElasticClient.getElasticsearchClient().indices().getAlias(
                 a -> a.name(alias)
         ).result().keySet();
+    }
+
+    public String getNomIndexActuel(String alias) throws Exception {
+        ElasticClient.chargeClient(elasticConfig.getHostname(), elasticConfig.getPort(), elasticConfig.getScheme(), elasticConfig.getUserName(), elasticConfig.getPassword(), elasticConfig.getProtocol());
+
+        return getIndexes(alias).stream().findFirst().orElseThrow();
+
     }
 
     public String getNomIndexSuivant(String alias) throws Exception {

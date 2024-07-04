@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
 import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.database.DbService;
+import fr.abes.theses_batch_indexation.utils.ElasticSearchUtils;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -49,16 +50,18 @@ public class InitialiserIndexESTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
-        if (env.getProperty("initialiseIndex") != null &&
-                env.getProperty("initialiseIndex").equals("true")) {
-            String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
+        String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
+        ElasticSearchUtils elasticSearchUtils = new ElasticSearchUtils(nomIndex);
+
+        if (env.getProperty("initialiseIndexTheses") != null &&
+                env.getProperty("initialiseIndexTheses").equals("true")) {
             log.warn("Réinitialisation de l'index " + nomIndex);
             File f = selectIndex();
 
             if (f != null) {
-                deleteIndexES(nomIndex);
+                elasticSearchUtils.deleteIndexES(nomIndex);
                 log.info("Index " + nomIndex + " supprimé");
-                createIndexES(f, nomIndex);
+                elasticSearchUtils.createIndexES(f, nomIndex);
                 log.info("Index " + nomIndex + " créé avec le schéma présent dans " + f.getPath());
                 dbService.mettreToutesLesThesesAIndexer(mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names")));
                 log.info("table d'indexation "+ mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names"))+" remplie dans la base.");
@@ -86,30 +89,5 @@ public class InitialiserIndexESTasklet implements Tasklet {
                 break;
         }
         return f;
-    }
-
-    private void createIndexES(File f, String nomIndex) throws IOException {
-        CreateIndexRequest.Builder builder = new CreateIndexRequest.Builder();
-        builder.index(nomIndex.toLowerCase());
-        builder.withJson(new FileInputStream(f));
-
-        CreateIndexResponse response = ElasticClient.getElasticsearchClient().indices().create(builder.build());
-
-        if (!response.acknowledged()) {
-            log.error("Erreur dans createIndexES()");
-        }
-    }
-
-    private void deleteIndexES(String nomIndex) throws IOException {
-        DeleteIndexRequest.Builder builder = new DeleteIndexRequest.Builder();
-        builder.index(nomIndex.toLowerCase());
-        builder.ignoreUnavailable(true);
-
-        DeleteIndexRequest deleteIndexRequest = builder.build();
-        DeleteIndexResponse response = ElasticClient.getElasticsearchClient().indices().delete(deleteIndexRequest);
-
-        if (!response.acknowledged()) {
-            log.error("Erreur dans deleteIndexES()");
-        }
     }
 }

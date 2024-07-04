@@ -75,8 +75,10 @@ public class MappingJobName {
 
         // Mise à jour de l'index personne en fonction de l'alias
         if (nomAliasES.get(env.getProperty("spring.batch.job.names")) != null) {
+
             String indexSuivant = nomIndexSelecteur.getNomIndexSuivant(
                     nomAliasES.get(env.getProperty("spring.batch.job.names")));
+
             nomIndexES.replace(env.getProperty("spring.batch.job.names"), indexSuivant);
         }
     }
