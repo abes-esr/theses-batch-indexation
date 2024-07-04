@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,7 +31,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class AjouterThesesPersonnesProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener, ChunkListener {
-    MappingJobName mappingJobName = new MappingJobName();
+
+    @Autowired
+    MappingJobName mappingJobName;
     private final XMLJsonMarshalling marshall;
     String nomIndex;
 

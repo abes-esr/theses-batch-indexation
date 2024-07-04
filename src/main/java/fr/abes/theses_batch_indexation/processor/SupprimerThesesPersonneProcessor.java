@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Component
 public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseModel, TheseModel>, StepExecutionListener, ChunkListener {
 
-    MappingJobName mappingJobName = new MappingJobName();
+    private final MappingJobName mappingJobName;
     private final XMLJsonMarshalling marshall;
     String nomIndex;
 
@@ -54,11 +54,12 @@ public class SupprimerThesesPersonneProcessor implements ItemProcessor<TheseMode
     private final ElasticConfig elasticConfig;
 
     @Autowired
-    public SupprimerThesesPersonneProcessor(XMLJsonMarshalling marshall,
+    public SupprimerThesesPersonneProcessor(MappingJobName mappingJobName, XMLJsonMarshalling marshall,
                                             JdbcTemplate jdbcTemplate,
                                             DbService dbService,
                                             ElasticConfig elasticConfig,
                                             @Qualifier("dataSourceLecture") DataSource dataSourceLecture) {
+        this.mappingJobName = mappingJobName;
         this.marshall = marshall;
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate.setDataSource(dataSourceLecture);
