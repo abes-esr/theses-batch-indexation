@@ -53,8 +53,6 @@ if [ "$THESES_BATCH_INDEXATION_THESES_CHOIX_JOB" = "personnes" ]; then
   if [ "$THESES_BATCH_INDEXATION_AT_STARTUP" = "1" ]; then
     echo "-> Lancement de personnes-batch-indexation.sh au démarrage du conteneur"
     /scripts/personnes-batch-indexation.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
-    echo "-> Lancement de personnes-batch-suppression.sh au démarrage du conteneur"
-    /scripts/personnes-batch-suppression.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
   fi
 
   # execute CMD (crond)
@@ -82,8 +80,6 @@ if [ "$THESES_BATCH_INDEXATION_THESES_CHOIX_JOB" = "recherche_personnes" ]; then
   if [ "$THESES_BATCH_INDEXATION_AT_STARTUP" = "1" ]; then
     echo "-> Lancement de recherche-personnes-batch-indexation.sh au démarrage du conteneur"
     /scripts/recherche-personnes-batch-indexation.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
-    echo "-> Lancement de recherche-personnes-batch-suppression.sh au démarrage du conteneur"
-    /scripts/recherche-personnes-batch-suppression.sh 1>/proc/1/fd/1 2>/proc/1/fd/2
   fi
 
   # execute CMD (crond)
