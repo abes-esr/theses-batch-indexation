@@ -24,6 +24,18 @@ public class JobConfig {
     @Value("${index.name}")
     private String nomIndex;
 
+    @Value("${index.name.theses}")
+    private String thesesIndex;
+
+    @Value("${index.name.personnes}")
+    private String personnesIndex;
+
+    @Value("${index.name.thematiques}")
+    private String thematiquesIndex;
+
+    @Value("${index.name.recherche_personnes}")
+    private String recherche_personnesIndex;
+
     @Value("${table.name}")
     private String nomTable;
 

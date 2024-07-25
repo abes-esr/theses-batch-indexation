@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.configuration.JobConfig;
 import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
@@ -39,6 +40,9 @@ public class ESItemWriter implements ItemWriter<TheseModel> {
     @Autowired
     MappingJobName mappingJobName;
 
+    @Autowired
+    JobConfig jobConfig;
+
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
 
@@ -54,13 +58,12 @@ public class ESItemWriter implements ItemWriter<TheseModel> {
                 continue;
 
             ByteArrayInputStream jsonByteArrayInputStream = null;
-            switch (nomIndex) {
-                case "theses" :
-                    jsonByteArrayInputStream = new ByteArrayInputStream(theseModel.getJsonThese().getBytes());
-                    break;
-                case "thematiques":
-                    jsonByteArrayInputStream = new ByteArrayInputStream(theseModel.getJsonThematiques().getBytes());
-                    break;
+
+            if (nomIndex.equals(jobConfig.getThesesIndex())) {
+                jsonByteArrayInputStream = new ByteArrayInputStream(theseModel.getJsonThese().getBytes());
+            }
+            else if (nomIndex.equals(jobConfig.getThematiquesIndex())) {
+                jsonByteArrayInputStream = new ByteArrayInputStream(theseModel.getJsonThematiques().getBytes());
             }
 
             JsonData json = readJson(jsonByteArrayInputStream, ElasticClient.getElasticsearchClient());
@@ -105,13 +108,12 @@ public class ESItemWriter implements ItemWriter<TheseModel> {
                 log.error(item.error().reason().concat(" pour ").concat(item.id()));
             }
             else {
-                switch (nomIndex) {
-                    case "theses" :
-                        dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_these);
-                        break;
-                    case "thematiques":
-                        dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_thematique);
-                        break;
+
+                if (nomIndex.equals(jobConfig.getThesesIndex())) {
+                    dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_these);
+                }
+                else if (nomIndex.equals(jobConfig.getThematiquesIndex())) {
+                    dbService.supprimerTheseATraiter(item.id(), TableIndexationES.indexation_es_thematique);
                 }
             }
         }
