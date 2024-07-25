@@ -227,7 +227,6 @@
       },
       "auteursNP": {
         "type": "text",
-        "analyzer": "francais",
         "fields": {
           "exact": {
             "type": "keyword",
@@ -236,8 +235,7 @@
         }
       },
       "auteursPN": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "auteursPpn": {
         "type": "text"
@@ -257,12 +255,10 @@
         }
       },
       "directeursNP": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "directeursPN": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "directeursPpn": {
         "type": "text"
@@ -282,12 +278,10 @@
         }
       },
       "presidentJuryNP": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "presidentJuryPN": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "presidentJuryPpn": {
         "type": "text"
@@ -307,12 +301,10 @@
         }
       },
       "membresJuryNP": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "membresJuryPN": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "membresJuryPpn": {
         "type": "text"
@@ -332,12 +324,10 @@
         }
       },
       "rapporteursNP": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "rapporteursPN": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "rapporteursPpn": {
         "type": "text"
@@ -358,7 +348,6 @@
       },
       "etabSoutenanceN": {
         "type": "text",
-        "analyzer": "francais",
         "fields": {
           "exact": {
             "type": "keyword"
@@ -380,8 +369,7 @@
         "type": "text"
       },
       "etabsCotutelleN": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "ecolesDoctorales": {
         "type": "nested",
@@ -399,7 +387,6 @@
       },
       "ecolesDoctoralesN": {
         "type": "text",
-        "analyzer": "francais",
         "fields": {
           "exact": {
             "type": "keyword"
@@ -424,8 +411,7 @@
         "type": "text"
       },
       "partenairesRechercheN": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "sujetsRameau" : {
         "type": "nested",
@@ -443,8 +429,7 @@
         "type": "text"
       },
       "sujetsRameauLibelle": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "sujets": {
         "type": "nested",
@@ -459,8 +444,7 @@
         }
       },
       "sujetsLibelle": {
-        "type": "text",
-        "analyzer": "francais"
+        "type": "text"
       },
       "oaiSetNames": {
         "type": "keyword"
