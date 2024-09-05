@@ -12,13 +12,16 @@ import fr.abes.theses_batch_indexation.configuration.ElasticClient;
 import fr.abes.theses_batch_indexation.configuration.ElasticConfig;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.model.bdd.PersonnesCacheModel;
+import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -34,26 +37,44 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IndexerPersonnesDansESTasklet implements Tasklet {
 
-    @Value("${index.name}")
+    private final JdbcTemplate jdbcTemplate;
+    private final ElasticConfig elasticConfig;
     private String nomIndex;
-
     @Value("${job.chunk}")
     private int chunkPersonneES;
-
     @Value("${table.personne.name}")
     private String tablePersonneName;
-
     private AtomicInteger page = new AtomicInteger(0);
 
-    private final JdbcTemplate jdbcTemplate;
-
-    private final ElasticConfig elasticConfig;
-
-    public IndexerPersonnesDansESTasklet(JdbcTemplate jdbcTemplate, ElasticConfig elasticConfig) {
+    public IndexerPersonnesDansESTasklet(JdbcTemplate jdbcTemplate, ElasticConfig elasticConfig,
+                                         @Autowired MappingJobName mappingJobName,
+                                         @Autowired Environment env) {
         this.jdbcTemplate = jdbcTemplate;
         this.elasticConfig = elasticConfig;
+        nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
     }
 
+    public static PersonneModelES mapperJson(String json) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(json, PersonneModelES.class);
+        } catch (Exception e) {
+            log.error("mapperJson");
+        }
+        return null;
+    }
+
+    public static JsonData readJson(InputStream input, ElasticsearchClient esClient) {
+        JsonpMapper jsonpMapper = esClient._transport().jsonpMapper();
+        JsonProvider jsonProvider = jsonpMapper.jsonProvider();
+
+        return JsonData.from(jsonProvider.createParser(input), jsonpMapper);
+    }
+
+    public static String modelToJson(PersonneModelES personneModelES) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(personneModelES);
+    }
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
@@ -80,7 +101,7 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
             }
 
             List<PersonnesCacheModel> items = r.stream()
-                    .map(p -> new PersonnesCacheModel((String) p.get("PPN"),(String) p.get("NOM_INDEX"),(String) p.get("PERSONNE")))
+                    .map(p -> new PersonnesCacheModel((String) p.get("PPN"), (String) p.get("NOM_INDEX"), (String) p.get("PERSONNE")))
                     .collect(Collectors.toList());
             boolean auMoinsUneOperation = false;
             for (PersonnesCacheModel personnesCacheModel : items) {
@@ -132,27 +153,5 @@ public class IndexerPersonnesDansESTasklet implements Tasklet {
 
         return null;
 
-    }
-
-    public static PersonneModelES mapperJson(String json) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(json, PersonneModelES.class);
-        } catch (Exception e) {
-            log.error("mapperJson");
-        }
-        return null;
-    }
-
-    public static JsonData readJson(InputStream input, ElasticsearchClient esClient) {
-        JsonpMapper jsonpMapper = esClient._transport().jsonpMapper();
-        JsonProvider jsonProvider = jsonpMapper.jsonProvider();
-
-        return JsonData.from(jsonProvider.createParser(input), jsonpMapper);
-    }
-
-    public static String modelToJson(PersonneModelES personneModelES) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(personneModelES);
     }
 }
