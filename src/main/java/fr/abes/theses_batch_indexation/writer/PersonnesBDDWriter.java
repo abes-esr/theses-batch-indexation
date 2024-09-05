@@ -11,6 +11,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,6 +39,8 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
     private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdatedDansCeChunk = new AtomicInteger(0);
 
+    private List<PersonneModelES> personneCacheList = Collections.synchronizedList(new ArrayList<>());
+
     private PersonneCacheUtils personneCacheUtils;
 
     private final JdbcTemplate jdbcTemplate;
@@ -57,7 +62,8 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         this.personneCacheUtils = new PersonneCacheUtils(
                 jdbcTemplate,
                 tablePersonneName,
-                nomIndex
+                nomIndex,
+                personneCacheList
         );
 
         nombreDePersonnesUpdatedDansCeChunk.set(0);
@@ -69,14 +75,14 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
                 nombreDePersonnes.incrementAndGet();
                 log.debug("ppn : " + personneModelES.getPpn());
                 log.debug("nom : " + personneModelES.getNom());
-                if (personneCacheUtils.estPresentDansBDD(personneModelES.getPpn())) {
+                if (personneCacheUtils.estPresentEnMemoire(personneModelES.getPpn())) {
                     log.debug("update");
-                    personneCacheUtils.updatePersonneDansBDD(personneModelES);
+                    personneCacheUtils.updatePersonneEnMemoire(personneModelES);
                     nombreDePersonnesUpdated.incrementAndGet();
                     nombreDePersonnesUpdatedDansCeChunk.incrementAndGet();
                 } else {
                     log.debug("ajout");
-                    personneCacheUtils.ajoutPersonneDansBDD(personneModelES, personneModelES.getPpn());
+                    personneCacheUtils.ajoutPersonneEnMemoire(personneModelES);
                 }
             }
         }
