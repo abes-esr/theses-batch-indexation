@@ -6,9 +6,13 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
+import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -29,21 +33,34 @@ public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel> {
 
      */
 
-    @Value("${index.name}")
-    private String nomIndex;
-
+    private final JdbcTemplate jdbcTemplate;
     @Value("${table.personne.name}")
     private String tablePersonneName;
-
+    @Autowired
+    private MappingJobName mappingJobName;
+    @Autowired
+    private Environment env;
+    private String nomIndex;
     private AtomicInteger nombreDeTheses = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnes = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdatedDansCeChunk = new AtomicInteger(0);
 
-    private final JdbcTemplate jdbcTemplate;
-
-    public RecherchePersonnesBDDWriter(JdbcTemplate jdbcTemplate) {
+    public RecherchePersonnesBDDWriter(JdbcTemplate jdbcTemplate,
+                                       @Autowired MappingJobName mappingJobName,
+                                       @Autowired Environment env) {
         this.jdbcTemplate = jdbcTemplate;
+        nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
+    }
+
+    public static RecherchePersonneModelES mapperJson(String json) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json, RecherchePersonneModelES.class);
+    }
+
+    public static String readJson(RecherchePersonneModelES personneModelES) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(personneModelES);
     }
 
     @Override
@@ -59,10 +76,12 @@ public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel> {
                 log.debug("ppn : " + personneModelES.getPpn());
                 log.debug("nom : " + personneModelES.getNom());
                 if (estPresentDansBDD(personneModelES.getPpn())) {
+                    log.debug("update");
                     updatePersonneDansBDD(personneModelES);
                     nombreDePersonnesUpdated.incrementAndGet();
                     nombreDePersonnesUpdatedDansCeChunk.incrementAndGet();
                 } else {
+                    log.debug("ajout");
                     ajoutPersonneDansBDD(personneModelES);
                 }
             }
@@ -93,7 +112,7 @@ public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel> {
             //jdbcTemplate.update("commit");
 
         } catch (Exception e) {
-            log.error("Dans ajoutPersonneDansES : " + e);
+            log.error("Dans ajoutPersonneDansBDD : " + e);
         }
     }
 
@@ -160,16 +179,6 @@ public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel> {
             log.error("Erreur dans deletePersonneES " + e);
             throw e;
         }
-    }
-
-    public static RecherchePersonneModelES mapperJson(String json) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, RecherchePersonneModelES.class);
-    }
-
-    public static String readJson(RecherchePersonneModelES personneModelES) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(personneModelES);
     }
 
 }

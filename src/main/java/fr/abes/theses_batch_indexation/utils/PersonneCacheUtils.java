@@ -26,10 +26,13 @@ public class PersonneCacheUtils {
     private String tablePersonneName;
     private String nomIndex;
 
-    public PersonneCacheUtils(JdbcTemplate jdbcTemplate, String tablePersonneName, String nomIndex) {
+    private List<PersonneModelES> personneCacheList;
+
+    public PersonneCacheUtils(JdbcTemplate jdbcTemplate, String tablePersonneName, String nomIndex, List<PersonneModelES> personneCacheList) {
         this.jdbcTemplate = jdbcTemplate;
         this.tablePersonneName = tablePersonneName;
         this.nomIndex = nomIndex;
+        this.personneCacheList = personneCacheList;
     }
 
     public void initialisePersonneCacheBDD() {
@@ -50,6 +53,10 @@ public class PersonneCacheUtils {
         } catch (Exception e) {
             log.error("Dans ajoutPersonneDansES : " + e);
         }
+    }
+
+    public void ajoutPersonneEnMemoire(PersonneModelES personneModelES) {
+        personneCacheList.add(personneModelES);
     }
 
     public PersonneModelES getPersonneModelBDD(String ppn) throws IOException {
@@ -102,12 +109,19 @@ public class PersonneCacheUtils {
     }
 
     public boolean estPresentDansBDD(String ppn) throws IOException {
-        if (ppn != null && !ppn.equals("")) {
+        if (ppn != null && !ppn.isEmpty()) {
             return jdbcTemplate.queryForList("select * from " + tablePersonneName + " where ppn = ? and nom_index = ?", ppn, nomIndex).size() > 0;
         } else {
             return false;
         }
 
+    }
+
+    public boolean estPresentEnMemoire(String ppn) {
+        if (ppn != null && !ppn.isEmpty()) {
+            return personneCacheList.stream().anyMatch(personneModelES -> personneModelES.getPpn().equals(ppn));
+        }
+        return false;
     }
 
     public void updatePersonneDansBDD(PersonneModelES personneCourante) throws IOException, InterruptedException {
@@ -130,6 +144,15 @@ public class PersonneCacheUtils {
             ajoutPersonneDansBDD(personneCourante, personneCourante.getPpn());
         }
         //jdbcTemplate.update("commit");
+    }
+
+    public void updatePersonneEnMemoire(PersonneModelES personneCourante) {
+        PersonneModelES personnePresentEnMemoire =
+                personneCacheList.stream().filter(personneModelES -> personneModelES.getPpn().equals(personneCourante.getPpn())).findAny().get();
+
+        personnePresentEnMemoire.getTheses_id().addAll(personneCourante.getTheses_id());
+        personnePresentEnMemoire.getTheses().addAll(personneCourante.getTheses());
+        personnePresentEnMemoire.getRoles().addAll(personneCourante.getRoles());
     }
 
     public boolean deletePersonneBDD(String ppn) throws IOException {

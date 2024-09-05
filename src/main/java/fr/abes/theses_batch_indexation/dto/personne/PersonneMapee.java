@@ -52,9 +52,9 @@ public class PersonneMapee {
         try {
             techMD = amdSec.getTechMD().stream().filter(d -> d.getMdWrap().getXmlData().getThesisAdmin() != null).findFirst().orElse(null);
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "techMD"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "techMD"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "techMD", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "techMD", e.getMessage()));
         }
 
         /************************************************************************
@@ -79,9 +79,9 @@ public class PersonneMapee {
                         || dmdSecPourStepGestion.get().getMdWrap().getXmlData().getStepGestion().getStepEtat().equals("soutenu")
                         ? Status.SOUTENUE : Status.EN_PREPARATION);
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Status"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Status"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Status", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Status", e.getMessage()));
         }
 
 
@@ -91,9 +91,9 @@ public class PersonneMapee {
         try {
             theseModelES.setTitre(dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titre principal"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titre principal"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titre principal", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titre principal", e.getMessage()));
         }
 
         /************************************
@@ -117,9 +117,9 @@ public class PersonneMapee {
                 }
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Sujets"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Sujets"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Sujets", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Sujets", e.getMessage()));
         }
 
         /************************************
@@ -193,12 +193,12 @@ public class PersonneMapee {
             }
         } catch (NullPointerException e) {
             if (theseModelES.getStatus() == Status.SOUTENUE) {
-                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Sujets Rameau"));
+                log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Sujets Rameau"));
             } else {
                 // Pas de sujets Rameau pour les thèses en préparation
             }
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Sujets Rameau", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Sujets Rameau", e.getMessage()));
         }
 
         /************************************
@@ -213,13 +213,13 @@ public class PersonneMapee {
                 if (!a.getLang().isEmpty()) {
                     theseModelES.getResumes().put(a.getLang(), a.getContent());
                 } else {
-                    log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du résumé : %s", id, "Résumé", a.getContent().substring(0, 30) + "..."));
+                    log.info(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du résumé : %s", id, "Résumé", a.getContent().substring(0, 30) + "..."));
                 }
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Résumé"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Résumé"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Résumé", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Résumé", e.getMessage()));
         }
 
         /************************************
@@ -231,9 +231,9 @@ public class PersonneMapee {
                     .getThesisDegree().getThesisDegreeDiscipline();
             theseModelES.setDiscipline(tddisc.getValue());
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Discipline"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Discipline"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Discipline", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Discipline", e.getMessage()));
         }
 
         /************************************
@@ -244,10 +244,10 @@ public class PersonneMapee {
             theseModelES.setDate_soutenance(techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString());
         } catch (NullPointerException e) {
             if (theseModelES.getStatus() == Status.SOUTENUE) {
-                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date de soutenance"));
+                log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date de soutenance"));
             }
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date de soutenance", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date de soutenance", e.getMessage()));
         }
 
         if (theseModelES.getStatus() == Status.EN_PREPARATION) {
@@ -258,9 +258,9 @@ public class PersonneMapee {
             try {
                 theseModelES.setDate_inscription(techMD.getMdWrap().getXmlData().getThesisAdmin().getThesisDegree().getDatePremiereInscriptionDoctorat().toString());
             } catch (NullPointerException e) {
-                log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date d'inscription"));
+                log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Date d'inscription"));
             } catch (Exception e) {
-                log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date d'inscription", e.getMessage()));
+                log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Date d'inscription", e.getMessage()));
             }
         }
 
@@ -289,9 +289,9 @@ public class PersonneMapee {
                 theseModelES.getEtablissements_cotutelle().add(ctdto);
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Etablissements"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Etablissements"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Etablissements", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Etablissements", e.getMessage()));
         }
 
         /************************************
@@ -309,9 +309,9 @@ public class PersonneMapee {
                 theseModelES.setSource(Source.STAR);
         } catch (NullPointerException e) {
             // Il s'agit d'une thèse Sudoc, il n’y a pas de lien avec le CINES (ce sont des thèses imprimées)
-            //log.error(String.format("%s - Champs '%s' : La valeur (getIndicCines) est nulle dans le TEF", nnt, "Source"));
+            //log.info(String.format("%s - Champs '%s' : La valeur (getIndicCines) est nulle dans le TEF", nnt, "Source"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Source", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Source", e.getMessage()));
         }
 
         /************************************
@@ -326,7 +326,7 @@ public class PersonneMapee {
                         dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
                         dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
             } else {
-                log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titre principal", dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().substring(0, 30) + "..."));
+                log.info(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titre principal", dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().substring(0, 30) + "..."));
             }
 
             // Titres alternatifs
@@ -339,15 +339,15 @@ public class PersonneMapee {
                         theseModelES.getTitres().put(
                                 a.getLang(), a.getContent());
                     } else {
-                        log.error(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titres", a.getContent().substring(0, 30) + "..."));
+                        log.info(String.format("%s - Champs '%s' : Le code langue est vide dans le TEF. Valeur du titre : %s", id, "Titres", a.getContent().substring(0, 30) + "..."));
                     }
 
                 }
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titres"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Titres"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titres", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Titres", e.getMessage()));
         }
 
         /************************************
@@ -364,9 +364,9 @@ public class PersonneMapee {
             }
 
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Domaines (oaiSets)"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Domaines (oaiSets)"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Domaines (oaiSets)", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Domaines (oaiSets)", e.getMessage()));
         }
 
         /************************************
@@ -383,9 +383,9 @@ public class PersonneMapee {
                         item.getPrenom()));
             }
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Auteurs"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Auteurs"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Auteurs", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Auteurs", e.getMessage()));
         }
 
         /************************************
@@ -403,9 +403,9 @@ public class PersonneMapee {
             }
 
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Directeurs"));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Directeurs"));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Directeurs", e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Directeurs", e.getMessage()));
         }
 
         /************************************************************************
@@ -421,9 +421,9 @@ public class PersonneMapee {
                     .getAuteur());
 
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.AUTEUR));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.AUTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.AUTEUR, e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.AUTEUR, e.getMessage()));
         }
 
         /************************************
@@ -434,9 +434,9 @@ public class PersonneMapee {
             traiterDirecteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getDirecteurThese());
         } catch (NullPointerException e) {
-            log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.DIRECTEUR));
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.DIRECTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.DIRECTEUR, e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.DIRECTEUR, e.getMessage()));
         }
 
         /************************************
@@ -449,9 +449,9 @@ public class PersonneMapee {
 
         } catch (NullPointerException e) {
             // Ce champs est optionnel
-            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.RAPPORTEUR));
+            //log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.RAPPORTEUR));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.RAPPORTEUR, e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.RAPPORTEUR, e.getMessage()));
         }
 
         /************************************
@@ -464,9 +464,9 @@ public class PersonneMapee {
 
         } catch (NullPointerException e) {
             // Ce champs est optionnel
-            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.PRESIDENT));
+            //log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.PRESIDENT));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.PRESIDENT, e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.PRESIDENT, e.getMessage()));
         }
 
         /************************************
@@ -479,9 +479,9 @@ public class PersonneMapee {
 
         } catch (NullPointerException e) {
             // Ce champs est optionnel
-            //log.error(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.MEMBRE_DU_JURY));
+            //log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.MEMBRE_DU_JURY));
         } catch (Exception e) {
-            log.error(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.MEMBRE_DU_JURY, e.getMessage()));
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.MEMBRE_DU_JURY, e.getMessage()));
         }
     }
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LANG=fr_FR.UTF-8
-if [[ $(pgrep -cf "theses-batch-indexation.jar --spring.batch.job.names=ajoutPersonnesDansES") < 1 ]];
+if [[ $(pgrep -cf "theses-batch-indexation.jar --spring.batch.job.names=indexationPersonnesDansES") < 1 ]];
 then
-    java -Xmx5120m -jar /scripts/theses-batch-indexation.jar --spring.batch.job.names=ajoutPersonnesDansES
+    java -Xmx5120m -jar /scripts/theses-batch-indexation.jar --spring.batch.job.names=indexationPersonnesDansES
 fi
