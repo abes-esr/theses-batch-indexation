@@ -39,5 +39,4 @@ public class JobConfig {
     @Value("${table.name}")
     private String nomTable;
 
-
 }

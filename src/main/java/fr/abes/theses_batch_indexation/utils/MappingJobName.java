@@ -1,7 +1,9 @@
 package fr.abes.theses_batch_indexation.utils;
 
+import fr.abes.theses_batch_indexation.configuration.JobConfig;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -13,17 +15,8 @@ import java.util.HashMap;
 @Getter
 public class MappingJobName {
 
-    @Value("${index.name.theses}")
-    private String theses;
-
-    @Value("${index.name.personnes}")
-    private String personnes;
-
-    @Value("${index.name.thematiques}")
-    private String thematiques;
-
-    @Value("${index.name.recherche_personnes}")
-    private String recherche_personnes;
+    @Autowired
+    JobConfig jobConfig;
 
     private final NomIndexSelecteur nomIndexSelecteur;
     private final Environment env;
@@ -54,18 +47,15 @@ public class MappingJobName {
         nomTableES.put("suppressionThematiquesDansES", TableIndexationES.suppression_es_thematique);
 
         // correspondance nom du job / nom de l'index dans ES
-        nomIndexES.put("indexationThesesDansES", theses);
-        nomIndexES.put("suppressionThesesDansES", theses);
-        nomIndexES.put("indexationPersonnesDansES", personnes);
-        nomIndexES.put("suppressionPersonnesDansES", personnes);
-        nomIndexES.put("indexationPersonnesDeBddVersES", personnes);
-        nomIndexES.put("ajoutPersonnesDansES", personnes);
-        nomIndexES.put("ajoutRecherchePersonnesDansES", recherche_personnes);
-        nomIndexES.put("indexationRecherchePersonnesDansES", recherche_personnes);
-        nomIndexES.put("indexationRecherchePersonnesDeBddVersES", recherche_personnes);
-        nomIndexES.put("suppressionRecherchePersonnesDansES", recherche_personnes);
-        nomIndexES.put("indexationThematiquesDansES", thematiques);
-        nomIndexES.put("suppressionThematiquesDansES", thematiques);
+        nomIndexES.put("indexationThesesDansES", jobConfig.getThesesIndex());
+        nomIndexES.put("suppressionThesesDansES", jobConfig.getThesesIndex());
+        nomIndexES.put("indexationPersonnesDansES", jobConfig.getPersonnesIndex());
+        nomIndexES.put("indexationPersonnesDeBddVersES", jobConfig.getPersonnesIndex());
+        nomIndexES.put("indexationThematiquesDansES", jobConfig.getThematiquesIndex());
+        nomIndexES.put("suppressionThematiquesDansES", jobConfig.getThematiquesIndex());
+        nomIndexES.put("indexationRecherchePersonnesDansES", jobConfig.getRecherche_personnesIndex());
+        nomIndexES.put("indexationRecherchePersonnesDeBddVersES", jobConfig.getRecherche_personnesIndex());
+
 
         // correspondance nom du job / nom de l'index dans ES
         nomAliasES.put("indexationPersonnesDansES", "personnes_alias");
