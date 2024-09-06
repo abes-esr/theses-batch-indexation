@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -119,7 +120,7 @@ public class PersonneCacheUtils {
 
     public boolean estPresentEnMemoire(String ppn) {
         if (ppn != null && !ppn.isEmpty()) {
-            return personneCacheList.stream().anyMatch(personneModelES -> personneModelES.getPpn().equals(ppn));
+            return personneCacheList.stream().anyMatch(personneModelES -> Objects.equals(personneModelES.getPpn(), ppn));
         }
         return false;
     }
@@ -148,7 +149,7 @@ public class PersonneCacheUtils {
 
     public void updatePersonneEnMemoire(PersonneModelES personneCourante) {
         PersonneModelES personnePresentEnMemoire =
-                personneCacheList.stream().filter(personneModelES -> personneModelES.getPpn().equals(personneCourante.getPpn())).findAny().get();
+                personneCacheList.stream().filter(personneModelES -> Objects.equals(personneModelES.getPpn(), personneCourante.getPpn())).findAny().get();
 
         personnePresentEnMemoire.getTheses_id().addAll(personneCourante.getTheses_id());
         personnePresentEnMemoire.getTheses().addAll(personneCourante.getTheses());
