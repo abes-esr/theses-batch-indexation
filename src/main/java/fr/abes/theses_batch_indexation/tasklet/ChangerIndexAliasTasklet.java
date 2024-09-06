@@ -49,7 +49,7 @@ public class ChangerIndexAliasTasklet implements Tasklet {
         String oldIndex = nomIndexSelecteur.getNomIndexActuel(alias);
 
         if (elasticSearchUtils.countIndex() < nombreMinimalPersonnes) {
-            throw new Exception("Index non réinitialisé");
+            throw new Exception("Moins de " + nombreMinimalPersonnes + " dans l'index " + newIndex);
         }
 
 
