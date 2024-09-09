@@ -1,25 +1,45 @@
 package fr.abes.theses_batch_indexation.writer;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.BulkRequest;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
+import co.elastic.clients.json.JsonData;
+import co.elastic.clients.json.JsonpMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.abes.theses_batch_indexation.configuration.ElasticClient;
+import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
+import fr.abes.theses_batch_indexation.model.bdd.PersonnesCacheModel;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import fr.abes.theses_batch_indexation.utils.PersonneCacheUtils;
+import fr.abes.theses_batch_indexation.utils.ProxyRetry;
+import jakarta.json.spi.JsonProvider;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
+public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecutionListener {
 
     /*
     todo: OK-Ajouter l'index dans la table
@@ -29,29 +49,40 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
 
      */
 
+    private final JdbcTemplate jdbcTemplate;
+    private final Environment env;
+    private final MappingJobName mappingJobName;
+    @Autowired
+    ProxyRetry proxyRetry;
     private String nomIndex;
-
     @Value("${table.personne.name}")
     private String tablePersonneName;
-
     private AtomicInteger nombreDeTheses = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnes = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdatedDansCeChunk = new AtomicInteger(0);
-
     private List<PersonneModelES> personneCacheList = Collections.synchronizedList(new ArrayList<>());
-
     private PersonneCacheUtils personneCacheUtils;
-
-    private final JdbcTemplate jdbcTemplate;
-
-    private final Environment env;
-    private final MappingJobName mappingJobName;
+    @Value("${job.chunk}")
+    private int chunkPersonneES;
+    private AtomicInteger page = new AtomicInteger(0);
 
     public PersonnesBDDWriter(JdbcTemplate jdbcTemplate, Environment env, MappingJobName mappingJobName) {
         this.jdbcTemplate = jdbcTemplate;
         this.env = env;
         this.mappingJobName = mappingJobName;
+    }
+
+    public static JsonData readJson(InputStream input, ElasticsearchClient esClient) {
+        JsonpMapper jsonpMapper = esClient._transport().jsonpMapper();
+        JsonProvider jsonProvider = jsonpMapper.jsonProvider();
+
+        return JsonData.from(jsonProvider.createParser(input), jsonpMapper);
+    }
+
+    public static String writeJson(Object personneModelES) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(personneModelES);
     }
 
     @Override
@@ -99,6 +130,76 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel> {
         if (theseModel.getPersonnes().size() < 2) {
             log.warn("Moins de personnes que prévu dans cette theses");
         }
+    }
+
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+    }
+
+    @SneakyThrows
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+
+        log.debug("IndexerDansES afterStep");
+        log.debug("Table personne name : " + tablePersonneName);
+        log.debug("Index nom : " + nomIndex);
+        while (true) {
+            BulkRequest.Builder br = new BulkRequest.Builder();
+
+            int pageCourante = page.getAndIncrement();
+
+            log.debug("Indexation de la page " + pageCourante);
+
+
+            List<PersonnesCacheModel> items = new ArrayList<>();
+
+            for (int i = ((pageCourante) * chunkPersonneES);
+                 (i < ((pageCourante) * chunkPersonneES) + chunkPersonneES) && (i<personneCacheList.size());
+                 i++) {
+
+                PersonneModelES personneModelES = personneCacheList.get(i);
+                items.add(new PersonnesCacheModel(personneModelES.getPpn(), nomIndex, writeJson(personneModelES)));
+            }
+
+            if (items.size() == 0) {
+                log.debug("Fin de ce thread");
+                break;
+            }
+
+
+
+
+            for (PersonnesCacheModel personnesCacheModel : items) {
+
+                JsonData json = readJson(
+                        new ByteArrayInputStream(
+                                personnesCacheModel.getPersonne().getBytes()),
+                        ElasticClient.getElasticsearchClient()
+                );
+
+                br.operations(op -> op
+                        .index(idx -> idx
+                                .index(nomIndex.toLowerCase())
+                                .id(personnesCacheModel.getPpn())
+                                .document(json)
+                        )
+                );
+            }
+
+            BulkResponse result = proxyRetry.executerDansES(br);
+
+
+            if (result.errors()) {
+                log.error("Erreurs dans le bulk : ");
+                for (BulkResponseItem item : result.items()) {
+                    if (item.error() != null) {
+                        log.error(item.id() + item.error());
+                    }
+                }
+            }
+        }
+
+        return ExitStatus.COMPLETED;
     }
 
 }

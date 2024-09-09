@@ -81,7 +81,6 @@ public class BatchConfiguration {
                 .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexPersonnesDansBDD)
-                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .next(stepChangerIndexAlias(changerIndexAliasTasklet))
                 .build();
     }
