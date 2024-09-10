@@ -9,14 +9,10 @@ import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -27,13 +23,15 @@ public class PersonneCacheUtils {
     private String tablePersonneName;
     private String nomIndex;
 
-    private List<PersonneModelES> personneCacheList;
+    private Map<String, PersonneModelES> personneCacheListPpn;
+    private List<PersonneModelES> personneCacheListSansPpn;
 
-    public PersonneCacheUtils(JdbcTemplate jdbcTemplate, String tablePersonneName, String nomIndex, List<PersonneModelES> personneCacheList) {
+    public PersonneCacheUtils(JdbcTemplate jdbcTemplate, String tablePersonneName, String nomIndex, Map<String, PersonneModelES> personneCacheListPpn, List<PersonneModelES> personneCacheListSansPpn) {
         this.jdbcTemplate = jdbcTemplate;
         this.tablePersonneName = tablePersonneName;
         this.nomIndex = nomIndex;
-        this.personneCacheList = personneCacheList;
+        this.personneCacheListPpn = personneCacheListPpn;
+        this.personneCacheListSansPpn = personneCacheListSansPpn;
     }
 
     public void initialisePersonneCacheBDD() {
@@ -57,7 +55,11 @@ public class PersonneCacheUtils {
     }
 
     public void ajoutPersonneEnMemoire(PersonneModelES personneModelES) {
-        personneCacheList.add(personneModelES);
+        if (personneModelES.isHas_idref()) {
+            personneCacheListPpn.put(personneModelES.getPpn(), personneModelES);
+        } else {
+            personneCacheListSansPpn.add(personneModelES);
+        }
     }
 
     public PersonneModelES getPersonneModelBDD(String ppn) throws IOException {
@@ -120,7 +122,7 @@ public class PersonneCacheUtils {
 
     public boolean estPresentEnMemoire(String ppn) {
         if (ppn != null && !ppn.isEmpty()) {
-            return personneCacheList.stream().anyMatch(personneModelES -> Objects.equals(personneModelES.getPpn(), ppn));
+            return personneCacheListPpn.containsKey(ppn);
         }
         return false;
     }
@@ -149,7 +151,7 @@ public class PersonneCacheUtils {
 
     public void updatePersonneEnMemoire(PersonneModelES personneCourante) {
         PersonneModelES personnePresentEnMemoire =
-                personneCacheList.stream().filter(personneModelES -> Objects.equals(personneModelES.getPpn(), personneCourante.getPpn())).findAny().get();
+                personneCacheListPpn.get(personneCourante.getPpn());
 
         personnePresentEnMemoire.getTheses_id().addAll(personneCourante.getTheses_id());
         personnePresentEnMemoire.getTheses().addAll(personneCourante.getTheses());

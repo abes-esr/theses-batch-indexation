@@ -77,8 +77,7 @@ public class BatchConfiguration {
                                             JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
-                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexPersonnesDansBDD)
                 .next(stepChangerIndexAlias(changerIndexAliasTasklet))
