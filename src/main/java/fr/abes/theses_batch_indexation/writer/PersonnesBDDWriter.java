@@ -61,7 +61,8 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
     private AtomicInteger nombreDePersonnes = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdated = new AtomicInteger(0);
     private AtomicInteger nombreDePersonnesUpdatedDansCeChunk = new AtomicInteger(0);
-    private List<PersonneModelES> personneCacheList = Collections.synchronizedList(new ArrayList<>());
+    private Map<String, PersonneModelES> personneCacheListPpn = new HashMap<>();
+    private List<PersonneModelES> personneCacheListSansPpn = new ArrayList<>();
     private PersonneCacheUtils personneCacheUtils;
     @Value("${job.chunk}")
     private int chunkPersonneES;
@@ -94,7 +95,8 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
                 jdbcTemplate,
                 tablePersonneName,
                 nomIndex,
-                personneCacheList
+                personneCacheListPpn,
+                personneCacheListSansPpn
         );
 
         nombreDePersonnesUpdatedDansCeChunk.set(0);
@@ -117,7 +119,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
                 }
             }
         }
-        jdbcTemplate.update("commit");
+        //jdbcTemplate.update("commit");
         log.info("Nombre de thèses traitées : " + nombreDeTheses.get());
         log.info("Nombre de personnes traitées : " + nombreDePersonnes.get());
         log.info("Nombre de personnes mis à jour dans ce chunk : " + nombreDePersonnesUpdatedDansCeChunk.get());
@@ -128,7 +130,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
 
     private void logSiPasAssezDePersonnesDansLaThese(TheseModel theseModel) {
         if (theseModel.getPersonnes().size() < 2) {
-            log.warn("Moins de personnes que prévu dans cette theses");
+            log.debug("Moins de personnes que prévu dans cette theses");
         }
     }
 
@@ -143,6 +145,11 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
         log.debug("IndexerDansES afterStep");
         log.debug("Table personne name : " + tablePersonneName);
         log.debug("Index nom : " + nomIndex);
+
+        personneCacheListSansPpn.addAll(personneCacheListPpn.values());
+
+        log.debug("Fin du merge des listes");
+
         while (true) {
             BulkRequest.Builder br = new BulkRequest.Builder();
 
@@ -154,10 +161,10 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
             List<PersonnesCacheModel> items = new ArrayList<>();
 
             for (int i = ((pageCourante) * chunkPersonneES);
-                 (i < ((pageCourante) * chunkPersonneES) + chunkPersonneES) && (i<personneCacheList.size());
+                 (i < ((pageCourante) * chunkPersonneES) + chunkPersonneES) && (i<personneCacheListSansPpn.size());
                  i++) {
 
-                PersonneModelES personneModelES = personneCacheList.get(i);
+                PersonneModelES personneModelES = personneCacheListSansPpn.get(i);
                 items.add(new PersonnesCacheModel(personneModelES.getPpn(), nomIndex, writeJson(personneModelES)));
             }
 
