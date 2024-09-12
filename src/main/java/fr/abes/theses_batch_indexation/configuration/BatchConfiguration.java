@@ -18,6 +18,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -68,45 +69,57 @@ public class BatchConfiguration {
 
     @Bean
     public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansBDD,
-                                            Tasklet initialiserIndexESTasklet,
+                                            Tasklet initialiserIndexEsPersonneTasklet,
                                             Tasklet initiliserIndexBDDTasklet,
                                             Tasklet indexerPersonnesDansESTasklet,
                                             Tasklet chargerOaiSetsTasklet,
+                                            Tasklet changerIndexAliasTasklet,
                                             JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
-                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexPersonnesDansBDD)
-                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
-                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .next(stepChangerIndexAlias(changerIndexAliasTasklet))
                 .build();
     }
 
     @Bean
-    public Job jobIndexationPersonnesDeBddVersES(Tasklet initialiserIndexESTasklet,
-                                                 Tasklet indexerPersonnesDansESTasklet,
-                                                 JobTheseCompletionNotificationListener listener) {
+    public Job jobIndexationPersonnesDeBddVersES(Tasklet initialiserIndexEsPersonneTasklet,
+                                                 JobTheseCompletionNotificationListener listener,
+                                                 Tasklet indexerPersonnesDansESTasklet) {
         return jobs.get("indexationPersonnesDeBddVersES").incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .start(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
 
     @Bean
     public Job jobIndexationRecherchePersonnesDansES(Step stepIndexRecherchePersonnesDansBDD,
-                                                     Tasklet initialiserIndexESTasklet,
+                                                     Tasklet initialiserIndexEsPersonneTasklet,
                                                      Tasklet initiliserIndexBDDTasklet,
                                                      Tasklet indexerPersonnesDansESTasklet,
                                                      Tasklet chargerOaiSetsTasklet,
+                                                     Tasklet changerIndexAliasTasklet,
                                                      JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationRecherchePersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
                 .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexRecherchePersonnesDansBDD)
-                .next(stepInitialiserIndexES(initialiserIndexESTasklet))
+                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
+                .next(stepChangerIndexAlias(changerIndexAliasTasklet))
+                .build();
+    }
+    @Bean
+    public Job jobIndexationRecherchePersonnesDeBddVersES(Tasklet initialiserIndexEsPersonneTasklet,
+                                                 JobTheseCompletionNotificationListener listener,
+                                                 Tasklet indexerPersonnesDansESTasklet) {
+        return jobs.get("indexationRecherchePersonnesDeBddVersES").incrementer(new RunIdIncrementer())
+                .listener(listener)
+                .start(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .build();
     }
@@ -151,58 +164,6 @@ public class BatchConfiguration {
                 .build();
     }
 
-    @Bean
-    public Job jobSuppressionPersonnesDansES(Step stepSupprimePersonnesDansES,
-                                             JobRepository jobRepository,
-                                             Tasklet chargerOaiSetsTasklet,
-                                             JobTheseCompletionNotificationListener listener) {
-        log.debug("debut du job de suppression des personnes dans ES...");
-
-        return jobs.get("suppressionPersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
-                .listener(listener)
-                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
-                .next(stepSupprimePersonnesDansES)
-                .build();
-    }
-
-    @Bean
-    public Job jobAjoutPersonnesDansES(Step stepAjouterPersonnesDansES,
-                                       JobRepository jobRepository,
-                                       Tasklet chargerOaiSetsTasklet,
-                                       JobTheseCompletionNotificationListener listener) {
-        return jobs.get("ajoutPersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
-                .listener(listener)
-                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
-                .next(stepAjouterPersonnesDansES)
-                .build();
-    }
-    @Bean
-    public Job jobSuppressionRecherchePersonnesDansES(Step stepSupprimeRecherchePersonnesDansES,
-                                             JobRepository jobRepository,
-                                             Tasklet chargerOaiSetsTasklet,
-                                             JobTheseCompletionNotificationListener listener) {
-        log.debug("debut du job de suppression des personnes dans ES...");
-
-        return jobs.get("suppressionRecherchePersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
-                .listener(listener)
-                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
-                .next(stepSupprimeRecherchePersonnesDansES)
-                .build();
-    }
-
-    @Bean
-    public Job jobAjoutRecherchePersonnesDansES(Step stepAjouterRecherchePersonnesDansES,
-                                       JobRepository jobRepository,
-                                       Tasklet chargerOaiSetsTasklet,
-                                       JobTheseCompletionNotificationListener listener) {
-        return jobs.get("ajoutRecherchePersonnesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
-                .listener(listener)
-                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
-                .next(stepAjouterRecherchePersonnesDansES)
-                .build();
-    }
-
-
     // ---------- STEP --------------------------------------------
     @Bean
     public Step stepIndexThesesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
@@ -233,7 +194,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexPersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+    public Step stepIndexPersonnesDansBDD(@Qualifier("jdbcPagingPersonnesCustomReader") ItemReader itemReader,
                                           @Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
                                           @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationPersonne").chunk(config.getChunk())
@@ -244,7 +205,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
+    public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("jdbcPagingPersonnesCustomReader") ItemReader itemReader,
                                                    @Qualifier("recherchePersonneItemProcessor") ItemProcessor itemProcessor,
                                                    @Qualifier("recherchePersonnesBDDWriter") ItemWriter itemWriter) {
         return stepBuilderFactory.get("stepIndexationRecherchePersonne").chunk(config.getChunk())
@@ -261,14 +222,26 @@ public class BatchConfiguration {
     }
 
     @Bean
+    public Step stepChangerIndexAlias(@Qualifier("changerIndexAliasTasklet") Tasklet t) {
+        return stepBuilderFactory.get("ChangerIndexAliasTasklet").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+
+    @Bean
+    public Step stepInitialiserIndexESPersonne(@Qualifier("initialiserIndexEsPersonneTasklet") Tasklet t) {
+        return stepBuilderFactory.get("stepInitialiserIndexESPersonne").allowStartIfComplete(true)
+                .tasklet(t).build();
+    }
+
+    @Bean
     public Step stepInitiliserIndexBDDTasklet(@Qualifier("initiliserIndexBDDTasklet") Tasklet t) {
-        return stepBuilderFactory.get("InitiliserIndexBDDTasklet").allowStartIfComplete(true)
+        return stepBuilderFactory.get("stepInitiliserIndexBDDTasklet").allowStartIfComplete(true)
                 .tasklet(t).build();
     }
 
     @Bean
     public Step stepIndexerPersonnesDansESTasklet(@Qualifier("indexerPersonnesDansESTasklet") Tasklet t) {
-        return stepBuilderFactory.get("IndexerDansESTasklet").allowStartIfComplete(true)
+        return stepBuilderFactory.get("stepIndexerPersonnesDansESTasklet").allowStartIfComplete(true)
                 .tasklet(t)
                 .taskExecutor(taskExecutor())
                 .throttleLimit(config.getThrottle())
@@ -290,46 +263,6 @@ public class BatchConfiguration {
                 .writer(itemWriter)
                 .taskExecutor(taskExecutor())
                 .throttleLimit(config.getThrottle())
-                .build();
-    }
-
-    @Bean
-    public Step stepSupprimePersonnesDansES(JdbcPersonneReader itemReader,
-                                            @Qualifier("supprimerThesesPersonneProcessor") ItemProcessor itemProcessor) {
-        return stepBuilderFactory.get("stepSupprimePersonnesDansES").<TheseModel, TheseModel>chunk(1)
-                .listener(theseWriteListener)
-                .reader(itemReader)
-                .processor(itemProcessor)
-                .build();
-    }
-
-    @Bean
-    public Step stepAjouterPersonnesDansES(JdbcPersonneReader itemReader,
-                                           @Qualifier("ajouterThesesPersonnesProcessor") ItemProcessor itemProcessor) {
-        return stepBuilderFactory.get("stepAjouterPersonnesDansES").chunk(1)
-                .listener(theseWriteListener)
-                .reader(itemReader)
-                .processor(itemProcessor)
-                .build();
-    }
-
-    @Bean
-    public Step stepSupprimeRecherchePersonnesDansES(JdbcPersonneReader itemReader,
-                                            @Qualifier("supprimerThesesRecherchePersonneProcessor") ItemProcessor itemProcessor) {
-        return stepBuilderFactory.get("stepSupprimeRecherchePersonnesDansES").<TheseModel, TheseModel>chunk(1)
-                .listener(theseWriteListener)
-                .reader(itemReader)
-                .processor(itemProcessor)
-                .build();
-    }
-
-    @Bean
-    public Step stepAjouterRecherchePersonnesDansES(JdbcPersonneReader itemReader,
-                                           @Qualifier("ajouterThesesRecherchePersonnesProcessor") ItemProcessor itemProcessor) {
-        return stepBuilderFactory.get("stepAjouterRecherchePersonnesDansES").<TheseModel, TheseModel>chunk(1)
-                .listener(theseWriteListener)
-                .reader(itemReader)
-                .processor(itemProcessor)
                 .build();
     }
 

@@ -1,11 +1,5 @@
 package fr.abes.theses_batch_indexation.tasklet;
 
-import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
-import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
-import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
-import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
-import fr.abes.theses_batch_indexation.configuration.ElasticClient;
-import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.utils.ElasticSearchUtils;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +13,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 @Component
 @Slf4j
-public class InitialiserIndexESTasklet implements Tasklet {
+public class InitialiserIndexEsPersonneTasklet implements Tasklet {
 
     @Value("${index.pathTheses}")
     private String pathTheses;
@@ -42,9 +34,6 @@ public class InitialiserIndexESTasklet implements Tasklet {
     Environment env;
 
     @Autowired
-    DbService dbService;
-
-    @Autowired
     MappingJobName mappingJobName;
 
     @Override
@@ -53,8 +42,9 @@ public class InitialiserIndexESTasklet implements Tasklet {
         String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
         ElasticSearchUtils elasticSearchUtils = new ElasticSearchUtils(nomIndex);
 
-        if (env.getProperty("initialiseIndexTheses") != null &&
-                env.getProperty("initialiseIndexTheses").equals("true")) {
+        if (env.getProperty("initialiseIndexPersonnes") != null &&
+                env.getProperty("initialiseIndexPersonnes").equals("true")) {
+
             log.warn("Réinitialisation de l'index " + nomIndex);
             File f = selectIndex();
 
@@ -63,10 +53,15 @@ public class InitialiserIndexESTasklet implements Tasklet {
                 log.info("Index " + nomIndex + " supprimé");
                 elasticSearchUtils.createIndexES(f, nomIndex);
                 log.info("Index " + nomIndex + " créé avec le schéma présent dans " + f.getPath());
-                dbService.mettreToutesLesThesesAIndexer(mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names")));
-                log.info("table d'indexation "+ mappingJobName.getNomTableES().get(env.getProperty("spring.batch.job.names"))+" remplie dans la base.");
             }
         }
+
+        if (elasticSearchUtils.countIndex() > 1) {
+            throw new Exception("Index non réinitialisé");
+        }
+
+
+
         return RepeatStatus.FINISHED;
     }
 
@@ -82,6 +77,7 @@ public class InitialiserIndexESTasklet implements Tasklet {
                 f = new File(pathPersonnes);
                 break;
             case "indexationRecherchePersonnesDansES" :
+            case "indexationRecherchePersonnesDeBddVersES" :
                 f = new File(pathRecherchePersonnes);
                 break;
             case "indexationThematiquesDansES" :
@@ -90,4 +86,6 @@ public class InitialiserIndexESTasklet implements Tasklet {
         }
         return f;
     }
+
+
 }

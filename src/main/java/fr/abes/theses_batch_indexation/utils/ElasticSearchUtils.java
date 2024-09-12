@@ -7,9 +7,15 @@ import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.TrackHits;
+import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
+import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexRequest;
+import co.elastic.clients.elasticsearch.indices.DeleteIndexResponse;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.JsonpMapper;
 import fr.abes.theses_batch_indexation.configuration.ElasticClient;
@@ -23,9 +29,7 @@ import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +47,43 @@ public class ElasticSearchUtils {
         this.nomIndex = nomIndex;
     }
 
+    public long countIndex() throws IOException {
+        SearchRequest searchRequest = new SearchRequest.Builder()
+                .index(nomIndex)
+                .size(0)
+                .trackTotalHits(builder -> builder.enabled(true))
+                .build();
+
+        SearchResponse<Object> searchResponse = ElasticClient.getElasticsearchClient().search(searchRequest, Object.class);
+
+        return searchResponse.hits().total().value();
+
+    }
+
+    public void createIndexES(File f, String nomIndex) throws IOException {
+        CreateIndexRequest.Builder builder = new CreateIndexRequest.Builder();
+        builder.index(nomIndex.toLowerCase());
+        builder.withJson(new FileInputStream(f));
+
+        CreateIndexResponse response = ElasticClient.getElasticsearchClient().indices().create(builder.build());
+
+        if (!response.acknowledged()) {
+            log.error("Erreur dans createIndexES()");
+        }
+    }
+
+    public void deleteIndexES(String nomIndex) throws IOException {
+        DeleteIndexRequest.Builder builder = new DeleteIndexRequest.Builder();
+        builder.index(nomIndex.toLowerCase());
+        builder.ignoreUnavailable(true);
+
+        DeleteIndexRequest deleteIndexRequest = builder.build();
+        DeleteIndexResponse response = ElasticClient.getElasticsearchClient().indices().delete(deleteIndexRequest);
+
+        if (!response.acknowledged()) {
+            log.error("Erreur dans deleteIndexES()");
+        }
+    }
 
     public void indexerPersonnesDansEsBulk(
             String tablePersonneName,
