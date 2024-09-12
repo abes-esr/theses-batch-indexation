@@ -8,7 +8,7 @@ Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override 
  spring.batch.job.names=nom_du_job
  ~~~
 
-Le batch supprime l'index et le recrée si initialiseIndex=true avec le fichier qui est dans resources/indexs :
+Le batch supprime l'index et le recrée si initialiseIndexTheses=true ou initialiseIndexPersonnes=true (reste à ajouter Thematiques) avec le fichier qui est dans resources/indexs :
 - si spring.batch.job.names=indexationThesesDansES  => on utilise le fichier theses.json
 - si spring.batch.job.names=indexationPersonnesDansES  => on utilise le fichier personnes.json
 - si spring.batch.job.names=indexationRecherchePersonnesDansES  => on utilise le fichier recherche_personnes.json
@@ -67,7 +67,8 @@ index.name=theses
 oaiSets.path=src/main/resources/listeOaiSets.xml
 
 # Crée ou recrée l'index si true
-initialiseIndex=false
+initialiseIndexTheses=false
+initialiseIndexPersonnes=false
 ~~~~
 
 Dans la base de données, les lignes à indexer sont gérées via : 
@@ -123,7 +124,7 @@ Pour choisir le Job qu'on veut lancer : Ajouter dans la configuration (Override 
  spring.batch.job.names=nom_du_job
  ~~~
 
-Le batch supprime l'index et le recrée si initialiseIndex=true avec le fichier qui est dans resources/indexs :
+Le batch supprime l'index et le recrée si initialiseIndexTheses=true ou initialiseIndexPersonnes=true avec le fichier qui est dans resources/indexs :
 - si spring.batch.job.names=indexationThesesDansES  => on utilise le fichier theses.json
 - si spring.batch.job.names=indexationPersonnesDansES  => on utilise le fichier personnes.json
 - si spring.batch.job.names=indexationRecherchePersonnesDansES  => on utilise le fichier recherche_personnes.json
@@ -182,7 +183,8 @@ index.name=theses
 oaiSets.path=src/main/resources/listeOaiSets.xml
 
 # Crée ou recrée l'index si true
-initialiseIndex=false
+initialiseIndexTheses=false
+initialiseIndexPersonnes=false
 ~~~~
 
 Dans la base de données, les lignes à indexer sont gérées via :
@@ -238,5 +240,30 @@ insert into indexation_es_these (select iddoc, nnt, numsujet from document);comm
 
 - lancer le batch avec les options suivantes, par exemple depuis un container de theses-batch-indexation :
 ~~~~
-java -jar /scripts/theses-batch-indexation.jar --initialiseIndex=true --spring.batch.job.names=indexationThesesDansES
+ java -Xmx5120m -jar /scripts/theses-batch-indexation.jar --spring.batch.job.names=indexationThesesDansES --initialiseIndexTheses=true
+~~~~
+
+Pour créer un nouvel index sans perturber le fonctionnement de theses.fr, on peut : 
+- choisir un nouveau nom d'index via la variable THESES_INDEX_NAME_THESES_BATCH du .ENV dans la partie paramètrage de theses-batch-indexation (par exemple theses2)
+- arreter (sudo docker compose down theses-batch-indexation-theses) et relancer (sudo docker compose up -d) le container pour qu'il prenne en compte le changement de nom d'index
+- relancer le batch via la commande : java -Xmx5120m -jar /scripts/theses-batch-indexation.jar --spring.batch.job.names=indexationThesesDansES --initialiseIndexTheses=true pour qu'il crée le nouvel index (pendant ce temps, les mises à jour sont reportées dans le nouvel index et non plus dans celui visible dans theses.fr)
+- lorsque l'index est plein, basculer l'alias dans dev tools de kibana sur le nouvel index via la commande :
+~~~~
+POST /_aliases
+{
+  "actions": [
+    {
+      "remove": {
+        "index": "theses2",
+        "alias": "theses_alias"
+      }
+    },
+    {
+      "add": {
+        "index": "theses3",
+        "alias": "theses_alias"
+      }
+    }
+  ]
+}
 ~~~~
