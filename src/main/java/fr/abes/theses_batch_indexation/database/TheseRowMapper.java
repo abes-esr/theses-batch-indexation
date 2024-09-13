@@ -25,7 +25,7 @@ public class TheseRowMapper implements RowMapper<TheseModel> {
             these.setIdSujet(rsOra.getString("numsujet"));
 
             try {
-                these.setDoc(XMLType.createXML(rsOra.getOPAQUE("doc")).getStringVal());
+                these.setDoc(XMLType.createXML(rsOra.getOPAQUE("doc")));
             } catch (java.sql.SQLException e) {
             }
 
