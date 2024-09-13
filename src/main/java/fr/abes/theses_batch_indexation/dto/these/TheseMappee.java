@@ -120,7 +120,7 @@ public class TheseMappee {
                     }
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour nnt " + e);
+                log.warn("PB pour nnt " + e);
             }
 
             // id
@@ -135,7 +135,7 @@ public class TheseMappee {
                     codeEtab = starGestion.get().getMdWrap().getXmlData().getStarGestion().getCodeEtab();
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour cas de " + nnt + e.getMessage());
+                log.warn("PB pour cas de " + nnt + e.getMessage());
             }
 
             // titrePrincipal
@@ -144,7 +144,7 @@ public class TheseMappee {
             try {
                 titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent();
             } catch (NullPointerException e) {
-                log.error("PB pour titrePrincipal de " + nnt + e.getMessage());
+                log.warn("PB pour titrePrincipal de " + nnt + e.getMessage());
             }
             // titres
             log.debug("traitement de titres");
@@ -164,7 +164,7 @@ public class TheseMappee {
                     }
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour titres de " + nnt + e.getMessage());
+                log.warn("PB pour titres de " + nnt + e.getMessage());
             }
 
             // resumes
@@ -179,7 +179,7 @@ public class TheseMappee {
                         resumes.put(a.getLang(), a.getContent());
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour resumes de " + nnt + e.getMessage());
+                log.warn("PB pour resumes de " + nnt + e.getMessage());
             }
 
             // langues
@@ -193,7 +193,7 @@ public class TheseMappee {
                     langues.add(l.getValue());
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour langue de " + nnt + e.getMessage());
+                log.warn("PB pour langue de " + nnt + e.getMessage());
             }
 
             // date de soutenance
@@ -202,14 +202,14 @@ public class TheseMappee {
             try {
                 dateSoutenance = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString();
             } catch (NullPointerException e) {
-                log.error("PB pour dateSoutenance de " + nnt);
+                log.warn("PB pour dateSoutenance de " + nnt);
             }
 
             // date de datePremiereInscriptionDoctorat
             try {
                 datePremiereInscriptionDoctorat = techMD.getMdWrap().getXmlData().getThesisAdmin().getThesisDegree().getDatePremiereInscriptionDoctorat().toString();
             } catch (NullPointerException e) {
-                log.error("PB pour datePremiereInscriptionDoctorat de " + nnt);
+                log.warn("PB pour datePremiereInscriptionDoctorat de " + nnt);
             }
 
             // date de fin d'embargo
@@ -221,7 +221,7 @@ public class TheseMappee {
                     dateFinEmbargo = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                             .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getDiffusion().getRestrictionTemporelleFin();
             } catch (NullPointerException e) {
-                log.error("PB pour date fin embargo de " + nnt + "," + e.getMessage());
+                log.warn("PB pour date fin embargo de " + nnt + "," + e.getMessage());
             }
 
             // accessible
@@ -243,7 +243,7 @@ public class TheseMappee {
                 }
 
             } catch (NullPointerException e) {
-                log.error("PB pour accessible de " + nnt);
+                log.warn("PB pour accessible de " + nnt);
             }
 
             // source
@@ -264,7 +264,7 @@ public class TheseMappee {
                 }
 
             } catch (NullPointerException ex) {
-                log.error("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
+                log.warn("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
 
             // isSoutenue
@@ -278,7 +278,7 @@ public class TheseMappee {
                     isSoutenue = true;
 
             } catch (NullPointerException e) {
-                log.error("PB pour isSoutenue de " + nnt + e.getMessage());
+                log.warn("PB pour isSoutenue de " + nnt + e.getMessage());
             }
 
             // status
@@ -307,7 +307,7 @@ public class TheseMappee {
                 }
 
             } catch (NullPointerException e) {
-                log.error("PB pour status de " + nnt + "," + e.getMessage());
+                log.warn("PB pour status de " + nnt + "," + e.getMessage());
             }
 
             // date filtre
@@ -354,7 +354,7 @@ public class TheseMappee {
                     }
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour etablissements de " + nnt + "," + e.getMessage());
+                log.warn("PB pour etablissements de " + nnt + "," + e.getMessage());
             }
 
             // partenaires
@@ -386,7 +386,7 @@ public class TheseMappee {
                             pdto.setType(p.getAutreType());
                         }
                     } catch (Exception eTypePartenaireRecherche) {
-                        log.error("pb lors de la récupération du type du partenaire de recherche pour nnt = " + nnt);
+                        log.warn("pb lors de la récupération du type du partenaire de recherche pour nnt = " + nnt);
                     }
 
 
@@ -398,7 +398,7 @@ public class TheseMappee {
                     }
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour partenaire  " + nnt + "," + e.getMessage());
+                log.warn("PB pour partenaire  " + nnt + "," + e.getMessage());
 
             }
 
@@ -427,7 +427,7 @@ public class TheseMappee {
                     }
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour ecolesDoctorales de " + nnt + "," + e.getMessage());
+                log.warn("PB pour ecolesDoctorales de " + nnt + "," + e.getMessage());
 
             }
 
@@ -439,7 +439,7 @@ public class TheseMappee {
                         .getThesisDegree().getThesisDegreeDiscipline();
                 discipline = tddisc.getValue();
             } catch (NullPointerException e) {
-                log.error("PB pour discipline de " + nnt + "," + e.getMessage());
+                log.warn("PB pour discipline de " + nnt + "," + e.getMessage());
 
             }
 
@@ -465,7 +465,7 @@ public class TheseMappee {
                     auteursPN.add(a.getPrenom() + " " + a.getNom());
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour auteurs de " + nnt + "," + e.getMessage());
+                log.warn("PB pour auteurs de " + nnt + "," + e.getMessage());
             }
 
             // co-auteurs
@@ -490,7 +490,7 @@ public class TheseMappee {
                     auteursPN.add(ca.getPrenom() + " " + ca.getNom());
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour co-auteurs de " + nnt + "," + e.getMessage());
+                log.warn("PB pour co-auteurs de " + nnt + "," + e.getMessage());
             }
 
             // directeurs
@@ -513,7 +513,7 @@ public class TheseMappee {
                     directeursPN.add(dt.getPrenom() + " " + dt.getNom());
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour directeurs de " + nnt + "," + e.getMessage());
+                log.warn("PB pour directeurs de " + nnt + "," + e.getMessage());
             }
 
             // presidentJury
@@ -533,7 +533,7 @@ public class TheseMappee {
                     presidentJuryPN = presidentDepuisTef.getPrenom() + " " + presidentDepuisTef.getNom();
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour president jury de " + nnt + "," + e.getMessage());
+                log.warn("PB pour president jury de " + nnt + "," + e.getMessage());
             }
 
             // membres Jury
@@ -557,7 +557,7 @@ public class TheseMappee {
                     membresJuryPN.add(m.getPrenom() + " " + m.getNom());
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour membres jury de " + nnt + "," + e.getMessage());
+                log.warn("PB pour membres jury de " + nnt + "," + e.getMessage());
             }
 
             // rapporteurs
@@ -581,7 +581,7 @@ public class TheseMappee {
                     rapporteursPN.add(r.getPrenom() + " " + r.getNom());
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour rapporteurs de " + nnt + "," + e.getMessage());
+                log.warn("PB pour rapporteurs de " + nnt + "," + e.getMessage());
             }
 
             // sujets
@@ -602,7 +602,7 @@ public class TheseMappee {
                     }
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour sujets de " + nnt + "," + e.getMessage());
+                log.warn("PB pour sujets de " + nnt + "," + e.getMessage());
             }
 
             // sujetsRameau
@@ -800,7 +800,7 @@ public class TheseMappee {
                     }
                 }
             } catch (NullPointerException e) {
-                log.error("PB pour sujetsRameau de " + nnt + ", " + e.getMessage());
+                log.warn("PB pour sujetsRameau de " + nnt + ", " + e.getMessage());
             }
 
             // oaiSets
@@ -816,7 +816,7 @@ public class TheseMappee {
                 }
 
             } catch (NullPointerException e) {
-                log.error("PB pour oaisets de " + nnt + "," + e.getMessage());
+                log.warn("PB pour oaisets de " + nnt + "," + e.getMessage());
             }
 
             // theseTravaux
@@ -826,7 +826,7 @@ public class TheseMappee {
                 theseTravaux = techMD.getMdWrap().getXmlData().getThesisAdmin()
                         .getTheseSurTravaux();
             } catch (NullPointerException e) {
-                log.error("PB pour thesesTravaux de " + nnt + "," + e.getMessage());
+                log.warn("PB pour thesesTravaux de " + nnt + "," + e.getMessage());
             }
         } catch (Exception e) {
             log.error("erreur lors du mappage = " + e.getMessage());
