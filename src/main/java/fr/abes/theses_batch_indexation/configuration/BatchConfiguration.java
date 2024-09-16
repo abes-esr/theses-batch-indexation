@@ -70,8 +70,6 @@ public class BatchConfiguration {
     @Bean
     public Job jobIndexationPersonnesDansES(Step stepIndexPersonnesDansBDD,
                                             Tasklet initialiserIndexEsPersonneTasklet,
-                                            Tasklet initiliserIndexBDDTasklet,
-                                            Tasklet indexerPersonnesDansESTasklet,
                                             Tasklet chargerOaiSetsTasklet,
                                             Tasklet changerIndexAliasTasklet,
                                             JobTheseCompletionNotificationListener listener) {
@@ -98,18 +96,14 @@ public class BatchConfiguration {
     @Bean
     public Job jobIndexationRecherchePersonnesDansES(Step stepIndexRecherchePersonnesDansBDD,
                                                      Tasklet initialiserIndexEsPersonneTasklet,
-                                                     Tasklet initiliserIndexBDDTasklet,
-                                                     Tasklet indexerPersonnesDansESTasklet,
                                                      Tasklet chargerOaiSetsTasklet,
                                                      Tasklet changerIndexAliasTasklet,
                                                      JobTheseCompletionNotificationListener listener) {
         return jobs.get("indexationRecherchePersonnesDansES").incrementer(new RunIdIncrementer())
                 .listener(listener)
-                .start(stepInitiliserIndexBDDTasklet(initiliserIndexBDDTasklet))
-                .next(stepChargerListeOaiSets(chargerOaiSetsTasklet))
+                .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexRecherchePersonnesDansBDD)
-                .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
                 .next(stepChangerIndexAlias(changerIndexAliasTasklet))
                 .build();
     }
