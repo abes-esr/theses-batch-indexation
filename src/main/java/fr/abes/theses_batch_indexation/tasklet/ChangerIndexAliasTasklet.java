@@ -37,12 +37,6 @@ public class ChangerIndexAliasTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 
-
-        //todo: verifier que l'init soit bien fait (et le faire avant la bdd : comme ca même s'il y a une erreur pendant
-        //      la phase bdd, on est assuré que ca ne passera pas le second test) OK
-        //TODO : test si il y a au moins 800K personnes dans l'index  Ok
-        //TODO: Sépaarer initialiseIndex OK
-
         String newIndex = mappingJobName.getNomIndexES().get(chunkContext.getStepContext().getJobName());
         ElasticSearchUtils elasticSearchUtils = new ElasticSearchUtils(newIndex);
         String alias = mappingJobName.getNomAliasES().get(chunkContext.getStepContext().getJobName());
@@ -51,7 +45,6 @@ public class ChangerIndexAliasTasklet implements Tasklet {
         if (elasticSearchUtils.countIndex() < nombreMinimalPersonnes) {
             throw new Exception("Moins de " + nombreMinimalPersonnes + " dans l'index " + newIndex);
         }
-
 
         try {
             // Supprimer l'alias de l'ancien index
@@ -75,7 +68,6 @@ public class ChangerIndexAliasTasklet implements Tasklet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         return RepeatStatus.FINISHED;
     }

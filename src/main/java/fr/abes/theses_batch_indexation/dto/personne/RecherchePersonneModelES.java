@@ -16,7 +16,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecherchePersonneModelES {
+public class RecherchePersonneModelES implements IModelES {
     protected String ppn;
     protected boolean has_idref;
     protected String nom;
