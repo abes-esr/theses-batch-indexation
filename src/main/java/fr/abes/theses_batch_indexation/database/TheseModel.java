@@ -4,7 +4,9 @@ import fr.abes.theses_batch_indexation.dto.personne.PersonneModelES;
 import fr.abes.theses_batch_indexation.dto.personne.RecherchePersonneModelES;
 import lombok.Getter;
 import lombok.Setter;
+import oracle.xdb.XMLType;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /** Objet "valise" qui modelise une entrée dans la base de données
@@ -16,7 +18,7 @@ import java.util.List;
 public class TheseModel {
     private int idDoc;
     private String nnt;
-    private String doc;
+    private XMLType doc;
     private String jsonThese;
     private List<PersonneModelES> personnes;
 
@@ -37,6 +39,14 @@ public class TheseModel {
         } else {
             return this.getIdSujet();
         }
+    }
+
+    public String getDoc() throws SQLException {
+        return doc.getStringVal();
+    }
+
+    public XMLType getDocXmlType() {
+        return doc;
     }
 
 }

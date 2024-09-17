@@ -15,7 +15,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PersonneModelES {
+public class PersonneModelES implements IModelES {
 
     protected String ppn;
     protected boolean has_idref;
