@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.loc.gov/METS/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:mads="http://www.loc.gov/mads/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:tef="http://www.abes.fr/abes/documents/tef" xmlns:mets="http://www.loc.gov/METS/" xmlns:tefudoc="http://www.theses.fr/namespace/tefudoc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tefextension="http://www.abes.fr/abes/documents/tefextension" xmlns:suj="http://www.theses.fr/namespace/sujets">
+  <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
+  <xs:import namespace="http://www.abes.fr/abes/documents/tef" schemaLocation="tef.xsd"/>
+  <xs:import namespace="http://www.abes.fr/abes/documents/tefextension" schemaLocation="tefextension.xsd"/>
+  <xs:import namespace="http://www.loc.gov/mads/" schemaLocation="mads.xsd"/>
+  <xs:import namespace="http://www.theses.fr/namespace/sujets" schemaLocation="suj.xsd"/>
+  <xs:import namespace="http://www.theses.fr/namespace/tefudoc" schemaLocation="tefudoc.xsd"/>
+  <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:element name="mets">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mets:metsHdr"/>
+        <xs:element maxOccurs="unbounded" ref="mets:dmdSec"/>
+        <xs:element maxOccurs="unbounded" ref="mets:amdSec"/>
+        <xs:element ref="mets:structMap"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="metsHdr">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="mets:agent"/>
+        <xs:element ref="mets:altRecordID"/>
+      </xs:sequence>
+      <xs:attribute name="CREATEDATE" use="required" type="xs:dateTime"/>
+      <xs:attribute name="ID" use="required"/>
+      <xs:attribute name="LASTMODDATE" use="required" type="xs:dateTime"/>
+      <xs:attribute name="RECORDSTATUS" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="agent">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mets:name"/>
+        <xs:element minOccurs="0" ref="mets:note"/>
+      </xs:sequence>
+      <xs:attribute name="ROLE" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="note" type="xs:NCName"/>
+  <xs:element name="altRecordID">
+    <xs:complexType>
+      <xs:attribute name="ID" use="required"/>
+      <xs:attribute name="TYPE" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dmdSec">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mets:mdWrap"/>
+      </xs:sequence>
+      <xs:attribute name="ID" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="amdSec">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="mets:techMD"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="techMD">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="mets:mdWrap"/>
+      </xs:sequence>
+      <xs:attribute name="ID"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="structMap">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mets:div"/>
+      </xs:sequence>
+      <xs:attribute name="TYPE" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="mdWrap">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="mets:xmlData"/>
+      </xs:sequence>
+      <xs:attribute name="MDTYPE" use="required" type="xs:NCName"/>
+      <xs:attribute name="OTHERMDTYPE" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="xmlData">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="tef:edition"/>
+        <xs:element ref="tef:thesisAdmin"/>
+        <xs:element ref="tef:thesisRecord"/>
+        <xs:sequence>
+          <xs:element name="star_gestion" form="unqualified">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="traitements" form="unqualified">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="entree" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="agentImport" use="required" type="xs:NMTOKEN"/>
+                          <xs:attribute name="completudeImport" use="required" type="xs:NCName"/>
+                          <xs:attribute name="date" use="required" type="xs:dateTime"/>
+                          <xs:attribute name="idSource" use="required"/>
+                          <xs:attribute name="type" use="required" type="xs:NCName"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="step" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="agentImport" use="required"/>
+                          <xs:attribute name="date" use="required"/>
+                          <xs:attribute name="idStep" use="required"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="maj" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="BIBL" use="required" type="xs:NCName"/>
+                          <xs:attribute name="FICH" use="required" type="xs:NCName"/>
+                          <xs:attribute name="SCOL" use="required" type="xs:NCName"/>
+                          <xs:attribute name="VALID" use="required" type="xs:NCName"/>
+                          <xs:attribute name="date" use="required" type="xs:dateTime"/>
+                          <xs:attribute name="import" use="required" type="xs:NCName"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="facile" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="BIBL" use="required" type="xs:NCName"/>
+                          <xs:attribute name="FICH" use="required" type="xs:NCName"/>
+                          <xs:attribute name="SCOL" use="required" type="xs:NCName"/>
+                          <xs:attribute name="VALID" use="required" type="xs:NCName"/>
+                          <xs:attribute name="date" use="required" type="xs:dateTime"/>
+                          <xs:attribute name="import" use="required" type="xs:NCName"/>
+                          <xs:attribute name="indicFacile" use="required" type="xs:NCName"/>
+                          <xs:attribute name="trace" use="required"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="ctrlUrl" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="date" use="required"/>
+                          <xs:attribute name="erreurUrl" use="required" type="xs:NCName"/>
+                          <xs:attribute name="indicCtrlUrl" use="required" type="xs:NCName"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="remonteeArchive" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="date" use="required"/>
+                          <xs:attribute name="indicRemonteeArchive" use="required" type="xs:NCName"/>
+                          <xs:attribute name="trace" use="required"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="purge" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="date" use="required"/>
+                          <xs:attribute name="indicPurge" use="required" type="xs:NCName"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="invalidation" form="unqualified">
+                        <xs:complexType>
+                          <xs:attribute name="date" use="required"/>
+                          <xs:attribute name="indicInvalidation" use="required" type="xs:NCName"/>
+                          <xs:attribute name="note" use="required"/>
+                        </xs:complexType>
+                      </xs:element>
+                      <xs:element name="sorties" form="unqualified">
+                        <xs:complexType>
+                          <xs:sequence>
+                            <xs:element name="cines" form="unqualified">
+                              <xs:complexType>
+                                <xs:attribute name="dateCines" use="required" type="xs:dateTime"/>
+                                <xs:attribute name="indicCines" use="required" type="xs:NCName"/>
+                                <xs:attribute name="trace" use="required"/>
+                              </xs:complexType>
+                            </xs:element>
+                            <xs:element name="sudoc" form="unqualified">
+                              <xs:complexType>
+                                <xs:sequence>
+                                  <xs:element name="RCR" form="unqualified">
+                                    <xs:complexType mixed="true">
+                                      <xs:attribute name="code" use="required" type="xs:NMTOKEN"/>
+                                    </xs:complexType>
+                                  </xs:element>
+                                  <xs:element name="EPN" form="unqualified">
+                                    <xs:complexType/>
+                                  </xs:element>
+                                </xs:sequence>
+                                <xs:attribute name="PPN" use="required" type="xs:NMTOKEN"/>
+                                <xs:attribute name="dateSudoc" use="required" type="xs:dateTime"/>
+                                <xs:attribute name="indicSudoc" use="required" type="xs:NCName"/>
+                                <xs:attribute name="majSudoc" use="required" type="xs:dateTime"/>
+                                <xs:attribute name="trace" use="required"/>
+                              </xs:complexType>
+                            </xs:element>
+                            <xs:element name="diffusion" form="unqualified">
+                              <xs:complexType>
+                                <xs:sequence>
+                                  <xs:element name="etabDiffuseur" form="unqualified">
+                                    <xs:complexType>
+                                      <xs:sequence>
+                                        <xs:element maxOccurs="unbounded" name="urlEtabDiffuseur" form="unqualified">
+                                          <xs:complexType>
+                                            <xs:simpleContent>
+                                              <xs:extension base="xs:anyURI">
+                                                <xs:attribute name="majUrlEtabDiffuseur" use="required"/>
+                                              </xs:extension>
+                                            </xs:simpleContent>
+                                          </xs:complexType>
+                                        </xs:element>
+                                      </xs:sequence>
+                                      <xs:attribute name="editeurScientifiqueLieu" use="required"/>
+                                      <xs:attribute name="editeurScientifiqueNom" use="required"/>
+                                      <xs:attribute name="etabDiffuseurPolEtablissement" use="required" type="xs:NCName"/>
+                                    </xs:complexType>
+                                  </xs:element>
+                                  <xs:element name="abesDiffuseur" form="unqualified">
+                                    <xs:complexType>
+                                      <xs:attribute name="FichEtabDiffAbesIntranet" use="required" type="xs:NCName"/>
+                                      <xs:attribute name="abesDiffuseurPolEtablissement" use="required" type="xs:NCName"/>
+                                      <xs:attribute name="dateAbesDiffuseur" use="required" type="xs:dateTime"/>
+                                      <xs:attribute name="indicAbesDiffuseur" use="required" type="xs:NCName"/>
+                                      <xs:attribute name="majAbesDiffuseur" use="required" type="xs:dateTime"/>
+                                      <xs:attribute name="urlAbesDiffuseur" use="required"/>
+                                    </xs:complexType>
+                                  </xs:element>
+                                  <xs:element name="ccsd" form="unqualified">
+                                    <xs:complexType>
+                                      <xs:attribute name="ccsdDiffuseurPolEtablissement" use="required" type="xs:NCName"/>
+                                      <xs:attribute name="dateCcsd" use="required"/>
+                                      <xs:attribute name="identifiantCcsd" use="required"/>
+                                      <xs:attribute name="indicCcsd" use="required" type="xs:NCName"/>
+                                      <xs:attribute name="majCcsd" use="required"/>
+                                      <xs:attribute name="numVersion" use="required"/>
+                                      <xs:attribute name="pwdCcsd" use="required"/>
+                                      <xs:attribute name="trace" use="required"/>
+                                      <xs:attribute name="urlCcsd" use="required"/>
+                                    </xs:complexType>
+                                  </xs:element>
+                                  <xs:element name="autresEtabDiffuseurs" form="unqualified">
+                                    <xs:complexType/>
+                                  </xs:element>
+                                  <xs:element name="oai" form="unqualified">
+                                    <xs:complexType>
+                                      <xs:attribute name="dateOai" use="required" type="xs:dateTime"/>
+                                      <xs:attribute name="indicOai" use="required" type="xs:NCName"/>
+                                      <xs:attribute name="majOai" use="required" type="xs:dateTime"/>
+                                      <xs:attribute name="trace" use="required"/>
+                                    </xs:complexType>
+                                  </xs:element>
+                                </xs:sequence>
+                                <xs:attribute name="confidentialiteFin" use="required"/>
+                                <xs:attribute name="conformitePolDiffusion" use="required" type="xs:NCName"/>
+                                <xs:attribute name="embargoFin" use="required"/>
+                                <xs:attribute name="restrictionTemporelleFin" use="required"/>
+                                <xs:attribute name="restrictionTemporelleType" use="required" type="xs:NCName"/>
+                                <xs:attribute name="typeDiffusion" use="required" type="xs:NCName"/>
+                                <xs:attribute name="urlPerenne" use="required" type="xs:anyURI"/>
+                              </xs:complexType>
+                            </xs:element>
+                          </xs:sequence>
+                          <xs:attribute name="date" use="required"/>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                    <xs:attribute name="scenario" use="required" type="xs:NCName"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+              <xs:attribute name="ID_THESE" use="required" type="xs:NCName"/>
+              <xs:attribute name="codeEtab" use="required" type="xs:NCName"/>
+              <xs:attribute name="enProd" use="required" type="xs:NCName"/>
+              <xs:attribute name="etat" use="required" type="xs:NCName"/>
+              <xs:attribute name="libEtab" use="required"/>
+              <xs:attribute name="ppnEtab" use="required" type="xs:NMTOKEN"/>
+              <xs:attribute name="scenarioEtab" use="required" type="xs:NCName"/>
+           
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="step_gestion" form="unqualified">
+            <xs:complexType>
+              <xs:attribute name="ID_SUJET" use="required" type="xs:NCName"/>
+              <xs:attribute name="stepEtat" use="required" type="xs:NCName"/>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="div">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="mets:div"/>
+      </xs:sequence>
+      <xs:attribute name="ADMID"/>
+      <xs:attribute name="CONTENTIDS" use="required"/>
+      <xs:attribute name="DMDID" use="required"/>
+      <xs:attribute name="TYPE" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

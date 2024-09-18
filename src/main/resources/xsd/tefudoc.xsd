@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.theses.fr/namespace/tefudoc" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:mads="http://www.loc.gov/mads/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:tef="http://www.abes.fr/abes/documents/tef" xmlns:mets="http://www.loc.gov/METS/" xmlns:tefudoc="http://www.theses.fr/namespace/tefudoc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tefextension="http://www.abes.fr/abes/documents/tefextension" xmlns:suj="http://www.theses.fr/namespace/sujets">
+  <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
+  <xs:import namespace="http://www.abes.fr/abes/documents/tef" schemaLocation="tef.xsd"/>
+  <xs:import namespace="http://www.abes.fr/abes/documents/tefextension" schemaLocation="tefextension.xsd"/>
+  <xs:import namespace="http://www.loc.gov/METS/" schemaLocation="mets.xsd"/>
+  <xs:import namespace="http://www.loc.gov/mads/" schemaLocation="mads.xsd"/>
+  <xs:import namespace="http://www.theses.fr/namespace/sujets" schemaLocation="suj.xsd"/>
+  <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:element name="ISBN" type="xs:NMTOKEN"/>
+  <xs:element name="collation" type="xs:string"/>
+  <xs:element name="biblioIndex" type="xs:string"/>
+  <xs:element name="noteGenerale" type="xs:string"/>
+  <xs:element name="exemplaires">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tefudoc:exemplaire"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="exemplaire">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tefudoc:rcr"/>
+        <xs:element ref="tefudoc:cote"/>
+        <xs:element ref="tefudoc:peb"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rcr" type="xs:NMTOKEN"/>
+  <xs:element name="cote">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="peb" type="xs:NCName"/>
+</xs:schema>
