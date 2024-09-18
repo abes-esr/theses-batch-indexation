@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.abes.fr/abes/documents/tef" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:mads="http://www.loc.gov/mads/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:tef="http://www.abes.fr/abes/documents/tef" xmlns:mets="http://www.loc.gov/METS/" xmlns:tefudoc="http://www.theses.fr/namespace/tefudoc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tefextension="http://www.abes.fr/abes/documents/tefextension" xmlns:suj="http://www.theses.fr/namespace/sujets">
+  <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
+  <xs:import namespace="http://www.abes.fr/abes/documents/tefextension" schemaLocation="tefextension.xsd"/>
+  <xs:import namespace="http://www.loc.gov/METS/" schemaLocation="mets.xsd"/>
+  <xs:import namespace="http://www.loc.gov/mads/" schemaLocation="mads.xsd"/>
+  <xs:import namespace="http://www.theses.fr/namespace/sujets" schemaLocation="suj.xsd"/>
+  <xs:import namespace="http://www.theses.fr/namespace/tefudoc" schemaLocation="tefudoc.xsd"/>
+  <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:element name="edition">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="dc:identifier"/>
+        <xs:sequence minOccurs="0">
+          <xs:element ref="tefudoc:ISBN"/>
+          <xs:element ref="tefudoc:collation"/>
+          <xs:element ref="tefudoc:biblioIndex"/>
+          <xs:element ref="tefudoc:noteGenerale"/>
+          <xs:element ref="tefudoc:exemplaires"/>
+        </xs:sequence>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thesisAdmin">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tef:auteur"/>
+   
+        <xs:element maxOccurs="unbounded" ref="tefextension:coAuteur"/>
+        <xs:element maxOccurs="unbounded" ref="dc:identifier"/>
+        <xs:element ref="dcterms:dateAccepted"/>
+        <xs:element ref="tef:thesis.degree"/>
+        <xs:element ref="tef:theseSurTravaux"/>
+        <xs:element ref="tef:avisJury"/>
+        <xs:element ref="tef:presidentJury"/>
+        <xs:element maxOccurs="unbounded" ref="tef:directeurThese"/>
+        <xs:element maxOccurs="unbounded" ref="tef:membreJury"/>
+        <xs:element maxOccurs="unbounded" ref="tef:rapporteur"/>
+        <xs:element maxOccurs="unbounded" ref="tef:ecoleDoctorale"/>
+        <xs:element maxOccurs="unbounded" ref="tef:partenaireRecherche"/>
+        <xs:element maxOccurs="unbounded" ref="tef:oaiSetSpec"/>
+        <xs:element maxOccurs="unbounded" ref="tef:MADSAuthority"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="auteur">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:element ref="tef:prenom"/>
+        <xs:element ref="tef:dateNaissance"/>
+        <xs:element ref="tef:nationalite"/>
+        <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="thesis.degree">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:thesis.degree.discipline"/>
+        <xs:element maxOccurs="unbounded" ref="tef:thesis.degree.grantor"/>
+        <xs:element ref="tef:thesis.degree.level"/>
+        <xs:element ref="tef:thesis.degree.name"/>
+        <xs:element ref="suj:datePremiereInscriptionDoctorat"/>
+        <xs:element ref="suj:dateInscriptionEtab"/>
+        <xs:element ref="suj:contratDoctoral"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thesis.degree.discipline">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:NCName">
+          <xs:attribute ref="xml:lang" use="required"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thesis.degree.grantor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:choice>
+          <xs:element ref="tef:autoriteInterne"/>
+          <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thesis.degree.level" type="xs:NCName"/>
+  <xs:element name="thesis.degree.name">
+    <xs:complexType mixed="true">
+      <xs:attribute ref="xml:lang" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="theseSurTravaux" type="xs:NCName"/>
+  <xs:element name="avisJury" type="xs:NCName"/>
+  <xs:element name="presidentJury">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:element ref="tef:prenom"/>
+        <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="directeurThese">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:element ref="tef:prenom"/>
+        <xs:element ref="tef:autoriteInterne"/>
+        <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="membreJury">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:element ref="tef:prenom"/>
+        <xs:element ref="tef:autoriteInterne"/>
+        <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rapporteur">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:element ref="tef:prenom"/>
+        <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ecoleDoctorale">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:element ref="tef:autoriteInterne"/>
+        <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="partenaireRecherche">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:nom"/>
+        <xs:element ref="tef:autoriteInterne"/>
+        <xs:element maxOccurs="unbounded" ref="tef:autoriteExterne"/>
+      </xs:sequence>
+      <xs:attribute name="autreType" type="xs:NCName"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="oaiSetSpec" type="xs:NMTOKEN"/>
+  <xs:element name="MADSAuthority">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:personMADS"/>
+      </xs:sequence>
+      <xs:attribute name="authorityID" use="required" type="xs:NCName"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="personMADS">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="mads:namePart"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="thesisRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="dc:title"/>
+        <xs:element maxOccurs="unbounded" ref="dcterms:alternative"/>
+        <xs:element maxOccurs="unbounded" ref="dc:subject"/>
+        <xs:element ref="tef:sujetRameau"/>
+        <xs:element maxOccurs="unbounded" ref="dcterms:abstract"/>
+        <xs:element maxOccurs="unbounded" ref="dc:type"/>
+        <xs:element maxOccurs="unbounded" ref="dc:language"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sujetRameau">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="tef:vedetteRameauNomCommun"/>
+        <xs:element maxOccurs="unbounded" ref="tef:vedetteRameauAuteurTitre"/>
+        <xs:element maxOccurs="unbounded" ref="tef:vedetteRameauCollectivite"/>
+        <xs:element maxOccurs="unbounded" ref="tef:vedetteRameauFamille"/>
+        <xs:element maxOccurs="unbounded" ref="tef:vedetteRameauNomGeographique"/>
+        <xs:element maxOccurs="unbounded" ref="tef:vedetteRameauPersonne"/>
+        <xs:element maxOccurs="unbounded" ref="tef:vedetteRameauTitre"/>
+      </xs:sequence>
+      <xs:attribute ref="xml:lang" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vedetteRameauNomCommun">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:elementdEntree"/>
+        <xs:element maxOccurs="unbounded" ref="tef:subdivision"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vedetteRameauAuteurTitre">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:elementdEntree"/>
+        <xs:element maxOccurs="unbounded" ref="tef:subdivision"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vedetteRameauCollectivite">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:elementdEntree"/>
+        <xs:element maxOccurs="unbounded" ref="tef:subdivision"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vedetteRameauFamille">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:elementdEntree"/>
+        <xs:element maxOccurs="unbounded" ref="tef:subdivision"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vedetteRameauNomGeographique">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:elementdEntree"/>
+        <xs:element maxOccurs="unbounded" ref="tef:subdivision"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vedetteRameauPersonne">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:elementdEntree"/>
+        <xs:element maxOccurs="unbounded" ref="tef:subdivision"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="vedetteRameauTitre">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="tef:elementdEntree"/>
+        <xs:element maxOccurs="unbounded" ref="tef:subdivision"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="nom" type="xs:string"/>
+  <xs:element name="prenom" type="xs:string"/>
+  <xs:element name="dateNaissance" type="xs:date"/>
+  <xs:element name="nationalite">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:NCName">
+          <xs:attribute name="scheme" use="required" type="xs:NCName"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="autoriteExterne">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:NMTOKEN">
+          <xs:attribute name="autoriteSource" use="required" type="xs:NCName"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="autoriteInterne" type="xs:NCName"/>
+  <xs:element name="elementdEntree">
+    <xs:complexType mixed="true">
+      <xs:attribute name="autoriteExterne" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="autoriteSource" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="subdivision">
+    <xs:complexType mixed="true">
+      <xs:attribute name="autoriteExterne" use="required" type="xs:NMTOKEN"/>
+      <xs:attribute name="autoriteSource" use="required" type="xs:NCName"/>
+      <xs:attribute name="type" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
