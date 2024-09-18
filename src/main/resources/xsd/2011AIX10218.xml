@@ -1,0 +1,527 @@
+<mets:mets xmlns:tef="http://www.abes.fr/abes/documents/tef"
+           xmlns:tefudoc="http://www.theses.fr/namespace/tefudoc"
+           xmlns:xlink="http://www.w3.org/1999/xlink"
+           xmlns:metsRights="http://cosimo.stanford.edu/sdr/metsrights/"
+           xmlns:mads="http://www.loc.gov/mads/"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:mets="http://www.loc.gov/METS/"
+           xmlns:dc="http://purl.org/dc/elements/1.1/"
+           xmlns:dcterms="http://purl.org/dc/terms/"
+           xmlns:tefextension="http://www.abes.fr/abes/documents/tefextension"
+         >
+   <mets:metsHdr ID="ABES.STAR.THESE_23173.METS_HEADER" CREATEDATE="2012-06-22T10:39:35Z"
+                 LASTMODDATE="2017-01-26T03:05:16Z"
+                 RECORDSTATUS="valide">
+      <mets:agent ROLE="CREATOR">
+         <mets:name/>
+         <mets:note>Note</mets:note>
+      </mets:agent>
+      <mets:agent ROLE="DISSEMINATOR">
+         <mets:name>ABES</mets:name>
+      </mets:agent>
+      <mets:altRecordID ID="ABES.STAR.THESE_23173.METS_HEADER.ALTERNATE" TYPE=""/>
+   </mets:metsHdr>
+   <mets:dmdSec xmlns:suj="http://www.theses.fr/namespace/sujets"
+                ID="ABES.STAR.THESE_23173.gestionSTAR">
+      <mets:mdWrap MDTYPE="OTHER" OTHERMDTYPE="tef_gestionSTAR">
+         <mets:xmlData>
+            <star_gestion codeEtab="AIX1" libEtab="Aix-Marseille 1" ppnEtab="2722953X" enProd="oui"
+                          ID_THESE="THESE_23173"
+                          scenarioEtab="cas1"
+                          etat="WFpostArchivage"
+                          xsi:noNamespaceSchemaLocation="http://www.abes.fr/abes/documents/pth/tef_gestion.xsd">
+               <traitements scenario="cas5">
+                  <entree type="importWS2" date="2012-06-22T10:39:35Z" agentImport="193.51.217.45"
+                          completudeImport="CORE"
+                          idSource=""/>
+                  <step date="" agentImport="" idStep=""/>
+                  <maj date="2017-01-26T03:05:16Z" import="non" SCOL="oui" BIBL="non" FICH="non"
+                       VALID="non"/>
+                  <facile date="2012-06-22T10:39:39Z" indicFacile="OK" trace="" import="non" SCOL="oui"
+                          BIBL="non"
+                          FICH="non"
+                          VALID="non"/>
+                  <ctrlUrl indicCtrlUrl="sansObjet" erreurUrl="sansObjet" date=""/>
+                  <remonteeArchive indicRemonteeArchive="sansObjet" date="" trace=""/>
+                  <purge indicPurge="sansObjet" date=""/>
+                  <invalidation indicInvalidation="sansObjet" date="" note=""/>
+                  <sorties date="">
+                     <cines dateCines="2013-03-08T11:18:29Z" indicCines="OK" trace=""/>
+                     <sudoc PPN="2722953X" dateSudoc="2013-03-08T11:20:56Z" indicSudoc="OK"
+                            majSudoc="2020-10-05T14:54:00Z"
+                            trace="">
+                        <RCR code="13055990A">Université de Provence. Service commun de la documentation. Bibliothèque électronique</RCR>
+                        <EPN/>
+                     </sudoc>
+                     <diffusion urlPerenne="http://www.theses.fr/2011AIX10218" conformitePolDiffusion="oui"
+                                typeDiffusion="intranet"
+                                restrictionTemporelleType="sansObjet"
+                                restrictionTemporelleFin=""
+                                embargoFin=""
+                                confidentialiteFin="">
+                        <etabDiffuseur etabDiffuseurPolEtablissement="oui" editeurScientifiqueLieu=""
+                                       editeurScientifiqueNom="">
+                           <urlEtabDiffuseur majUrlEtabDiffuseur=""/>
+						   <urlEtabDiffuseur majUrlEtabDiffuseur="">http://www.google.fr</urlEtabDiffuseur>
+                        </etabDiffuseur>
+                        <abesDiffuseur abesDiffuseurPolEtablissement="non" FichEtabDiffAbesIntranet="oui"
+                                       indicAbesDiffuseur="OK"
+                                       dateAbesDiffuseur="2013-03-08T11:20:30Z"
+                                       majAbesDiffuseur="2014-11-05T22:30:59Z"
+                                       urlAbesDiffuseur=""/>
+                        <ccsd ccsdDiffuseurPolEtablissement="non" indicCcsd="sansObjet" identifiantCcsd=""
+                              pwdCcsd=""
+                              urlCcsd=""
+                              numVersion=""
+                              dateCcsd=""
+                              majCcsd=""
+                              trace=""/>
+                        <autresEtabDiffuseurs/>
+                        <oai majOai="2021-04-16T03:09:14Z" dateOai="2013-03-08T11:20:33Z" indicOai="OK"
+                             trace=""/>
+                     </diffusion>
+                  </sorties>
+               </traitements>
+            </star_gestion>
+            <step_gestion stepEtat="these" ID_SUJET="SUJET_386949"></step_gestion>
+         </mets:xmlData>
+      </mets:mdWrap>
+  </mets:dmdSec>
+   <mets:dmdSec xmlns:suj="http://www.theses.fr/namespace/sujets"
+                ID="ABES.STAR.THESE_23173.DESCRIPTION_BIBLIOGRAPHIQUE">
+      <mets:mdWrap MDTYPE="OTHER" OTHERMDTYPE="tef_desc_these">
+         <mets:xmlData>
+            <tef:thesisRecord>
+               <dc:title xml:lang="fr">Le phénomène acheuléen en Europe Occidentale : approche chronologique, technologie lithique et implications culturelles</dc:title>
+               <dcterms:alternative xml:lang="en">THE ACHEULIAN PHENOMENON IN WESTERN EUROPE : Chronological approach, lithic technology and cultural implications</dcterms:alternative>
+               <dcterms:alternative xml:lang="it">IL FENOMENO ACHEULEANO IN EUROPA OCCIDENTALE : Approccio cronologico, tecnologia litica e implicazioni culturali</dcterms:alternative>
+               <dcterms:alternative xml:lang="es">EL FENÓMENO ACHEULEANO EN EUROPA OCCIDENTAL : Enfoque cronológico, tecnológia litica e implicaciones culturales</dcterms:alternative>
+               <dcterms:alternative xml:lang="de">DAS PHÄNOMEN DES ACHEULÉENS IM ABENDLÄNDISCHEN EUROPA : Chronologischer Ansatz, lithologische Technologie und kulturelle Auswirkungen</dcterms:alternative>
+               <dc:subject xml:lang="fr">Acheuléen</dc:subject>
+               <dc:subject xml:lang="fr">Pléistocène moyen</dc:subject>
+               <dc:subject xml:lang="fr">Paléolithique inférieur</dc:subject>
+               <dc:subject xml:lang="fr">Europe occidentale</dc:subject>
+               <dc:subject xml:lang="fr">Biface</dc:subject>
+               <dc:subject xml:lang="fr">Pièce bifaciale</dc:subject>
+               <dc:subject xml:lang="fr">Out of Africa</dc:subject>
+               <dc:subject xml:lang="fr">Technologie lithique</dc:subject>
+               <dc:subject xml:lang="fr">Analyse structurelle</dc:subject>
+               <dc:subject xml:lang="fr">Analyse techno-morpho-fonctionnelle</dc:subject>
+               <dc:subject xml:lang="fr">Réinvention</dc:subject>
+               <dc:subject xml:lang="fr">Évolution des techniques</dc:subject>
+               <dc:subject xml:lang="fr">Ligne de Movius</dc:subject>
+               <dc:subject xml:lang="en">Acheulian</dc:subject>
+               <dc:subject xml:lang="en">Middle Pleistocene</dc:subject>
+               <dc:subject xml:lang="en">Lower Paleolithic</dc:subject>
+               <dc:subject xml:lang="en">Western Europe</dc:subject>
+               <dc:subject xml:lang="en">Handaxe</dc:subject>
+               <dc:subject xml:lang="en">Bifacial piece</dc:subject>
+               <dc:subject xml:lang="en">Out of Africa</dc:subject>
+               <dc:subject xml:lang="en">Lithic technology</dc:subject>
+               <dc:subject xml:lang="en">Structural analysis</dc:subject>
+               <dc:subject xml:lang="en">Techno-morpho-functionnal analysis</dc:subject>
+               <dc:subject xml:lang="en">Reinvention</dc:subject>
+               <dc:subject xml:lang="en">Technics evolution</dc:subject>
+               <dc:subject xml:lang="en">Movius Line</dc:subject>
+               <dc:subject xml:lang="en">Soucy</dc:subject>
+               <dc:subject xsi:type="dcterms:DDC"/>
+               <tef:sujetRameau xml:lang="fr">
+                  <tef:vedetteRameauNomCommun>
+                     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+                     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+                                      type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+					      <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+                                      type="subdivisionGeographique">Europe de l'Est</tef:subdivision>
+                  </tef:vedetteRameauNomCommun>
+				  <tef:vedetteRameauNomCommun>
+                     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+                     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+                                      type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauNomCommun>
+                  <tef:vedetteRameauAuteurTitre>
+                     <tef:elementdEntree autoriteExterne="02722953X" autoriteSource="Sudoc">Paléolithique inférieur</tef:elementdEntree>
+                     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+                                      type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+                        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauAuteurTitre>
+                  <tef:vedetteRameauAuteurTitre>
+                     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+                     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+                        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+                        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauAuteurTitre>
+				  <tef:vedetteRameauCollectivite>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauCollectivite>
+				  <tef:vedetteRameauCollectivite>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauCollectivite>
+				  <tef:vedetteRameauFamille>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauFamille>
+				  <tef:vedetteRameauFamille>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauFamille>
+				  <tef:vedetteRameauNomGeographique>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauNomGeographique>
+				  <tef:vedetteRameauNomGeographique>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauNomGeographique>
+				  <tef:vedetteRameauPersonne>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauPersonne>
+				  <tef:vedetteRameauPersonne>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauPersonne>
+				  <tef:vedetteRameauTitre>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauTitre>
+				  <tef:vedetteRameauTitre>
+				     <tef:elementdEntree autoriteExterne="14459482X" autoriteSource="Sudoc">Acheuléen</tef:elementdEntree>
+				     <tef:subdivision autoriteExterne="02722953X" autoriteSource="Sudoc"
+				        type="subdivisionGeographique">Europe de l'Ouest</tef:subdivision>
+                  </tef:vedetteRameauTitre>
+               </tef:sujetRameau>
+               <dcterms:abstract xml:lang="fr">La diversité historique et substantielle de l’Acheuléen d’Europe occidentale est perceptible d’un point de vue phénoménologique. Chacune des 36 séries lithiques de France, d’Angleterre, d’Italie et d’Espagne étudiées dans ce travail présente une production originale. Le phénomène bifacial peut être dissocié des autres manifestations de l’Acheuléen : les pièces bifaciales sensu stricto apparaissent massivement dans le nord de l’Europe autour de l’OIS 11 puis sur le pourtourméditerranéen vers l’OIS 9 mais sous une forme différente, engendrant des modifi cations majeures de toute la production. L’analyse critique des contextes lithostratigraphiques et la prise en compte des diversités technique, technologique ou chronologique des industries permettent de reconsidérer le paradigme de la diffusion « Out of Africa ». Tout conduit à proposer l’hypothèse d’une invention locale de la pièce bifaciale et de son évolution sur place. Le terme a trop longtemps masqué la véritable diversité du Paléolithique inférieur tout entier. C’est vers l’analyse de la pluralité des comportements humains et des sociétés qu’il faut se diriger maintenant.</dcterms:abstract>
+               <dcterms:abstract xml:lang="en">The historic and substantial diversity of the Western European Acheulian can be perceived from a phenomenological standpoint. All of the 36 lithic assemblages studied in France, England, Italy and Spain provide an original production. The bifacial phenomenon can be separated from other expressions of the Acheulian. Indeed, bifacial pieces, in the strict sense, appear in great numbers in northern Europe around the OIS 11 and in the Mediterranean region around the OIS 9. However, the latter are found under different forms, which imply major modifi cations of all the production. The critical analysis of lithostratigraphic contexts and the consideration of technical, technological and chronological diversities, allow reconsidering the paradigm of the « Out of Africa » diffusion. The hypothesis of a local invention and evolution of bifacial pieces can be put forward. The use of this term has limited our perception of the Lower Paleolithic as a whole. One should now focus on analyzing the diversity of human behaviors and societies.</dcterms:abstract>
+               <dc:type>Electronic Thesis or Dissertation</dc:type>
+               <dc:type xsi:type="dcterms:DCMIType">Text</dc:type>
+               <dc:language xsi:type="dcterms:RFC3066">fr</dc:language>
+			   <dc:language xsi:type="dcterms:RFC3066">fr</dc:language>
+            </tef:thesisRecord>
+         </mets:xmlData>
+      </mets:mdWrap>
+  </mets:dmdSec>
+   <mets:dmdSec ID="ABES.STAR.THESE_23173.DESCRIPTION.EDITION_DEPOT_NATIONAL">
+      <mets:mdWrap MDTYPE="OTHER" OTHERMDTYPE="tef_desc_edition">
+         <mets:xmlData>
+            <tef:edition>
+               <dc:identifier xsi:type="dcterms:URI">http://www.sudoc.fr/167955195</dc:identifier>
+            </tef:edition>
+         </mets:xmlData>
+      </mets:mdWrap>
+   </mets:dmdSec>
+   <mets:dmdSec ID="ABES.STAR.THESE_23173.DESCRIPTION.EDITION_REPRO_PAPIER">
+      <mets:mdWrap MDTYPE="OTHER" OTHERMDTYPE="tef_desc_edition">
+         <mets:xmlData>
+            <tef:edition>
+			      <dc:identifier xmlns:suj="http://www.theses.fr/namespace/sujets" xsi:type="dcterms:URI">https://bdr-parisnanterre-fr.faraway.parisnanterre.fr/theses/intranet/2020/2020PA100053/2020PA100053_Arch.pdf</dc:identifier>
+               <dc:identifier xsi:type="dcterms:URI">http://www.sudoc.fr/168153424</dc:identifier>
+			   <tefudoc:ISBN>978-2-343-18080-9</tefudoc:ISBN>
+               <tefudoc:collation>1 vol. (483 p.)</tefudoc:collation>
+               <tefudoc:biblioIndex>Bibliogr. p. 415-444</tefudoc:biblioIndex>
+               <tefudoc:noteGenerale>Thèse soutenue en co-tutelle. </tefudoc:noteGenerale>
+               <tefudoc:exemplaires>
+                  <tefudoc:exemplaire>
+                     <tefudoc:rcr>13001210A</tefudoc:rcr>
+                     <tefudoc:cote/>
+                     <tefudoc:peb>u</tefudoc:peb>
+                  </tefudoc:exemplaire>
+               </tefudoc:exemplaires>
+            </tef:edition>
+         </mets:xmlData>
+      </mets:mdWrap>
+   </mets:dmdSec>
+   <mets:amdSec>
+      <mets:techMD xmlns:suj="http://www.theses.fr/namespace/sujets"
+                   ID="ABES.STAR.THESE_23173.ADMINISTRATION">
+         <mets:mdWrap MDTYPE="OTHER" OTHERMDTYPE="tef_admin_these">
+            <mets:xmlData>
+               <tef:thesisAdmin>
+                  <tef:auteur>
+                     <tef:nom>Nicoud</tef:nom>
+                     <tef:prenom>Elisa</tef:prenom>
+                     <tef:dateNaissance>1983-04-24</tef:dateNaissance>
+                     <tef:nationalite scheme="ISO-3166-1">FR</tef:nationalite>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+                  </tef:auteur>
+				      <tef:auteur>
+                     <tef:nom>Nicoud</tef:nom>
+                     <tef:prenom>Elisa</tef:prenom>
+                     <tef:dateNaissance>1983-04-24</tef:dateNaissance>
+                     <tef:nationalite scheme="ISO-3166-1">FR</tef:nationalite>
+				         <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:auteur>
+                  <tef:coAuteur>
+                     <tef:nom>Martin-noureux</tef:nom>
+                     <tef:prenom>Philippe</tef:prenom>
+                     <tef:dateNaissance>1962-09-21</tef:dateNaissance>
+                     <tef:nationalite scheme="ISO-3166-1">FR</tef:nationalite>
+                     <tef:autoriteExterne autoriteSource="Sudoc">184579872</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">184579872</tef:autoriteExterne>
+                     <suj:adresseDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">6 rue amédée bonnet</suj:adresseDoctorant>
+                     <suj:codePostalDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">69006</suj:codePostalDoctorant>
+                     <suj:villeAdresseDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">Lyon</suj:villeAdresseDoctorant>
+                     <suj:paysAdresseDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">FR</suj:paysAdresseDoctorant>
+                     <suj:telephoneDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets"/>
+                  </tef:coAuteur>
+                  <tefextension:coAuteur>
+                     <tef:nom>Martin-noureux</tef:nom>
+                     <tef:prenom>Philippe</tef:prenom>
+                     <tef:dateNaissance>1962-09-21</tef:dateNaissance>
+                     <tef:nationalite scheme="ISO-3166-1">FR</tef:nationalite>
+                     <tef:autoriteExterne autoriteSource="Sudoc">184579872</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">184579872</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">184579872</tef:autoriteExterne>
+                     <suj:adresseDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">6 rue amédée bonnet</suj:adresseDoctorant>
+                     <suj:codePostalDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">69006</suj:codePostalDoctorant>
+                     <suj:villeAdresseDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">Lyon</suj:villeAdresseDoctorant>
+                     <suj:paysAdresseDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets">FR</suj:paysAdresseDoctorant>
+                     <suj:telephoneDoctorant xmlns:suj="http://www.theses.fr/namespace/sujets"/>
+                  </tefextension:coAuteur>
+                  <dc:identifier xsi:type="tef:nationalThesisPID">http://www.theses.fr/2011AIX10218</dc:identifier>
+                  <dc:identifier xsi:type="tef:NNT">2011AIX10218</dc:identifier>
+                  <dcterms:dateAccepted xsi:type="dcterms:W3CDTF">2011-05-10</dcterms:dateAccepted>
+                  <tef:thesis.degree>
+                     <tef:thesis.degree.discipline xml:lang="fr">Préhistoire</tef:thesis.degree.discipline>
+                     <tef:thesis.degree.grantor>
+                        <tef:nom>Aix-Marseille 1</tef:nom>
+                        <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                        <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+                        <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+                     </tef:thesis.degree.grantor>
+                     <tef:thesis.degree.grantor>
+                        <tef:nom>Università degli studi La Sapienza (Rome). Dipartimento di Scienze storiche archeologiche e antropologiche dell'antichità</tef:nom>
+                        <tef:autoriteInterne>MADS_ETABLISSEMENT_DE_COTUTELLE_1</tef:autoriteInterne>
+                     </tef:thesis.degree.grantor>
+                     <tef:thesis.degree.level>Doctorat</tef:thesis.degree.level>
+                     <tef:thesis.degree.name xml:lang="fr">Docteur es</tef:thesis.degree.name>
+                     <suj:datePremiereInscriptionDoctorat>2023-03-29</suj:datePremiereInscriptionDoctorat>
+                     <suj:dateInscriptionEtab>2023-03-29</suj:dateInscriptionEtab>
+                     <suj:contratDoctoral>non</suj:contratDoctoral>
+                  </tef:thesis.degree>
+                  <tef:theseSurTravaux>non</tef:theseSurTravaux>
+                  <tef:avisJury>oui</tef:avisJury>
+				  <tef:presidentJury>
+                     <tef:nom>Baena Preysler</tef:nom>
+                     <tef:prenom>Javier</tef:prenom>
+				     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+				     <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+				     <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+				     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:presidentJury>
+                  <tef:directeurThese>
+                     <tef:nom>Texier</tef:nom>
+                     <tef:prenom>Pierre Jean</tef:prenom>
+                     <tef:autoriteInterne>MADS_DIRECTEUR_DE_THESE_1</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+                  </tef:directeurThese>
+                  <tef:directeurThese>
+                     <tef:nom>Piperno</tef:nom>
+                     <tef:prenom>Marcello</tef:prenom>
+                     <tef:autoriteInterne>MADS_DIRECTEUR_DE_THESE_2</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:directeurThese>
+                  <tef:membreJury>
+                     <tef:nom>Texier</tef:nom>
+                     <tef:prenom>Pierre Jean</tef:prenom>
+                     <tef:autoriteInterne>MADS_MEMBRE_DU_JURY_1</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+                  </tef:membreJury>
+                  <tef:membreJury>
+                     <tef:nom>Piperno</tef:nom>
+                     <tef:prenom>Marcello</tef:prenom>
+                     <tef:autoriteInterne>MADS_MEMBRE_DU_JURY_2</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:membreJury>
+                  <tef:membreJury>
+                     <tef:nom>Conard</tef:nom>
+                     <tef:prenom>Nicholas John</tef:prenom>
+                     <tef:autoriteInterne>MADS_MEMBRE_DU_JURY_3</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:membreJury>
+                  <tef:membreJury>
+                     <tef:nom>Meignen</tef:nom>
+                     <tef:prenom>Liliane</tef:prenom>
+                     <tef:autoriteInterne>MADS_MEMBRE_DU_JURY_4</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:membreJury>
+                  <tef:membreJury>
+                     <tef:nom>Peresani</tef:nom>
+                     <tef:prenom>Marco</tef:prenom>
+                     <tef:autoriteInterne>MADS_MEMBRE_DU_JURY_5</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:membreJury>
+                  <tef:membreJury>
+                     <tef:nom>Ronchitelli</tef:nom>
+                     <tef:prenom>Annamaria</tef:prenom>
+                     <tef:autoriteInterne>MADS_MEMBRE_DU_JURY_6</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">16208580X</tef:autoriteExterne>
+                  </tef:membreJury>
+                  <tef:membreJury>
+                     <tef:nom>Truffeau</tef:nom>
+                     <tef:prenom>Alain</tef:prenom>
+                     <tef:autoriteInterne>MADS_MEMBRE_DU_JURY_7</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">07699774X</tef:autoriteExterne>
+                  </tef:membreJury>
+                  <tef:rapporteur>
+                     <tef:nom>Peretto</tef:nom>
+                     <tef:prenom>Carlo</tef:prenom>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+                  </tef:rapporteur>
+                  <tef:rapporteur>
+                     <tef:nom>Turq</tef:nom>
+                     <tef:prenom>Alain</tef:prenom>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:rapporteur>
+                  <tef:ecoleDoctorale>
+                     <tef:nom>Ecole Doctorale Espaces, Cultures, Sociétés (Aix-en-Provence)</tef:nom>
+                     <tef:autoriteInterne>MADS_ECOLE_DOCTORALE_1</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+                  </tef:ecoleDoctorale>
+				  <tef:ecoleDoctorale>
+                     <tef:nom>Ecole Doctorale Espaces, Cultures, Sociétés (Aix-en-Provence)</tef:nom>
+                     <tef:autoriteInterne>MADS_ECOLE_DOCTORALE_1</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">08361821X</tef:autoriteExterne>
+                  </tef:ecoleDoctorale>
+                  <tef:partenaireRecherche type="laboratoire" autreType="aaa">
+                     <tef:nom>Cultures et Environnements. Préhistoire, Antiquité, Moyen Âge</tef:nom>
+                     <tef:autoriteInterne>MADS_PARTENAIRE_DE_RECHERCHE_1</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="CODE_INE">0G416L0AT8</tef:autoriteExterne>
+                     <tef:autoriteExterne autoriteSource="MATRICULE_ADUM">58246</tef:autoriteExterne>
+                  </tef:partenaireRecherche>
+                  <tef:partenaireRecherche type="laboratoire">
+                     <tef:nom>Institut national de recherches archéologiques préventives (France)</tef:nom>
+                     <tef:autoriteInterne>MADS_PARTENAIRE_DE_RECHERCHE_2</tef:autoriteInterne>
+                     <tef:autoriteExterne autoriteSource="Sudoc">02722953X</tef:autoriteExterne>
+                  </tef:partenaireRecherche>
+                  <tef:oaiSetSpec>ddc:930</tef:oaiSetSpec>
+				  <tef:oaiSetSpec>ddc:930</tef:oaiSetSpec>
+                  <tef:MADSAuthority authorityID="MADS_ETABLISSEMENT_DE_COTUTELLE_1" type="corporate">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Università degli studi La Sapienza (Rome). Dipartimento di Scienze storiche archeologiche e antropologiche dell'antichità</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_DIRECTEUR_DE_THESE_1" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Texier</mads:namePart>
+                        <mads:namePart type="given">Pierre-Jean</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_DIRECTEUR_DE_THESE_2" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Piperno</mads:namePart>
+                        <mads:namePart type="given">Marcello</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_MEMBRE_DU_JURY_1" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Texier</mads:namePart>
+                        <mads:namePart type="given">Pierre-Jean</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_MEMBRE_DU_JURY_2" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Piperno</mads:namePart>
+                        <mads:namePart type="given">Marcello</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_MEMBRE_DU_JURY_3" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Conard</mads:namePart>
+                        <mads:namePart type="given">Nicholas John</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_MEMBRE_DU_JURY_4" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Meignen</mads:namePart>
+                        <mads:namePart type="given">Liliane</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_MEMBRE_DU_JURY_5" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Peresani</mads:namePart>
+                        <mads:namePart type="given">Marco</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_MEMBRE_DU_JURY_6" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Ronchitelli</mads:namePart>
+                        <mads:namePart type="given">Annamaria</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_MEMBRE_DU_JURY_7" type="personal">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Truffeau</mads:namePart>
+                        <mads:namePart type="given">Alain</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_ECOLE_DOCTORALE_1" type="corporate">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Ecole Doctorale Espaces, Cultures, Sociétés (Aix-en-Provence)</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_PARTENAIRE_DE_RECHERCHE_1" type="corporate">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Centre d'études Préhistoire, Antiquité, Moyen âge (Sophia-Antipolis, Alpes-Maritimes)</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+                  <tef:MADSAuthority authorityID="MADS_PARTENAIRE_DE_RECHERCHE_2" type="corporate">
+                     <tef:personMADS>
+                        <mads:namePart type="family">Institut national de recherches archéologiques préventives (France)</mads:namePart>
+                     </tef:personMADS>
+                  </tef:MADSAuthority>
+               </tef:thesisAdmin>
+            </mets:xmlData>
+         </mets:mdWrap>
+      </mets:techMD>
+      <mets:techMD></mets:techMD>
+   </mets:amdSec>
+   <mets:amdSec/>
+   <mets:structMap TYPE="logical">
+      <mets:div TYPE="THESE" CONTENTIDS="CONTENTIDS.ABES.STAR.THESE_23173"
+                DMDID="ABES.STAR.THESE_23173.DESCRIPTION_BIBLIOGRAPHIQUE"
+                ADMID="ABES.STAR.THESE_23173.ADMINISTRATION">
+         <mets:div TYPE="EDITION"
+                   CONTENTIDS="CONTENTIDS.ABES.STAR.THESE_23173.EDITION_DEPOT_NATIONAL"
+                   DMDID="ABES.STAR.THESE_23173.DESCRIPTION.EDITION_DEPOT_NATIONAL"/>
+         <mets:div TYPE="EDITION"
+                   CONTENTIDS="CONTENTIDS.ABES.STAR.THESE_23173.EDITION_REPRO_PAPIER"
+                   DMDID="ABES.STAR.THESE_23173.DESCRIPTION.EDITION_REPRO_PAPIER"/>
+      </mets:div>
+   </mets:structMap>
+</mets:mets>

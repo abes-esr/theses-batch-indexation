@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.theses.fr/namespace/sujets" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:mads="http://www.loc.gov/mads/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:tef="http://www.abes.fr/abes/documents/tef" xmlns:mets="http://www.loc.gov/METS/" xmlns:tefudoc="http://www.theses.fr/namespace/tefudoc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tefextension="http://www.abes.fr/abes/documents/tefextension" xmlns:suj="http://www.theses.fr/namespace/sujets">
+  <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
+  <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
+  <xs:import namespace="http://www.abes.fr/abes/documents/tef" schemaLocation="tef.xsd"/>
+  <xs:import namespace="http://www.abes.fr/abes/documents/tefextension" schemaLocation="tefextension.xsd"/>
+  <xs:import namespace="http://www.loc.gov/METS/" schemaLocation="mets.xsd"/>
+  <xs:import namespace="http://www.loc.gov/mads/" schemaLocation="mads.xsd"/>
+  <xs:import namespace="http://www.theses.fr/namespace/tefudoc" schemaLocation="tefudoc.xsd"/>
+  <xs:import namespace="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="xsi.xsd"/>
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xs:element name="datePremiereInscriptionDoctorat" type="xs:date"/>
+  <xs:element name="dateInscriptionEtab" type="xs:date"/>
+  <xs:element name="contratDoctoral" type="xs:NCName"/>
+  <xs:element name="adresseDoctorant" type="xs:string"/>
+  <xs:element name="codePostalDoctorant" type="xs:integer"/>
+  <xs:element name="villeAdresseDoctorant" type="xs:NCName"/>
+  <xs:element name="paysAdresseDoctorant" type="xs:NCName"/>
+  <xs:element name="telephoneDoctorant">
+    <xs:complexType/>
+  </xs:element>
+</xs:schema>
