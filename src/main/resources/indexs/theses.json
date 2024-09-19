@@ -88,6 +88,9 @@
       "nnt": {
         "type": "keyword"
       },
+      "idDoc": {
+        "type": "keyword"
+      },
       "numSujet": {
         "type": "keyword"
       },
