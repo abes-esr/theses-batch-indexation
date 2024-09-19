@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @Setter
 public class TheseMappee {
 
-    //String id;
+    String idDoc;
     String dateInsertionDansES;
     String cas;
     String accessible;
@@ -82,7 +82,7 @@ public class TheseMappee {
     List<String> oaiSetNames = new ArrayList<>();
     String theseTravaux = "non";
 
-    public TheseMappee(Mets mets, List<Set> oaiSets) {
+    public TheseMappee(Mets mets, List<Set> oaiSets, int idDoc) {
         try {
 
             DmdSec dmdSec = mets.getDmdSec().get(1);
@@ -91,6 +91,8 @@ public class TheseMappee {
             TechMD techMD = null;
 
             try {
+
+                this.idDoc = String.valueOf(idDoc);
 
                 // dateInsertionDansES
                 dateInsertionDansES = java.time.Clock.systemUTC().instant().toString();

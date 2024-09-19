@@ -37,7 +37,7 @@ public class TheseItemProcessor implements ItemProcessor<TheseModel, TheseModel>
 
         log.debug("debut de traitement de " + item.getNnt());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(item.getDoc().getBytes()));
-        String json = new Gson().toJson(new TheseMappee(mets, oaiSets));
+        String json = new Gson().toJson(new TheseMappee(mets, oaiSets, item.getIdDoc()));
         item.setJsonThese(json);
         Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
         if (starGestion.isPresent()) {
