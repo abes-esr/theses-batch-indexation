@@ -3,6 +3,7 @@ package fr.abes.theses_batch_indexation.writer;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
+import fr.abes.theses_batch_indexation.configuration.JobConfig;
 import fr.abes.theses_batch_indexation.database.DbService;
 import fr.abes.theses_batch_indexation.database.TableIndexationES;
 import fr.abes.theses_batch_indexation.database.TheseModel;
@@ -15,6 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -30,6 +32,9 @@ public class ESDeleteWriter implements ItemWriter<TheseModel> {
     @Autowired
     MappingJobName mappingJobName;
 
+    @Autowired
+    JobConfig jobConfig;
+
     @Override
     public void write(List<? extends TheseModel> items) throws Exception {
 
@@ -39,25 +44,22 @@ public class ESDeleteWriter implements ItemWriter<TheseModel> {
         for (TheseModel theseModel : items) {
 
             br.operations(op -> op
-                    .delete(d->d.index(nomIndex.toLowerCase())
-                            .id(theseModel.getNnt() == null? theseModel.getIdSujet() : theseModel.getNnt())
-            )
-        );
-    }
+                    .delete(d -> d.index(nomIndex.toLowerCase())
+                            .id(theseModel.getNnt() == null ? theseModel.getIdSujet() : theseModel.getNnt())
+                    )
+            );
+        }
         BulkResponse result = proxyRetry.executerDansES(br);
 
-        for (BulkResponseItem item: result.items()) {
+        for (BulkResponseItem item : result.items()) {
 
             if (item.error() != null) {
                 log.error(item.error().reason().concat(" pour ").concat(item.id()));
-            }
-            else {
-                switch (nomIndex) {
-                    case "theses" :
-                        dbService.supprimerTheseATraiter(item.id(), TableIndexationES.suppression_es_these);
-                    case "thematiques":
-                        dbService.supprimerTheseATraiter(item.id(), TableIndexationES.suppression_es_thematique);
-                }
+            } else {
+                if (Objects.equals(nomIndex, jobConfig.getThesesIndex()))
+                    dbService.supprimerTheseATraiter(item.id(), TableIndexationES.suppression_es_these);
+                if (Objects.equals(nomIndex, jobConfig.getThematiquesIndex()))
+                    dbService.supprimerTheseATraiter(item.id(), TableIndexationES.suppression_es_thematique);
             }
         }
     }
