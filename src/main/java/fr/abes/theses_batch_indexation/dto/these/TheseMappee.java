@@ -144,7 +144,7 @@ public class TheseMappee {
 
             log.debug("traitement de titrePrincipal");
             try {
-                titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent();
+                titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().replace("\"", "''");
             } catch (NullPointerException e) {
                 log.warn("PB pour titrePrincipal de " + nnt + e.getMessage());
             }
@@ -154,7 +154,7 @@ public class TheseMappee {
                 if (!dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang().isEmpty()) {
                     titres.put(
                             dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
-                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
+                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().replace("\"", "''"));
                 }
 
                 if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
@@ -162,7 +162,7 @@ public class TheseMappee {
                     while (titreAlternativeIterator.hasNext()) {
                         Alternative a = titreAlternativeIterator.next();
                         if (!a.getLang().isEmpty())
-                            titres.put(a.getLang(), a.getContent());
+                            titres.put(a.getLang(), a.getContent().replace("\"", "''"));
                     }
                 }
             } catch (NullPointerException e) {
@@ -178,7 +178,7 @@ public class TheseMappee {
                 while (abstractIterator.hasNext()) {
                     Abstract a = abstractIterator.next();
                     if (!a.getLang().isEmpty())
-                        resumes.put(a.getLang(), a.getContent());
+                        resumes.put(a.getLang(), a.getContent().replace("\"", "''"));
                 }
             } catch (NullPointerException e) {
                 log.warn("PB pour resumes de " + nnt + e.getMessage());
