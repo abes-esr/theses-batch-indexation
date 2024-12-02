@@ -178,7 +178,9 @@ public class TheseMappee {
                 while (abstractIterator.hasNext()) {
                     Abstract a = abstractIterator.next();
                     if (!a.getLang().isEmpty())
-                        resumes.put(a.getLang(), a.getContent().replace("\"", "''"));
+                        resumes.put(a.getLang(), a.getContent()
+                                .replace("\"", "''")
+                                .replace("\t", " "));
                 }
             } catch (NullPointerException e) {
                 log.warn("PB pour resumes de " + nnt + e.getMessage());
