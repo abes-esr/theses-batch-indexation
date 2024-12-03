@@ -600,9 +600,9 @@ public class TheseMappee {
 
                     if (s != null && s.getLang() != null) {
                         sujetDTO.setLangue(s.getLang());
-                        sujetDTO.setLibelle(s.getContent());
+                        sujetDTO.setLibelle(s.getContent().replace("\"", "''"));
                         sujets.add(sujetDTO);
-                        sujetsLibelle.add(s.getContent());
+                        sujetsLibelle.add(s.getContent().replace("\"", "''"));
                     }
                 }
             } catch (NullPointerException e) {
