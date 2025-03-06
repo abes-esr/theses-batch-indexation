@@ -30,6 +30,7 @@ public class TheseMappee {
     String numSujet;
     String numSujetSansS;
     String dateSoutenance;
+    String dateCines;
     String datePremiereInscriptionDoctorat;
     String dateFinEmbargo;
     String dateFiltre;
@@ -207,6 +208,18 @@ public class TheseMappee {
                 dateSoutenance = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString();
             } catch (NullPointerException e) {
                 log.warn("PB pour dateSoutenance de " + nnt);
+            }
+
+            // date d'archivage au Cines
+            log.debug("traitement de dateCines");
+            try {
+                Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
+                if (starGestion.isPresent()) {
+                    dateCines = starGestion.get().getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getDateCines().toString();
+                }
+
+            } catch (NullPointerException e) {
+                log.warn("PB pour dateCines de " + nnt);
             }
 
             // date de datePremiereInscriptionDoctorat
