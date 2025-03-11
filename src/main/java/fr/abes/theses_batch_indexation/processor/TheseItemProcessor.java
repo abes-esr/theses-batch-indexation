@@ -38,13 +38,23 @@ public class TheseItemProcessor implements ItemProcessor<TheseModel, TheseModel>
         log.debug("debut de traitement de " + item.getNnt());
         Mets mets = marshall.chargerMets(new ByteArrayInputStream(item.getDoc().getBytes()));
         String json = new Gson().toJson(new TheseMappee(mets, oaiSets, item.getIdDoc()));
+
+        json = replaceControlChar(json);
+
         item.setJsonThese(json);
+
         Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
         if (starGestion.isPresent()) {
             item.setCodeEtab(starGestion.get().getMdWrap().getXmlData().getStarGestion().getCodeEtab());
         }
 
         return item;
+    }
+
+    private static String replaceControlChar(String json) {
+        json = json.replaceAll("\\\\\"", "''");
+        json = json.replaceAll("\\\\[trnbavf0e]", " ");
+        return json;
     }
 
     @Override
