@@ -145,7 +145,7 @@ public class TheseMappee {
 
             log.debug("traitement de titrePrincipal");
             try {
-                titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().replace("\"", "''");
+                titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent();
             } catch (NullPointerException e) {
                 log.warn("PB pour titrePrincipal de " + nnt + e.getMessage());
             }
@@ -155,7 +155,7 @@ public class TheseMappee {
                 if (!dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang().isEmpty()) {
                     titres.put(
                             dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
-                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().replace("\"", "''"));
+                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
                 }
 
                 if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
@@ -163,7 +163,7 @@ public class TheseMappee {
                     while (titreAlternativeIterator.hasNext()) {
                         Alternative a = titreAlternativeIterator.next();
                         if (!a.getLang().isEmpty())
-                            titres.put(a.getLang(), a.getContent().replace("\"", "''"));
+                            titres.put(a.getLang(), a.getContent());
                     }
                 }
             } catch (NullPointerException e) {
@@ -179,9 +179,7 @@ public class TheseMappee {
                 while (abstractIterator.hasNext()) {
                     Abstract a = abstractIterator.next();
                     if (!a.getLang().isEmpty())
-                        resumes.put(a.getLang(), a.getContent()
-                                .replace("\"", "''")
-                                .replace("\t", " "));
+                        resumes.put(a.getLang(), a.getContent());
                 }
             } catch (NullPointerException e) {
                 log.warn("PB pour resumes de " + nnt + e.getMessage());
@@ -613,9 +611,9 @@ public class TheseMappee {
 
                     if (s != null && s.getLang() != null) {
                         sujetDTO.setLangue(s.getLang());
-                        sujetDTO.setLibelle(s.getContent().replace("\"", "''"));
+                        sujetDTO.setLibelle(s.getContent());
                         sujets.add(sujetDTO);
-                        sujetsLibelle.add(s.getContent().replace("\"", "''"));
+                        sujetsLibelle.add(s.getContent());
                     }
                 }
             } catch (NullPointerException e) {
