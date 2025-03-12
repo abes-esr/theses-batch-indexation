@@ -53,7 +53,7 @@ public class TheseItemProcessor implements ItemProcessor<TheseModel, TheseModel>
 
     private static String replaceControlChar(String json) {
         json = json.replaceAll("\\\\\"", "''");
-        json = json.replaceAll("\\\\[trnbavf0e]", " ");
+        json = json.replaceAll("[\\\\]+[trnbavf0e]", " ");
         return json;
     }
 
