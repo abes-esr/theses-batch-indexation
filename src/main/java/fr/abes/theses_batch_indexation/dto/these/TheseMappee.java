@@ -30,6 +30,7 @@ public class TheseMappee {
     String numSujet;
     String numSujetSansS;
     String dateSoutenance;
+    String dateCines;
     String datePremiereInscriptionDoctorat;
     String dateFinEmbargo;
     String dateFiltre;
@@ -144,7 +145,7 @@ public class TheseMappee {
 
             log.debug("traitement de titrePrincipal");
             try {
-                titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().replace("\"", "''");
+                titrePrincipal = dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent();
             } catch (NullPointerException e) {
                 log.warn("PB pour titrePrincipal de " + nnt + e.getMessage());
             }
@@ -154,7 +155,7 @@ public class TheseMappee {
                 if (!dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang().isEmpty()) {
                     titres.put(
                             dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getLang(),
-                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent().replace("\"", "''"));
+                            dmdSec.getMdWrap().getXmlData().getThesisRecord().getTitle().getContent());
                 }
 
                 if (dmdSec.getMdWrap().getXmlData().getThesisRecord().getAlternative() != null) {
@@ -162,7 +163,7 @@ public class TheseMappee {
                     while (titreAlternativeIterator.hasNext()) {
                         Alternative a = titreAlternativeIterator.next();
                         if (!a.getLang().isEmpty())
-                            titres.put(a.getLang(), a.getContent().replace("\"", "''"));
+                            titres.put(a.getLang(), a.getContent());
                     }
                 }
             } catch (NullPointerException e) {
@@ -178,9 +179,7 @@ public class TheseMappee {
                 while (abstractIterator.hasNext()) {
                     Abstract a = abstractIterator.next();
                     if (!a.getLang().isEmpty())
-                        resumes.put(a.getLang(), a.getContent()
-                                .replace("\"", "''")
-                                .replace("\t", " "));
+                        resumes.put(a.getLang(), a.getContent());
                 }
             } catch (NullPointerException e) {
                 log.warn("PB pour resumes de " + nnt + e.getMessage());
@@ -207,6 +206,18 @@ public class TheseMappee {
                 dateSoutenance = techMD.getMdWrap().getXmlData().getThesisAdmin().getDateAccepted().getValue().toString();
             } catch (NullPointerException e) {
                 log.warn("PB pour dateSoutenance de " + nnt);
+            }
+
+            // date d'archivage au Cines
+            log.debug("traitement de dateCines");
+            try {
+                Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
+                if (starGestion.isPresent()) {
+                    dateCines = starGestion.get().getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getDateCines().toString();
+                }
+
+            } catch (NullPointerException e) {
+                log.warn("PB pour dateCines de " + nnt);
             }
 
             // date de datePremiereInscriptionDoctorat
@@ -600,9 +611,9 @@ public class TheseMappee {
 
                     if (s != null && s.getLang() != null) {
                         sujetDTO.setLangue(s.getLang());
-                        sujetDTO.setLibelle(s.getContent().replace("\"", "''"));
+                        sujetDTO.setLibelle(s.getContent());
                         sujets.add(sujetDTO);
-                        sujetsLibelle.add(s.getContent().replace("\"", "''"));
+                        sujetsLibelle.add(s.getContent());
                     }
                 }
             } catch (NullPointerException e) {
