@@ -2,7 +2,7 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2024.05.14 à 04:50:23 PM CEST 
+// Généré le : 2025.06.20 à 11:51:49 AM CEST 
 //
 
 
@@ -311,6 +311,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *               &lt;complexContent>
  *                 &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                   &lt;attribute name="ID_SUJET" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+ *                   &lt;attribute name="codeEtab" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *                   &lt;attribute name="stepEtat" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
  *                 &lt;/restriction>
  *               &lt;/complexContent>
@@ -4683,6 +4684,7 @@ public class XmlData {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;attribute name="ID_SUJET" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
+     *       &lt;attribute name="codeEtab" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
      *       &lt;attribute name="stepEtat" use="required" type="{http://www.w3.org/2001/XMLSchema}NCName" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -4699,6 +4701,10 @@ public class XmlData {
         @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
         @XmlSchemaType(name = "NCName")
         protected String idsujet;
+        @XmlAttribute(name = "codeEtab", required = true)
+        @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
+        @XmlSchemaType(name = "NCName")
+        protected String codeEtab;
         @XmlAttribute(name = "stepEtat", required = true)
         @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
         @XmlSchemaType(name = "NCName")
@@ -4726,6 +4732,30 @@ public class XmlData {
          */
         public void setIDSUJET(String value) {
             this.idsujet = value;
+        }
+
+        /**
+         * Obtient la valeur de la propriété codeEtab.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getCodeEtab() {
+            return codeEtab;
+        }
+
+        /**
+         * Définit la valeur de la propriété codeEtab.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setCodeEtab(String value) {
+            this.codeEtab = value;
         }
 
         /**
