@@ -133,10 +133,16 @@ public class TheseMappee {
             log.debug("traitement de cas et codeEtab");
             try {
                 Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
+                Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
                 if (starGestion.isPresent()) {
                     cas = starGestion.get().getMdWrap().getXmlData().getStarGestion().getTraitements().getScenario();
                     codeEtab = starGestion.get().getMdWrap().getXmlData().getStarGestion().getCodeEtab();
                 }
+                if (stepGestion.isPresent()) {
+                    codeEtab = stepGestion.get().getMdWrap().getXmlData().getStepGestion().getCodeEtab();
+                }
+                // Ici
+
             } catch (NullPointerException e) {
                 log.warn("PB pour cas de " + nnt + e.getMessage());
             }
