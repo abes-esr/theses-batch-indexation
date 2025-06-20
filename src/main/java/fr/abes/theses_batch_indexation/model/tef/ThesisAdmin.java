@@ -2,7 +2,7 @@
 // Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
 // Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2025.06.20 à 11:51:49 AM CEST 
+// Généré le : 2025.06.20 à 02:47:21 PM CEST 
 //
 
 
@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}auteur" maxOccurs="unbounded"/>
- *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}coAuteur"/>
+ *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}coAuteur" maxOccurs="unbounded"/>
  *         &lt;element ref="{http://purl.org/dc/elements/1.1/}identifier" maxOccurs="unbounded"/>
  *         &lt;element ref="{http://purl.org/dc/terms/}dateAccepted"/>
  *         &lt;element ref="{http://www.abes.fr/abes/documents/tef}thesis.degree"/>
@@ -77,7 +77,7 @@ public class ThesisAdmin {
     @XmlElement(required = true)
     protected List<Auteur> auteur;
     @XmlElement(required = true)
-    protected CoAuteur coAuteur;
+    protected List<CoAuteur> coAuteur;
     @XmlElement(namespace = "http://purl.org/dc/elements/1.1/", required = true)
     protected List<Identifier> identifier;
     @XmlElement(namespace = "http://purl.org/dc/terms/", required = true)
@@ -141,27 +141,32 @@ public class ThesisAdmin {
     }
 
     /**
-     * Obtient la valeur de la propriété coAuteur.
+     * Gets the value of the coAuteur property.
      * 
-     * @return
-     *     possible object is
-     *     {@link CoAuteur }
-     *     
-     */
-    public CoAuteur getCoAuteur() {
-        return coAuteur;
-    }
-
-    /**
-     * Définit la valeur de la propriété coAuteur.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the coAuteur property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link CoAuteur }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCoAuteur().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CoAuteur }
+     * 
+     * 
      */
-    public void setCoAuteur(CoAuteur value) {
-        this.coAuteur = value;
+    public List<CoAuteur> getCoAuteur() {
+        if (coAuteur == null) {
+            coAuteur = new ArrayList<CoAuteur>();
+        }
+        return this.coAuteur;
     }
 
     /**
