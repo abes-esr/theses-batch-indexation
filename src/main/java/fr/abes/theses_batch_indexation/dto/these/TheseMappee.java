@@ -116,8 +116,10 @@ public class TheseMappee {
                 Iterator<Identifier> iteIdentifiersDoi = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
                 while (iteIdentifiersDoi.hasNext()) {
                     Identifier i = iteIdentifiersDoi.next();
-                    if (isDoi(i.getValue()))
-                        doi = i.getValue();
+                    if (isDoi(i.getValue())) {
+                        // soustraine la chaine "https://doi.org/" pour récupérer le doi simple
+                        doi = i.getValue().replaceAll("https://doi\\.org/", "");
+                    }
                 }
                 log.info("traitement de " + doi);
 
