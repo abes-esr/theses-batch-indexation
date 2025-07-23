@@ -5,7 +5,7 @@ import fr.abes.theses_batch_indexation.dto.these.Source;
 import fr.abes.theses_batch_indexation.dto.these.Status;
 import fr.abes.theses_batch_indexation.model.oaisets.Set;
 import fr.abes.theses_batch_indexation.model.tef.*;
-import fr.abes.theses_batch_indexation.utils.OutilsTef;
+import fr.abes.theses_batch_indexation.utils.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -130,76 +130,8 @@ public class PersonneMapee {
         log.debug("traitement de sujetsRameau");
 
         try {
-            List<VedetteRameauNomCommun> sujetsRameauNomCommunDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauNomCommun();
-            Iterator<VedetteRameauNomCommun> vedetteRameauNomCommunIterator = sujetsRameauNomCommunDepuisTef.iterator();
-            while (vedetteRameauNomCommunIterator.hasNext()) {
-                VedetteRameauNomCommun vedette = vedetteRameauNomCommunIterator.next();
-                if (vedette.getElementdEntree() != null) {
-                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
-                }
-                processVedetteSubdivisions(vedette);
-            }
-            List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauAuteurTitre();
-            Iterator<VedetteRameauAuteurTitre> vedetteRameauAuteurTitreIterator = sujetsRameauAuteurTitreDepuisTef.iterator();
-            while (vedetteRameauAuteurTitreIterator.hasNext()) {
-                VedetteRameauAuteurTitre vedette = vedetteRameauAuteurTitreIterator.next();
-                if (vedette.getElementdEntree() != null) {
-                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
-                }
-                processVedetteSubdivisions(vedette);
-            }
-            List<VedetteRameauCollectivite> sujetsRameauCollectiviteDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauCollectivite();
-            Iterator<VedetteRameauCollectivite> vedetteRameauCollectiviteIterator = sujetsRameauCollectiviteDepuisTef.iterator();
-            while (vedetteRameauCollectiviteIterator.hasNext()) {
-                VedetteRameauCollectivite vedette = vedetteRameauCollectiviteIterator.next();
-                if (vedette.getElementdEntree() != null) {
-                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
-                }
-                processVedetteSubdivisions(vedette);
-            }
-            List<VedetteRameauFamille> sujetsRameauFamilleDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauFamille();
-            Iterator<VedetteRameauFamille> vedetteRameauFamilleIterator = sujetsRameauFamilleDepuisTef.iterator();
-            while (vedetteRameauFamilleIterator.hasNext()) {
-                VedetteRameauFamille vedette = vedetteRameauFamilleIterator.next();
-                if (vedette.getElementdEntree() != null) {
-                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
-                }
-                processVedetteSubdivisions(vedette);
-            }
-            List<VedetteRameauPersonne> sujetsRameauPersonneDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauPersonne();
-            Iterator<VedetteRameauPersonne> vedetteRameauPersonneIterator = sujetsRameauPersonneDepuisTef.iterator();
-            while (vedetteRameauPersonneIterator.hasNext()) {
-                VedetteRameauPersonne vedette = vedetteRameauPersonneIterator.next();
-                if (vedette.getElementdEntree() != null) {
-                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
-                }
-                processVedetteSubdivisions(vedette);
-            }
-            List<VedetteRameauNomGeographique> sujetsRameauNomGeographiqueDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauNomGeographique();
-            Iterator<VedetteRameauNomGeographique> vedetteRameauNomGeographiqueIterator = sujetsRameauNomGeographiqueDepuisTef.iterator();
-            while (vedetteRameauNomGeographiqueIterator.hasNext()) {
-                VedetteRameauNomGeographique vedette = vedetteRameauNomGeographiqueIterator.next();
-                if (vedette.getElementdEntree() != null) {
-                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
-                }
-                processVedetteSubdivisions(vedette);
-            }
-            List<VedetteRameauTitre> sujetsRameauTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
-                    .getThesisRecord().getSujetRameau().getVedetteRameauTitre();
-            Iterator<VedetteRameauTitre> vedetteRameauTitreIterator = sujetsRameauTitreDepuisTef.iterator();
-            while (vedetteRameauTitreIterator.hasNext()) {
-                VedetteRameauTitre vedette = vedetteRameauTitreIterator.next();
-                if (vedette.getElementdEntree() != null) {
-                    theseModelES.getSujets_rameau().add(new SujetRameauES(vedette.getElementdEntree().getAutoriteExterne(), vedette.getElementdEntree().getContent()));
-                }
-                processVedetteSubdivisions(vedette);
-            }
+            VedetteProcessor vedetteProcessor = new VedetteProcessor(dmdSec, theseModelES);
+            vedetteProcessor.processAllVedettes();
         } catch (NullPointerException e) {
             if (theseModelES.getStatus() == Status.SOUTENUE) {
                 log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Sujets Rameau"));
@@ -491,33 +423,6 @@ public class PersonneMapee {
             //log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", nnt, "Rôle "+Roles.MEMBRE_DU_JURY));
         } catch (Exception e) {
             log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Rôle " + Roles.MEMBRE_DU_JURY, e.getMessage()));
-        }
-    }
-
-    /**
-     * Vérifie si un sujet rameau a des subdivisions et les ajoute à theseModelES.sujetsRameau (a plat)
-     *
-     * @param vedette Le sujet rameau
-     */
-    private void processVedetteSubdivisions(Object vedette) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        // Réflexion car pas d'interface possible avec les classes générées par jaxb
-        Method getSubdivisionMethod = vedette.getClass().getMethod("getSubdivision");
-        List<?> subdivisions = (List<?>) getSubdivisionMethod.invoke(vedette);
-
-        Iterator<?> subdivisionIterator = subdivisions.iterator();
-
-        while (subdivisionIterator.hasNext()) {
-            Subdivision subdivision = (Subdivision) subdivisionIterator.next();
-
-            Method getAutoriteExterneMethod = subdivision.getClass().getMethod("getAutoriteExterne");
-            Method getContentMethod = subdivision.getClass().getMethod("getContent");
-
-            String autoriteExterne = (String) getAutoriteExterneMethod.invoke(subdivision);
-            String content = (String) getContentMethod.invoke(subdivision);
-
-            if (!theseModelES.getSujets_rameau().contains(autoriteExterne)) {
-                theseModelES.getSujets_rameau().add(new SujetRameauES(autoriteExterne, content));
-            }
         }
     }
 
