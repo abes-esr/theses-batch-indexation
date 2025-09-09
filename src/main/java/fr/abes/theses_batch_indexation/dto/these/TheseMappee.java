@@ -273,17 +273,14 @@ public class TheseMappee {
             boolean sourceIsSet = false;
             try {
                 source = "sudoc";
-
-                if (nnt == null || "".equals(nnt)) {
+                if (mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst().orElse(null) != null) {
                     source = "step";
                 }
-
                 if (!(nnt == null || "".equals(nnt)) &&
                         mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                                 .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
                     source = "star";
                 }
-
             } catch (NullPointerException ex) {
                 log.warn("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
