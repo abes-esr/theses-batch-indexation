@@ -273,9 +273,11 @@ public class TheseMappee {
             boolean sourceIsSet = false;
             try {
                 source = "sudoc";
+
                 if (mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst().orElse(null) != null) {
                     source = "step";
                 }
+
                 if (!(nnt == null || "".equals(nnt)) &&
                         mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
                                 .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
