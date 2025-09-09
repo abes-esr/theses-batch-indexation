@@ -270,20 +270,18 @@ public class TheseMappee {
             // source
             log.debug("traitement de source");
 
-            boolean sourceIsSet = false;
             try {
                 source = "sudoc";
 
-                if (nnt == null || "".equals(nnt)) {
+                if (mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst().orElse(null) != null) {
                     source = "step";
                 }
 
+                DmdSec star_gestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null);
                 if (!(nnt == null || "".equals(nnt)) &&
-                        mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                                .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
+                        (star_gestion != null && star_gestion.getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))) {
                     source = "star";
                 }
-
             } catch (NullPointerException ex) {
                 log.warn("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
@@ -645,18 +643,18 @@ public class TheseMappee {
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
                     List<Subdivision> subdivisions = vedette.getSubdivision();
-                        Iterator<Subdivision> subdivisionIterator = subdivisions.iterator();
-                        while (subdivisionIterator.hasNext()) {
-                            Subdivision subdivision1 = subdivisionIterator.next();
-                            if (!sujetsRameauPpn.contains(subdivision1.getAutoriteExterne())) {
-                                SujetRameauDTO subdivision = new SujetRameauDTO();
-                                subdivision.setPpn(subdivision1.getAutoriteExterne());
-                                subdivision.setLibelle(subdivision1.getContent());
-                                sujetsRameau.add(subdivision);
-                                sujetsRameauPpn.add(subdivision1.getAutoriteExterne());
-                                sujetsRameauLibelle.add(subdivision1.getContent());
-                            }
+                    Iterator<Subdivision> subdivisionIterator = subdivisions.iterator();
+                    while (subdivisionIterator.hasNext()) {
+                        Subdivision subdivision1 = subdivisionIterator.next();
+                        if (!sujetsRameauPpn.contains(subdivision1.getAutoriteExterne())) {
+                            SujetRameauDTO subdivision = new SujetRameauDTO();
+                            subdivision.setPpn(subdivision1.getAutoriteExterne());
+                            subdivision.setLibelle(subdivision1.getContent());
+                            sujetsRameau.add(subdivision);
+                            sujetsRameauPpn.add(subdivision1.getAutoriteExterne());
+                            sujetsRameauLibelle.add(subdivision1.getContent());
                         }
+                    }
                 }
                 List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
                         .getThesisRecord().getSujetRameau().getVedetteRameauAuteurTitre();
