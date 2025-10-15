@@ -27,6 +27,7 @@ public class TheseMappee {
     Boolean isSoutenue;
     String codeEtab;
     String nnt;
+    String doi;
     String numSujet;
     String numSujetSansS;
     String dateSoutenance;
@@ -109,6 +110,16 @@ public class TheseMappee {
                         nnt = i.getValue();
                 }
                 log.info("traitement de " + nnt);
+
+                // doi
+                log.debug("traitement de doi");
+                Iterator<Identifier> iteIdentifiersDoi = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
+                while (iteIdentifiersDoi.hasNext()) {
+                    Identifier i = iteIdentifiersDoi.next();
+                    if (isDoi(i.getValue()))
+                        doi = i.getValue();
+                }
+                log.info("traitement de " + doi);
 
                 // numsujet
                 log.debug("traitement de numSujet");
@@ -856,6 +867,13 @@ public class TheseMappee {
 
     private boolean isNnt(String identifier) {
         String regex = "\\d{4}[A-Z]{2}[0-9A-Z]{2}[0-9A-Z]{4}";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(identifier);
+        return m.matches();
+    }
+
+    private boolean isDoi(String identifier) {
+        String regex = "https://doi.org/10.70675/[0-9a-z]{36}";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(identifier);
         return m.matches();
