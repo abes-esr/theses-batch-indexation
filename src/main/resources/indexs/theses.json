@@ -88,6 +88,9 @@
       "nnt": {
         "type": "keyword"
       },
+      "doi": {
+        "type": "keyword"
+      },
       "idDoc": {
         "type": "keyword"
       },

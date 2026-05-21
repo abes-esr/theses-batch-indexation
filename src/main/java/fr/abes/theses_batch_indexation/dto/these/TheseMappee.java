@@ -27,6 +27,7 @@ public class TheseMappee {
     Boolean isSoutenue;
     String codeEtab;
     String nnt;
+    String doi;
     String numSujet;
     String numSujetSansS;
     String dateSoutenance;
@@ -110,6 +111,18 @@ public class TheseMappee {
                 }
                 log.info("traitement de " + nnt);
 
+                // doi
+                log.debug("traitement de doi");
+                Iterator<Identifier> iteIdentifiersDoi = techMD.getMdWrap().getXmlData().getThesisAdmin().getIdentifier().iterator();
+                while (iteIdentifiersDoi.hasNext()) {
+                    Identifier i = iteIdentifiersDoi.next();
+                    if (isDoi(i.getValue())) {
+                        // soustraine la chaine "https://doi.org/" pour récupérer le doi simple
+                        doi = i.getValue().replaceAll("https://doi\\.org/", "");
+                    }
+                }
+                log.info("traitement de " + doi);
+
                 // numsujet
                 log.debug("traitement de numSujet");
                 Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
@@ -133,10 +146,16 @@ public class TheseMappee {
             log.debug("traitement de cas et codeEtab");
             try {
                 Optional<DmdSec> starGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst();
+                Optional<DmdSec> stepGestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst();
                 if (starGestion.isPresent()) {
                     cas = starGestion.get().getMdWrap().getXmlData().getStarGestion().getTraitements().getScenario();
                     codeEtab = starGestion.get().getMdWrap().getXmlData().getStarGestion().getCodeEtab();
                 }
+                if (stepGestion.isPresent()) {
+                    codeEtab = stepGestion.get().getMdWrap().getXmlData().getStepGestion().getCodeEtab();
+                }
+                // Ici
+
             } catch (NullPointerException e) {
                 log.warn("PB pour cas de " + nnt + e.getMessage());
             }
@@ -264,20 +283,18 @@ public class TheseMappee {
             // source
             log.debug("traitement de source");
 
-            boolean sourceIsSet = false;
             try {
                 source = "sudoc";
 
-                if (nnt == null || "".equals(nnt)) {
+                if (mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStepGestion() != null).findFirst().orElse(null) != null) {
                     source = "step";
                 }
 
+                DmdSec star_gestion = mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null);
                 if (!(nnt == null || "".equals(nnt)) &&
-                        mets.getDmdSec().stream().filter(d -> d.getMdWrap().getXmlData().getStarGestion() != null).findFirst().orElse(null)
-                                .getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK")) {
+                        (star_gestion != null && star_gestion.getMdWrap().getXmlData().getStarGestion().getTraitements().getSorties().getCines().getIndicCines().equals("OK"))) {
                     source = "star";
                 }
-
             } catch (NullPointerException ex) {
                 log.warn("impossible de récupérer le getIndicCines pour " + nnt + "(NullPointerException)");
             }
@@ -639,18 +656,18 @@ public class TheseMappee {
                         sujetsRameauLibelle.add(vedette.getElementdEntree().getContent());
                     }
                     List<Subdivision> subdivisions = vedette.getSubdivision();
-                        Iterator<Subdivision> subdivisionIterator = subdivisions.iterator();
-                        while (subdivisionIterator.hasNext()) {
-                            Subdivision subdivision1 = subdivisionIterator.next();
-                            if (!sujetsRameauPpn.contains(subdivision1.getAutoriteExterne())) {
-                                SujetRameauDTO subdivision = new SujetRameauDTO();
-                                subdivision.setPpn(subdivision1.getAutoriteExterne());
-                                subdivision.setLibelle(subdivision1.getContent());
-                                sujetsRameau.add(subdivision);
-                                sujetsRameauPpn.add(subdivision1.getAutoriteExterne());
-                                sujetsRameauLibelle.add(subdivision1.getContent());
-                            }
+                    Iterator<Subdivision> subdivisionIterator = subdivisions.iterator();
+                    while (subdivisionIterator.hasNext()) {
+                        Subdivision subdivision1 = subdivisionIterator.next();
+                        if (!sujetsRameauPpn.contains(subdivision1.getAutoriteExterne())) {
+                            SujetRameauDTO subdivision = new SujetRameauDTO();
+                            subdivision.setPpn(subdivision1.getAutoriteExterne());
+                            subdivision.setLibelle(subdivision1.getContent());
+                            sujetsRameau.add(subdivision);
+                            sujetsRameauPpn.add(subdivision1.getAutoriteExterne());
+                            sujetsRameauLibelle.add(subdivision1.getContent());
                         }
+                    }
                 }
                 List<VedetteRameauAuteurTitre> sujetsRameauAuteurTitreDepuisTef = dmdSec.getMdWrap().getXmlData()
                         .getThesisRecord().getSujetRameau().getVedetteRameauAuteurTitre();
@@ -852,6 +869,13 @@ public class TheseMappee {
 
     private boolean isNnt(String identifier) {
         String regex = "\\d{4}[A-Z]{2}[0-9A-Z]{2}[0-9A-Z]{4}";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(identifier);
+        return m.matches();
+    }
+
+    private boolean isDoi(String identifier) {
+        String regex = "https://doi.org/10.70675/[0-9a-z]{36}";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(identifier);
         return m.matches();
