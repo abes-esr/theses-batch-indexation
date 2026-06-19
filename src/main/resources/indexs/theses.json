@@ -121,6 +121,9 @@
           "exact": {
             "type": "text",
             "analyzer": "standard"
+          },
+          "keyword": {
+            "type": "keyword"
           }
         }
       },
@@ -229,14 +232,19 @@
       "langues": {
         "type": "keyword"
       },
-      "auteurs" : {
+      "auteurs": {
         "type": "nested",
         "properties": {
           "ppn": {
             "type": "keyword"
           },
           "nom": {
-            "type": "text"
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword"
+              }
+            }
           },
           "prenom": {
             "type": "text"
