@@ -122,8 +122,9 @@
             "type": "text",
             "analyzer": "standard"
           },
-          "keyword": {
-            "type": "keyword"
+          "sort": {
+            "type": "keyword",
+            "normalizer": "exact"
           }
         }
       },
@@ -239,12 +240,7 @@
             "type": "keyword"
           },
           "nom": {
-            "type": "text",
-            "fields": {
-              "keyword": {
-                "type": "keyword"
-              }
-            }
+            "type": "text"
           },
           "prenom": {
             "type": "text"
