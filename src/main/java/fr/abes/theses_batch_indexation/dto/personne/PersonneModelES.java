@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Représente une personne au format de l'index Elastic Search.
@@ -21,6 +22,8 @@ public class PersonneModelES implements IModelES {
     protected boolean has_idref;
     protected String nom;
     protected String prenom;
+    protected String date_naissance;
+    protected String idxDoublon;
     protected List<String> nom_complet = new ArrayList<>();
     protected Set<String> theses_id = new LinkedHashSet<>();
 
@@ -39,6 +42,14 @@ public class PersonneModelES implements IModelES {
 
         nom_complet.add(String.format("%1$s %2$s", prenom, nom));
         nom_complet.add(String.format("%1$s %2$s", nom, prenom));
+    }
+
+
+    //set la date de naissance pour les auteurs, et instancie le champ "idxDoublon"
+    public void setDate_Naissance(XMLGregorianCalendar dateNaissance) {
+            String date =String.format("%04d%02d%02d",dateNaissance.getYear(),dateNaissance.getMonth(),dateNaissance.getDay());
+            this.idxDoublon = String.join("|", this.nom, this.prenom, date);
+            this.date_naissance = dateNaissance.toString();
     }
 
 

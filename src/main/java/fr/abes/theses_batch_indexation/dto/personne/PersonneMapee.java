@@ -564,6 +564,7 @@ public class PersonneMapee {
                         item.getNom(),
                         item.getPrenom()
                 );
+                personne.setDate_Naissance(item.getDateNaissance());
                 personnes.add(personne);
             }
 

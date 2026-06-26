@@ -58,6 +58,11 @@
   },
   "mappings": {
     "properties": {
+      "idxDoublon":{
+        "type" : "keyword",
+        "normalizer": "exact"
+        
+      },
       "ppn": {
         "type": "keyword"
       },
@@ -98,6 +103,9 @@
             "analyzer": "standard"
           }
         }
+      },
+      "date_naissance":{
+        "type" : "date"
       },
       "has_idref": {
         "type": "boolean",

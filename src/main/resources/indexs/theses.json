@@ -121,6 +121,10 @@
           "exact": {
             "type": "text",
             "analyzer": "standard"
+          },
+          "sort": {
+            "type": "keyword",
+            "normalizer": "exact"
           }
         }
       },
@@ -229,7 +233,7 @@
       "langues": {
         "type": "keyword"
       },
-      "auteurs" : {
+      "auteurs": {
         "type": "nested",
         "properties": {
           "ppn": {
