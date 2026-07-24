@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * L'objet PersonneMappe correspond à un objet transitoire entre le format TEF (XML) et le format JSON attendu par Elastic Search.
@@ -428,6 +429,19 @@ public class PersonneMapee {
         try {
             traiterAuteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getAuteur());
+
+            //S'il existe un coAuteur
+            if(techMD.getMdWrap().getXmlData().getThesisAdmin().getCoAuteur() != null 
+            && !techMD.getMdWrap().getXmlData().getThesisAdmin().getCoAuteur().isEmpty()){
+                
+                //on le traite comme un auteur
+                traiterAuteurs( techMD.getMdWrap().getXmlData().getThesisAdmin()
+                            .getCoAuteur()
+                            .stream()
+                            .map(OutilsTef::coAuteurToAuteur) //mapping coAuteur --> Auteur
+                            .collect(Collectors.toList())
+                );
+            }
 
         } catch (NullPointerException e) {
             log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.AUTEUR));

@@ -1,6 +1,8 @@
 package fr.abes.theses_batch_indexation.utils;
 
+import fr.abes.theses_batch_indexation.model.tef.Auteur;
 import fr.abes.theses_batch_indexation.model.tef.AutoriteExterne;
+import fr.abes.theses_batch_indexation.model.tef.CoAuteur;
 
 import java.util.List;
 
@@ -28,6 +30,23 @@ public class OutilsTef {
             }
         }
         return null;
+    }
+
+
+    public static Auteur coAuteurToAuteur(CoAuteur coAuteur){
+        Auteur res = null;
+
+        if(coAuteur != null){
+            res = new Auteur();
+
+            res.setPrenom(coAuteur.getPrenom());
+            res.setNom(coAuteur.getNom());
+            res.setDateNaissance(coAuteur.getDateNaissance());
+            res.setNationalite(coAuteur.getNationalite());
+            res.getAutoriteExterne().addAll(coAuteur.getAutoriteExterne());
+        }
+
+        return res;
     }
 
 }
