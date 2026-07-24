@@ -47,9 +47,12 @@ public class PersonneModelES implements IModelES {
 
     //set la date de naissance pour les auteurs, et instancie le champ "idxDoublon"
     public void setDate_Naissance(XMLGregorianCalendar dateNaissance) {
-            String date =String.format("%04d%02d%02d",dateNaissance.getYear(),dateNaissance.getMonth(),dateNaissance.getDay());
-            this.idxDoublon = String.join("|", this.nom, this.prenom, date);
-            this.date_naissance = dateNaissance.toString();
+
+            if(dateNaissance != null){
+                String date =String.format("%04d%02d%02d",dateNaissance.getYear(),dateNaissance.getMonth(),dateNaissance.getDay());
+                this.idxDoublon = String.join("|", this.nom, this.prenom, date);
+                this.date_naissance = dateNaissance.toString();
+            }
     }
 
 
