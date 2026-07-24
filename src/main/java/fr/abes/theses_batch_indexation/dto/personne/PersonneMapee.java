@@ -388,7 +388,29 @@ public class PersonneMapee {
                     .getAuteur().iterator();
             while (iter.hasNext()) {
                 Auteur item = iter.next();
-                theseModelES.getAuteurs().add(new PersonneLiteES(OutilsTef.getPPN(item.getAutoriteExterne()),
+                theseModelES.getAuteurs().add(new PersonneLiteES(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom()));
+            }
+        } catch (NullPointerException e) {
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Auteurs"));
+        } catch (Exception e) {
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Auteurs", e.getMessage()));
+        }
+
+
+        /************************************
+         * Parsing des co-auteurs de la thèse
+         * ***********************************/
+        log.debug("traitement des auteurs");
+        try {
+            Iterator<CoAuteur> iter = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getCoAuteur().iterator();
+            while (iter.hasNext()) {
+                CoAuteur item = iter.next();
+                theseModelES.getAuteurs().add(new PersonneLiteES(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
                         item.getPrenom()));
             }
