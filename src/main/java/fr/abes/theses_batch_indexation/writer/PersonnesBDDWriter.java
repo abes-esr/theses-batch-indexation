@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -44,7 +45,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
     }
 
     @Override
-    public void write(List<? extends TheseModel> items) {
+    public void write(Chunk<? extends TheseModel> items) {
 
         nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
 
@@ -54,7 +55,7 @@ public class PersonnesBDDWriter implements ItemWriter<TheseModel>, StepExecution
                 personneCacheListSansPpn
         );
 
-        personneCacheUtils.ecrireEnMemoire(items, nombreDeTheses, nombreDePersonnes, nombreDePersonnesUpdated);
+        personneCacheUtils.ecrireEnMemoire(items.getItems(), nombreDeTheses, nombreDePersonnes, nombreDePersonnesUpdated);
 
     }
 

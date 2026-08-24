@@ -15,6 +15,7 @@ import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import fr.abes.theses_batch_indexation.utils.ProxyRetry;
 import jakarta.json.spi.JsonProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -44,12 +44,12 @@ public class ESItemWriter implements ItemWriter<TheseModel> {
     JobConfig jobConfig;
 
     @Override
-    public void write(List<? extends TheseModel> items) throws Exception {
+    public void write(Chunk<? extends TheseModel> items) throws Exception {
 
         BulkRequest.Builder br = new BulkRequest.Builder();
         String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
 
-        for (TheseModel theseModel : items) {
+        for (TheseModel theseModel : items.getItems()) {
             if (
                     theseModel.getCodeEtab() != null &&
                     (theseModel.getCodeEtab().equals("FOR1") || theseModel.getCodeEtab().equals("FOR2"))

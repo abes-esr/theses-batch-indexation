@@ -5,5 +5,5 @@
 // Généré le : 2025.06.23 à 03:52:59 PM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.abes.fr/abes/documents/tef", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://www.abes.fr/abes/documents/tef", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package fr.abes.theses_batch_indexation.model.tef;

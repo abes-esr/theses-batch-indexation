@@ -10,12 +10,12 @@ import fr.abes.theses_batch_indexation.database.TheseModel;
 import fr.abes.theses_batch_indexation.utils.MappingJobName;
 import fr.abes.theses_batch_indexation.utils.ProxyRetry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -36,12 +36,12 @@ public class ESDeleteWriter implements ItemWriter<TheseModel> {
     JobConfig jobConfig;
 
     @Override
-    public void write(List<? extends TheseModel> items) throws Exception {
+    public void write(Chunk<? extends TheseModel> items) throws Exception {
 
         BulkRequest.Builder br = new BulkRequest.Builder();
         String nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
 
-        for (TheseModel theseModel : items) {
+        for (TheseModel theseModel : items.getItems()) {
 
             br.operations(op -> op
                     .delete(d -> d.index(nomIndex.toLowerCase())

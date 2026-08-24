@@ -12,10 +12,10 @@ import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -33,20 +34,27 @@ import javax.sql.DataSource;
 @EnableBatchProcessing
 public class BatchConfiguration {
 
-    protected final JobBuilderFactory jobs;
-    protected final StepBuilderFactory stepBuilderFactory;
     protected final DataSource dataSourceLecture;
     private final JobConfig config;
     private final ItemWriteListener<TheseModel> theseWriteListener;
     private final ItemProcessListener<TheseModel, TheseModel> theseProcessListener;
+    private final PlatformTransactionManager transactionManager;
+    private final JobRepository jobRepository;
 
-    public BatchConfiguration(JobBuilderFactory jobs, StepBuilderFactory stepBuilderFactory, @Qualifier("dataSourceLecture") DataSource dataSourceLecture, JobConfig config, @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener, @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener) {
-        this.jobs = jobs;
-        this.stepBuilderFactory = stepBuilderFactory;
+    public BatchConfiguration(
+            @Qualifier("dataSourceLecture") DataSource dataSourceLecture,
+            JobConfig config,
+            @Qualifier("theseWriteListener") ItemWriteListener<TheseModel> theseWriteListener,
+            @Qualifier("theseProcessListener") ItemProcessListener<TheseModel, TheseModel> theseProcessListener,
+            PlatformTransactionManager transactionManager,
+            JobRepository jobRepository
+    ) {
         this.dataSourceLecture = dataSourceLecture;
         this.config = config;
         this.theseWriteListener = theseWriteListener;
         this.theseProcessListener = theseProcessListener;
+        this.transactionManager = transactionManager;
+        this.jobRepository = jobRepository;
     }
 
     // ---------- JOB ---------------------------------------------
@@ -59,7 +67,7 @@ public class BatchConfiguration {
                                          JobTheseCompletionNotificationListener listener) {
         log.debug("debut du job indexation des theses dans ES...");
 
-        return jobs.get("indexationThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+        return new JobBuilder("indexationThesesDansES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepInitialiserIndexES(initialiserIndexESTasklet))
@@ -73,7 +81,7 @@ public class BatchConfiguration {
                                             Tasklet chargerOaiSetsTasklet,
                                             Tasklet changerIndexAliasTasklet,
                                             JobTheseCompletionNotificationListener listener) {
-        return jobs.get("indexationPersonnesDansES").incrementer(new RunIdIncrementer())
+        return new JobBuilder("indexationPersonnesDansES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
@@ -86,7 +94,7 @@ public class BatchConfiguration {
     public Job jobIndexationPersonnesDeBddVersES(Tasklet initialiserIndexEsPersonneTasklet,
                                                  JobTheseCompletionNotificationListener listener,
                                                  Tasklet indexerPersonnesDansESTasklet) {
-        return jobs.get("indexationPersonnesDeBddVersES").incrementer(new RunIdIncrementer())
+        return new JobBuilder("indexationPersonnesDeBddVersES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
@@ -99,7 +107,7 @@ public class BatchConfiguration {
                                                      Tasklet chargerOaiSetsTasklet,
                                                      Tasklet changerIndexAliasTasklet,
                                                      JobTheseCompletionNotificationListener listener) {
-        return jobs.get("indexationRecherchePersonnesDansES").incrementer(new RunIdIncrementer())
+        return new JobBuilder("indexationRecherchePersonnesDansES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepChargerListeOaiSets(chargerOaiSetsTasklet))
                 .next(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
@@ -111,7 +119,7 @@ public class BatchConfiguration {
     public Job jobIndexationRecherchePersonnesDeBddVersES(Tasklet initialiserIndexEsPersonneTasklet,
                                                  JobTheseCompletionNotificationListener listener,
                                                  Tasklet indexerPersonnesDansESTasklet) {
-        return jobs.get("indexationRecherchePersonnesDeBddVersES").incrementer(new RunIdIncrementer())
+        return new JobBuilder("indexationRecherchePersonnesDeBddVersES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitialiserIndexESPersonne(initialiserIndexEsPersonneTasklet))
                 .next(stepIndexerPersonnesDansESTasklet(indexerPersonnesDansESTasklet))
@@ -125,7 +133,7 @@ public class BatchConfiguration {
                                               JobTheseCompletionNotificationListener listener) {
         log.debug("debut du job indexation des thematiques dans ES...");
 
-        return jobs.get("indexationThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+        return new JobBuilder("indexationThematiquesDansES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepInitialiserIndexES(initialiserIndexESTasklet))
                 .next(stepIndexThematiquesDansES)
@@ -140,7 +148,7 @@ public class BatchConfiguration {
                                           JobTheseCompletionNotificationListener listener) {
         log.debug("debut du job de suppression des theses dans ES...");
 
-        return jobs.get("suppressionThesesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+        return new JobBuilder("suppressionThesesDansES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepSupprimeThesesOuThematiquesDansES)
                 .build();
@@ -152,7 +160,7 @@ public class BatchConfiguration {
                                                JobTheseCompletionNotificationListener listener) {
         log.debug("debut du job de suppression des thématiques dans ES...");
 
-        return jobs.get("suppressionThematiquesDansES").repository(jobRepository).incrementer(new RunIdIncrementer())
+        return new JobBuilder("suppressionThematiquesDansES", jobRepository).incrementer(new RunIdIncrementer())
                 .listener(listener)
                 .start(stepSupprimeThesesOuThematiquesDansES)
                 .build();
@@ -163,7 +171,8 @@ public class BatchConfiguration {
     public Step stepIndexThesesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
                                       @Qualifier("theseItemProcessor") ItemProcessor itemProcessor,
                                       @Qualifier("ESItemWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexationThese").<TheseModel, TheseModel>chunk(config.getChunk())
+        return new StepBuilder("stepIndexationThese", jobRepository)
+                .<TheseModel, TheseModel>chunk(config.getChunk(), transactionManager)
                 .listener(theseWriteListener)
                 .reader(itemReader)
                 .processor(itemProcessor)
@@ -178,7 +187,8 @@ public class BatchConfiguration {
     public Step stepIndexThematiquesDansES(@Qualifier("jdbcPagingCustomReader") JdbcPagingCustomReader itemReader,
                                            @Qualifier("thematiqueItemProcessor") ItemProcessor itemProcessor,
                                            @Qualifier("ESItemWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexationThematique").<TheseModel, TheseModel>chunk(config.getChunk())
+        return new StepBuilder("stepIndexationThematique", jobRepository)
+                .<TheseModel, TheseModel>chunk(config.getChunk(), transactionManager)
                 .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
@@ -191,7 +201,8 @@ public class BatchConfiguration {
     public Step stepIndexPersonnesDansBDD(@Qualifier("jdbcPagingPersonnesCustomReader") ItemReader itemReader,
                                           @Qualifier("personneItemProcessor") ItemProcessor itemProcessor,
                                           @Qualifier("personnesBDDWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexationPersonne").chunk(config.getChunk())
+        return new StepBuilder("stepIndexationPersonne", jobRepository)
+                .chunk(config.getChunk(), transactionManager)
                 .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
@@ -202,7 +213,8 @@ public class BatchConfiguration {
     public Step stepIndexRecherchePersonnesDansBDD(@Qualifier("jdbcPagingPersonnesCustomReader") ItemReader itemReader,
                                                    @Qualifier("recherchePersonneItemProcessor") ItemProcessor itemProcessor,
                                                    @Qualifier("recherchePersonnesBDDWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepIndexationRecherchePersonne").chunk(config.getChunk())
+        return new StepBuilder("stepIndexationRecherchePersonne", jobRepository)
+                .chunk(config.getChunk(), transactionManager)
                 .reader(itemReader)
                 .processor(itemProcessor)
                 .writer(itemWriter)
@@ -211,32 +223,32 @@ public class BatchConfiguration {
 
     @Bean
     public Step stepInitialiserIndexES(@Qualifier("initialiserIndexESTasklet") Tasklet t) {
-        return stepBuilderFactory.get("InitialiserIndexESTasklet").allowStartIfComplete(true)
-                .tasklet(t).build();
+        return new StepBuilder("InitialiserIndexESTasklet", jobRepository).allowStartIfComplete(true)
+                .tasklet(t, transactionManager).build();
     }
 
     @Bean
     public Step stepChangerIndexAlias(@Qualifier("changerIndexAliasTasklet") Tasklet t) {
-        return stepBuilderFactory.get("ChangerIndexAliasTasklet").allowStartIfComplete(true)
-                .tasklet(t).build();
+        return new StepBuilder("ChangerIndexAliasTasklet", jobRepository).allowStartIfComplete(true)
+                .tasklet(t, transactionManager).build();
     }
 
     @Bean
     public Step stepInitialiserIndexESPersonne(@Qualifier("initialiserIndexEsPersonneTasklet") Tasklet t) {
-        return stepBuilderFactory.get("stepInitialiserIndexESPersonne").allowStartIfComplete(true)
-                .tasklet(t).build();
+        return new StepBuilder("stepInitialiserIndexESPersonne", jobRepository).allowStartIfComplete(true)
+                .tasklet(t, transactionManager).build();
     }
 
     @Bean
     public Step stepInitiliserIndexBDDTasklet(@Qualifier("initiliserIndexBDDTasklet") Tasklet t) {
-        return stepBuilderFactory.get("stepInitiliserIndexBDDTasklet").allowStartIfComplete(true)
-                .tasklet(t).build();
+        return new StepBuilder("stepInitiliserIndexBDDTasklet", jobRepository).allowStartIfComplete(true)
+                .tasklet(t, transactionManager).build();
     }
 
     @Bean
     public Step stepIndexerPersonnesDansESTasklet(@Qualifier("indexerPersonnesDansESTasklet") Tasklet t) {
-        return stepBuilderFactory.get("stepIndexerPersonnesDansESTasklet").allowStartIfComplete(true)
-                .tasklet(t)
+        return new StepBuilder("stepIndexerPersonnesDansESTasklet", jobRepository).allowStartIfComplete(true)
+                .tasklet(t, transactionManager)
                 .taskExecutor(taskExecutor())
                 .throttleLimit(config.getThrottle())
                 .build();
@@ -244,14 +256,15 @@ public class BatchConfiguration {
 
     @Bean
     public Step stepChargerListeOaiSets(@Qualifier("chargerOaiSetsTasklet") Tasklet t) {
-        return stepBuilderFactory.get("ChargerOaiSetsTasklet").allowStartIfComplete(true)
-                .tasklet(t).build();
+        return new StepBuilder("ChargerOaiSetsTasklet", jobRepository).allowStartIfComplete(true)
+                .tasklet(t, transactionManager).build();
     }
 
     @Bean
     public Step stepSupprimeThesesOuThematiquesDansES(@Qualifier("jdbcPagingDeleteReader") JdbcPagingDeleteReader itemReader,
                                                       @Qualifier("ESDeleteWriter") ItemWriter itemWriter) {
-        return stepBuilderFactory.get("stepSuppressionThese").<TheseModel, TheseModel>chunk(config.getChunk())
+        return new StepBuilder("stepSuppressionThese", jobRepository)
+                .<TheseModel, TheseModel>chunk(config.getChunk(), transactionManager)
                 .listener(theseWriteListener)
                 .reader(itemReader)
                 .writer(itemWriter)

@@ -25,6 +25,7 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,7 +69,7 @@ public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel>, Step
     }
 
     @Override
-    public void write(List<? extends TheseModel> items) {
+    public void write(Chunk<? extends TheseModel> items) {
 
         nomIndex = mappingJobName.getNomIndexES().get(env.getProperty("spring.batch.job.names"));
 
@@ -78,7 +79,7 @@ public class RecherchePersonnesBDDWriter implements ItemWriter<TheseModel>, Step
                 recherchePersonneCacheListSansPpn
         );
 
-        personneCacheUtils.ecrireEnMemoire(items, nombreDeTheses, nombreDePersonnes, nombreDePersonnesUpdated);
+        personneCacheUtils.ecrireEnMemoire(items.getItems(), nombreDeTheses, nombreDePersonnes, nombreDePersonnesUpdated);
 
     }
 

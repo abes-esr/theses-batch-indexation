@@ -1,4 +1,5 @@
 src/main/resources/application.properties
+application-localhost.properties
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 *.class
@@ -19,3 +20,4 @@ src/main/resources/application.properties
 *.iml
 *.ipr
 /src/main/resources/jibx/
+.env
