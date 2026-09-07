@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * L'objet PersonneMappe correspond à un objet transitoire entre le format TEF (XML) et le format JSON attendu par Elastic Search.
@@ -387,7 +388,29 @@ public class PersonneMapee {
                     .getAuteur().iterator();
             while (iter.hasNext()) {
                 Auteur item = iter.next();
-                theseModelES.getAuteurs().add(new PersonneLiteES(OutilsTef.getPPN(item.getAutoriteExterne()),
+                theseModelES.getAuteurs().add(new PersonneLiteES(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
+                        item.getNom(),
+                        item.getPrenom()));
+            }
+        } catch (NullPointerException e) {
+            log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Auteurs"));
+        } catch (Exception e) {
+            log.info(String.format("%s - Champs '%s' : Erreur de traitement : %s", id, "Auteurs", e.getMessage()));
+        }
+
+
+        /************************************
+         * Parsing des co-auteurs de la thèse
+         * ***********************************/
+        log.debug("traitement des auteurs");
+        try {
+            Iterator<CoAuteur> iter = techMD.getMdWrap().getXmlData().getThesisAdmin()
+                    .getCoAuteur().iterator();
+            while (iter.hasNext()) {
+                CoAuteur item = iter.next();
+                theseModelES.getAuteurs().add(new PersonneLiteES(
+                        OutilsTef.getPPN(item.getAutoriteExterne()),
                         item.getNom(),
                         item.getPrenom()));
             }
@@ -428,6 +451,19 @@ public class PersonneMapee {
         try {
             traiterAuteurs(techMD.getMdWrap().getXmlData().getThesisAdmin()
                     .getAuteur());
+
+            //S'il existe un coAuteur
+            if(techMD.getMdWrap().getXmlData().getThesisAdmin().getCoAuteur() != null 
+            && !techMD.getMdWrap().getXmlData().getThesisAdmin().getCoAuteur().isEmpty()){
+                
+                //on le traite comme un auteur
+                traiterAuteurs( techMD.getMdWrap().getXmlData().getThesisAdmin()
+                            .getCoAuteur()
+                            .stream()
+                            .map(OutilsTef::coAuteurToAuteur) //mapping coAuteur --> Auteur
+                            .collect(Collectors.toList())
+                );
+            }
 
         } catch (NullPointerException e) {
             log.info(String.format("%s - Champs '%s' : La valeur est nulle dans le TEF", id, "Rôle " + Roles.AUTEUR));
@@ -564,6 +600,7 @@ public class PersonneMapee {
                         item.getNom(),
                         item.getPrenom()
                 );
+                personne.setDate_Naissance(item.getDateNaissance());
                 personnes.add(personne);
             }
 

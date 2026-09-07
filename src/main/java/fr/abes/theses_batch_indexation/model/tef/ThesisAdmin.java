@@ -76,7 +76,11 @@ public class ThesisAdmin {
 
     @XmlElement(required = true)
     protected List<Auteur> auteur;
-    @XmlElement(required = true)
+    @XmlElement(
+            name = "coAuteur",
+            namespace = "http://www.abes.fr/abes/documents/tefextension",
+            required = true
+    )
     protected List<CoAuteur> coAuteur;
     @XmlElement(namespace = "http://purl.org/dc/elements/1.1/", required = true)
     protected List<Identifier> identifier;
